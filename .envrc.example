@@ -3,7 +3,7 @@ export NVM_DIR="$HOME/.nvm"
 # Try common nvm installation paths
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Standard installation
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # Homebrew on macOS
-nvm use 20
+nvm use
 
 # Fix for Scaffolder plugin
 export NODE_OPTIONS="--no-node-snapshot"
