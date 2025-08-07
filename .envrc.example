@@ -2,7 +2,7 @@
 nvm use
 
 # Fix for Scaffolder plugin
-export NODE_OPTIONS="--no-node-snapshot"
+export NODE_OPTIONS="${NODE_OPTIONS:-} --no-node-snapshot"
 
 # Github Authentication Configuration
 export GITHUB_CLIENT_ID=
