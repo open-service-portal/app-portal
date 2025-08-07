@@ -84,6 +84,10 @@ auth:
 
 scaffolder:
   # see https://backstage.io/docs/features/software-templates/configuration for software template options
+  defaultAuthor:
+    name: Open Service Portal
+    email: noreply@github.com
+  defaultCommitMessage: "Initial commit from Backstage"
 
 catalog:
   import:
