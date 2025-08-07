@@ -4,11 +4,12 @@ nvm use
 # Fix for Scaffolder plugin
 export NODE_OPTIONS="--no-node-snapshot"
 
-# Github Authentication Configuration
-export GITHUB_CLIENT_ID=
-export GITHUB_CLIENT_SECRET=
-
-export GITHUB_TOKEN=
+# GitHub App Configuration (required)
+export AUTH_GITHUB_CLIENT_ID=        # GitHub App Client ID
+export AUTH_GITHUB_CLIENT_SECRET=    # GitHub App Client Secret  
+export AUTH_GITHUB_APP_ID=           # GitHub App ID
+export AUTH_GITHUB_APP_PRIVATE_KEY_FILE=  # Path to .pem file
+export AUTH_GITHUB_APP_INSTALLATION_ID=   # Installation ID after installing app
 
 # Postgres Configuration (optional - uses SQLite by default)
 # export POSTGRES_HOST=localhost
