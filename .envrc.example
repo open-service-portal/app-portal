@@ -19,6 +19,3 @@ export GITHUB_TOKEN=
 # Backstage configuration
 export APP_CONFIG_app_title='Open Service Portal'
 
-# GitHub Auth for Backstage (if different from above)
-# export APP_CONFIG_auth_providers_github_clientId=
-# export APP_CONFIG_auth_providers_github_clientSecret=
