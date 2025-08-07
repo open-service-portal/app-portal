@@ -39,6 +39,7 @@ integrations:
         - appId: ${AUTH_GITHUB_APP_ID}
           clientId: ${AUTH_GITHUB_CLIENT_ID}
           clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+          installationId: ${AUTH_GITHUB_APP_INSTALLATION_ID}
           privateKey:
             $file: ${AUTH_GITHUB_APP_PRIVATE_KEY_FILE}
     ### Example for how to add your GitHub Enterprise instance using the API:
