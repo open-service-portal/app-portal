@@ -45,6 +45,11 @@ site
 
 # Sensitive credentials
 *-credentials.yaml
+*.pem
+*.key
+*.p12
+*.pfx
+private-key*
 
 # vscode database functionality support files
 *.session.sql
