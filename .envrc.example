@@ -1,14 +1,28 @@
+# Node.js version management (requires nvm)
+export NVM_DIR="$HOME/.nvm"
+# Try common nvm installation paths
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Standard installation
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # Homebrew on macOS
+nvm use 20
+
+# Fix for Scaffolder plugin
+export NODE_OPTIONS="--no-node-snapshot"
+
 # Github Authentication Configuration
 export GITHUB_CLIENT_ID=
 export GITHUB_CLIENT_SECRET=
 
 export GITHUB_TOKEN=
 
-# Postgres Configuration
-export POSTGRES_HOST=todo
-export POSTGRES_PORT=todo
-export POSTGRES_USER=todo
-export POSTGRES_PASSWORD=todo
+# Postgres Configuration (optional - uses SQLite by default)
+# export POSTGRES_HOST=localhost
+# export POSTGRES_PORT=5432
+# export POSTGRES_USER=postgres
+# export POSTGRES_PASSWORD=
 
-# Example configuration with namespace
+# Backstage configuration
 export APP_CONFIG_app_title='Open Service Portal'
+
+# GitHub Auth for Backstage (if different from above)
+# export APP_CONFIG_auth_providers_github_clientId=
+# export APP_CONFIG_auth_providers_github_clientSecret=
