@@ -30,6 +30,9 @@ node_modules/
 .env
 .env.test
 
+# direnv
+.envrc
+
 # Build output
 dist
 dist-types

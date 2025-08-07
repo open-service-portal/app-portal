@@ -1,0 +1,14 @@
+# Github Authentication Configuration
+export GITHUB_CLIENT_ID=
+export GITHUB_CLIENT_SECRET=
+
+export GITHUB_TOKEN=
+
+# Postgres Configuration
+export POSTGRES_HOST=todo
+export POSTGRES_PORT=todo
+export POSTGRES_USER=todo
+export POSTGRES_PASSWORD=todo
+
+# Example configuration with namespace
+export APP_CONFIG_app_title='Open Service Portal'
