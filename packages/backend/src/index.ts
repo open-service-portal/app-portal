@@ -32,6 +32,9 @@ backend.add(
 // GitHub Org Entity Provider - imports users and teams from GitHub
 backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
 
+// GitHub Discovery - automatically discovers repositories matching patterns
+backend.add(import('@backstage/plugin-catalog-backend-module-github'));
+
 // See https://backstage.io/docs/features/software-catalog/configuration#subscribing-to-catalog-errors
 backend.add(import('@backstage/plugin-catalog-backend-module-logs'));
 

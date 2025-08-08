@@ -94,7 +94,7 @@ catalog:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration
   rules:
-    - allow: [Component, System, API, Resource, Location, User, Group]
+    - allow: [Component, System, API, Resource, Location, User, Group, Template]
   providers:
     githubOrg:
       - id: production
@@ -103,16 +103,22 @@ catalog:
         schedule:
           frequency: { minutes: 30 }
           timeout: { minutes: 3 }
+    github:
+      templateDiscovery:
+        organization: 'open-service-portal'
+        catalogPath: '/template.yaml'  # Look for template.yaml in repo root
+        filters:
+          repository: '^service-.*-template$'  # Match repos like service-nodejs-template
+        schedule:
+          frequency: { minutes: 30 }
+          timeout: { minutes: 3 }
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
       target: ../../examples/entities.yaml
 
-    # Local example template
-    - type: file
-      target: ../../examples/template/template.yaml
-      rules:
-        - allow: [Template]
+    # Templates are now auto-discovered via GitHub provider
+    # Repos matching pattern 'service-*-template' are automatically imported
 
     # Local example organizational data
     - type: file
