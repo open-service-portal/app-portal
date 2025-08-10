@@ -1,0 +1,35 @@
+name: Sync Organization Labels
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run weekly on Sunday at midnight
+    - cron: '0 0 * * 0'
+  push:
+    branches: [ "main" ]
+    paths:
+      - '.github/workflows/sync-labels.yml'
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Sync labels from organization
+        uses: EndBug/label-sync@v2
+        with:
+          # Pull labels from organization's .github repository
+          config-file: https://raw.githubusercontent.com/open-service-portal/.github/main/.github/labels.yml
+          
+          # Uses the automatic GITHUB_TOKEN
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+          # Don't delete labels that aren't in the config
+          delete-other-labels: false
+          
+      - name: Label sync complete
+        run: echo "✅ Labels synchronized from organization standards"
