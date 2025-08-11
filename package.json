@@ -31,10 +31,10 @@
   "devDependencies": {
     "@backstage/cli": "^0.33.1",
     "@backstage/e2e-test-utils": "^0.1.1",
-    "@playwright/test": "^1.32.3",
-    "node-gyp": "^10.0.0",
-    "prettier": "^2.3.2",
-    "typescript": "~5.8.0"
+    "@playwright/test": "^1.54.2",
+    "node-gyp": "^11.3.0",
+    "prettier": "^3.6.2",
+    "typescript": "~5.9.0"
   },
   "resolutions": {
     "@types/react": "^18",
@@ -50,8 +50,5 @@
       "prettier --write"
     ]
   },
-  "packageManager": "yarn@4.4.1",
-  "dependencies": {
-    "@backstage/plugin-catalog-backend-module-github-org": "^0.3.12"
-  }
+  "packageManager": "yarn@4.4.1"
 }
