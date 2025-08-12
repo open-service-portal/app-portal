@@ -1,5 +1,8 @@
-# Node.js version management (requires nvm)
-nvm use
+# Load nvm if available and use the specified Node version
+if [ -s "$HOME/.nvm/nvm.sh" ]; then
+  source "$HOME/.nvm/nvm.sh"
+  nvm use
+fi
 
 # Fix for Scaffolder plugin
 export NODE_OPTIONS="${NODE_OPTIONS:-} --no-node-snapshot"
