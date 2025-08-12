@@ -1,0 +1,83 @@
+# Zero-config development configuration for frontend developers
+# This config requires no environment variables or secrets to run
+# Usage: yarn dev
+
+app:
+  title: Open Service Portal (Dev Mode)
+  baseUrl: http://localhost:3000
+
+organization:
+  name: Example Organization
+
+backend:
+  baseUrl: http://localhost:7007
+  listen:
+    port: 7007
+  csp:
+    connect-src: ["'self'", 'http:', 'https:']
+  cors:
+    origin: http://localhost:3000
+    methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+    credentials: true
+  database:
+    client: better-sqlite3
+    connection: ':memory:'
+
+# No external integrations - everything runs locally
+integrations: {}
+
+# Guest authentication only - no tokens needed
+auth:
+  environment: development
+  providers:
+    guest:
+      dangerouslyAllowOutsideDevelopment: true
+
+# TechDocs in local mode - no external dependencies
+techdocs:
+  builder: 'local'
+  generator:
+    runIn: 'local'
+  publisher:
+    type: 'local'
+
+scaffolder:
+  defaultAuthor:
+    name: Dev User
+    email: dev@example.com
+  defaultCommitMessage: "Initial commit from Backstage Dev Mode"
+
+# Catalog with only local example data - no external providers
+catalog:
+  import:
+    entityFilename: catalog-info.yaml
+    pullRequestBranchName: backstage-integration
+  rules:
+    - allow: [Component, System, API, Resource, Location, User, Group, Template]
+  providers: {} # All external providers disabled
+  locations:
+    # Load example entities
+    - type: file
+      target: ../../examples/entities.yaml
+    
+    # Load example template
+    - type: file
+      target: ../../examples/template/template.yaml
+      rules:
+        - allow: [Template]
+    
+    # Load example users and groups
+    - type: file
+      target: ../../examples/org.yaml
+      rules:
+        - allow: [User, Group]
+
+# Kubernetes disabled in dev mode
+kubernetes:
+  serviceLocatorMethod:
+    type: 'multiTenant'
+  clusterLocatorMethods: []
+
+# Permissions enabled for testing
+permission:
+  enabled: true

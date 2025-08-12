@@ -4,12 +4,31 @@ A [Backstage](https://backstage.io) based Internal Developer Platform for self-s
 
 ## 🚀 Quick Start
 
+### Frontend Development (Zero Config)
+
+No configuration needed! Perfect for UI/theme development:
+
 ```bash
 # Clone and install
 git clone https://github.com/open-service-portal/app-portal.git
 cd app-portal
 yarn install
 
+# Start with mock data - no secrets required
+yarn dev
+```
+
+This starts Backstage with:
+- Guest authentication (no GitHub tokens needed)
+- Mock example data
+- In-memory database
+- No external integrations
+
+### Full Development Setup
+
+For full functionality with GitHub integration:
+
+```bash
 # Configure environment (see docs for GitHub App setup)
 cp .envrc.example .envrc
 # Edit .envrc with your credentials
