@@ -3008,7 +3008,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/backend-plugin-api@npm:^1.0.0, @backstage/backend-plugin-api@npm:^1.1.1, @backstage/backend-plugin-api@npm:^1.4.1":
+"@backstage/backend-plugin-api@npm:^1.0.0, @backstage/backend-plugin-api@npm:^1.1.1, @backstage/backend-plugin-api@npm:^1.4.0, @backstage/backend-plugin-api@npm:^1.4.1":
   version: 1.4.1
   resolution: "@backstage/backend-plugin-api@npm:1.4.1"
   dependencies:
@@ -3042,7 +3042,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/catalog-model@npm:^1.7.3, @backstage/catalog-model@npm:^1.7.5":
+"@backstage/catalog-model@npm:^1.7.3, @backstage/catalog-model@npm:^1.7.4, @backstage/catalog-model@npm:^1.7.5":
   version: 1.7.5
   resolution: "@backstage/catalog-model@npm:1.7.5"
   dependencies:
@@ -3538,7 +3538,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/integration@npm:^1.15.0, @backstage/integration@npm:^1.17.1":
+"@backstage/integration@npm:^1.15.0, @backstage/integration@npm:^1.17.0, @backstage/integration@npm:^1.17.1":
   version: 1.17.1
   resolution: "@backstage/integration@npm:1.17.1"
   dependencies:
@@ -4574,7 +4574,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-scaffolder-common@npm:^1.6.0":
+"@backstage/plugin-scaffolder-common@npm:^1.5.11, @backstage/plugin-scaffolder-common@npm:^1.6.0":
   version: 1.6.0
   resolution: "@backstage/plugin-scaffolder-common@npm:1.6.0"
   dependencies:
@@ -4610,6 +4610,33 @@ __metadata:
     zod: "npm:^3.22.4"
     zod-to-json-schema: "npm:^3.20.4"
   checksum: 10c0/c2f2e95008c2adc2a1d4204d70a26cba37e0cb39edf2cef1430477dcab80ff9712ef9a119c0ae6d8bfe41dbcf05f812ea6693cc7be703dbc7762cf891de34ac4
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-scaffolder-node@npm:^0.9.0":
+  version: 0.9.0
+  resolution: "@backstage/plugin-scaffolder-node@npm:0.9.0"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.4.0"
+    "@backstage/catalog-model": "npm:^1.7.4"
+    "@backstage/errors": "npm:^1.2.7"
+    "@backstage/integration": "npm:^1.17.0"
+    "@backstage/plugin-scaffolder-common": "npm:^1.5.11"
+    "@backstage/types": "npm:^1.2.1"
+    "@isomorphic-git/pgp-plugin": "npm:^0.0.7"
+    concat-stream: "npm:^2.0.0"
+    fs-extra: "npm:^11.2.0"
+    globby: "npm:^11.0.0"
+    isomorphic-git: "npm:^1.23.0"
+    jsonschema: "npm:^1.5.0"
+    lodash: "npm:^4.17.21"
+    p-limit: "npm:^3.1.0"
+    tar: "npm:^6.1.12"
+    winston: "npm:^3.2.1"
+    winston-transport: "npm:^4.7.0"
+    zod: "npm:^3.22.4"
+    zod-to-json-schema: "npm:^3.20.4"
+  checksum: 10c0/aa17fdc7e69d9be02edc7d0fa3f83f3caa96393b12382d27999c5314577c1dcb93238d9218991acfbb2721f7ecf3a0561a54ec0fd668b801c641177b562d7323
   languageName: node
   linkType: hard
 
@@ -11197,6 +11224,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@roadiehq/scaffolder-backend-module-utils@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "@roadiehq/scaffolder-backend-module-utils@npm:3.6.0"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.4.0"
+    "@backstage/config": "npm:^1.3.2"
+    "@backstage/errors": "npm:^1.2.7"
+    "@backstage/plugin-scaffolder-node": "npm:^0.9.0"
+    adm-zip: "npm:^0.5.9"
+    detect-indent: "npm:^6.1.0"
+    fast-glob: "npm:^3.3.3"
+    fs-extra: "npm:^10.0.0"
+    jsonata: "npm:^2.0.4"
+    lodash: "npm:^4.17.21"
+    yaml: "npm:^2.6.1"
+    yawn-yaml: "npm:^2.3.0"
+    zod: "npm:^3.19.1"
+  checksum: 10c0/c8be69d525d3c19bc11dd759f726ae890435ba8f970f3c3ca2de7980e110b45ffeea15d2c91f0c6922d7eb815ee2a86179207973ed283cce7ddda68928dc95ab
+  languageName: node
+  linkType: hard
+
 "@rollup/plugin-commonjs@npm:^26.0.0":
   version: 26.0.3
   resolution: "@rollup/plugin-commonjs@npm:26.0.3"
@@ -14970,7 +15018,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"adm-zip@npm:^0.5.10":
+"adm-zip@npm:^0.5.10, adm-zip@npm:^0.5.9":
   version: 0.5.16
   resolution: "adm-zip@npm:0.5.16"
   checksum: 10c0/6f10119d4570c7ba76dcf428abb8d3f69e63f92e51f700a542b43d4c0130373dd2ddfc8f85059f12d4a843703a90c3970cfd17876844b4f3f48bf042bfa6b49f
@@ -15946,6 +15994,7 @@ __metadata:
     "@backstage/plugin-search-backend-module-techdocs": "npm:^0.4.4"
     "@backstage/plugin-search-backend-node": "npm:^1.3.13"
     "@backstage/plugin-techdocs-backend": "npm:^2.0.4"
+    "@roadiehq/scaffolder-backend-module-utils": "npm:^3.6.0"
     app: "link:../app"
     better-sqlite3: "npm:^9.0.0"
     node-gyp: "npm:^11.3.0"
@@ -18446,6 +18495,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"detect-indent@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "detect-indent@npm:6.1.0"
+  checksum: 10c0/dd83cdeda9af219cf77f5e9a0dc31d828c045337386cfb55ce04fad94ba872ee7957336834154f7647b89b899c3c7acc977c57a79b7c776b506240993f97acc7
+  languageName: node
+  linkType: hard
+
 "detect-libc@npm:^2.0.0":
   version: 2.0.4
   resolution: "detect-libc@npm:2.0.4"
@@ -19963,7 +20019,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.2":
+"fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.2, fast-glob@npm:^3.3.3":
   version: 3.3.3
   resolution: "fast-glob@npm:3.3.3"
   dependencies:
@@ -23792,6 +23848,13 @@ __metadata:
   bin:
     json5: lib/cli.js
   checksum: 10c0/5a04eed94810fa55c5ea138b2f7a5c12b97c3750bc63d11e511dcecbfef758003861522a070c2272764ee0f4e3e323862f386945aeb5b85b87ee43f084ba586c
+  languageName: node
+  linkType: hard
+
+"jsonata@npm:^2.0.4":
+  version: 2.1.0
+  resolution: "jsonata@npm:2.1.0"
+  checksum: 10c0/3f7e56960dc7870969aede56262d500e444b55576d5d49b793d75f405cfc4729764a92189ed14d77912d1b2906bc9cd95fed4ebf63eb6b732af2878409d5a0de
   languageName: node
   linkType: hard
 
@@ -33765,6 +33828,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"yaml-js@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "yaml-js@npm:0.3.1"
+  checksum: 10c0/ff5eeeb1773ae8401734a6bc02a92814d069c7847193d4d948a7936d64105502dbb1a9ea51c9615e226c9777b0c6ea36ff0fde52c2ced9ec6958891a894a3078
+  languageName: node
+  linkType: hard
+
 "yaml@npm:^1.10.0, yaml@npm:^1.10.2, yaml@npm:^1.7.2":
   version: 1.10.2
   resolution: "yaml@npm:1.10.2"
@@ -33772,7 +33842,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.0.0, yaml@npm:^2.2.1":
+"yaml@npm:^2.0.0, yaml@npm:^2.2.1, yaml@npm:^2.6.1":
   version: 2.8.1
   resolution: "yaml@npm:2.8.1"
   bin:
@@ -33832,6 +33902,17 @@ __metadata:
     buffer-crc32: "npm:~0.2.3"
     pend: "npm:~1.2.0"
   checksum: 10c0/7b40b3dc46b95761a2a764391d257a11f494d365875af73a1b48fe16d4bd103dd178612e60168d12a0e59a8ba4f6411a15a5e8871d5a5f78255d6cc1ce39ee62
+  languageName: node
+  linkType: hard
+
+"yawn-yaml@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "yawn-yaml@npm:2.3.0"
+  dependencies:
+    js-yaml: "npm:^4.1.0"
+    lodash: "npm:^4.17.21"
+    yaml-js: "npm:^0.3.1"
+  checksum: 10c0/a7b85f3147109f42d029059080fc1f451aebf25252e928d2a2583376748188e840a5ff2c4596bfca32b57fbb0c45ef3d104c29f684a720ed14578db21b51f910
   languageName: node
   linkType: hard
 
@@ -33916,7 +33997,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.22.4":
+"zod@npm:^3.19.1, zod@npm:^3.22.4":
   version: 3.25.76
   resolution: "zod@npm:3.25.76"
   checksum: 10c0/5718ec35e3c40b600316c5b4c5e4976f7fee68151bc8f8d90ec18a469be9571f072e1bbaace10f1e85cf8892ea12d90821b200e980ab46916a6166a4260a983c
