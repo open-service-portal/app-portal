@@ -1,0 +1,70 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-website
+  namespace: default
+  labels:
+    backstage.io/kubernetes-id: example-website
+    app: example-website
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: example-website
+  template:
+    metadata:
+      labels:
+        app: example-website
+        backstage.io/kubernetes-id: example-website
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-website
+  namespace: default
+  labels:
+    backstage.io/kubernetes-id: example-website
+    app: example-website
+spec:
+  selector:
+    app: example-website
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: example-website-config
+  namespace: default
+  labels:
+    backstage.io/kubernetes-id: example-website
+    app: example-website
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Example Website</title>
+    </head>
+    <body>
+        <h1>Example Website for Backstage</h1>
+        <p>This is a test deployment for Backstage Kubernetes plugin integration.</p>
+    </body>
+    </html>
