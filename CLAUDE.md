@@ -2,6 +2,13 @@
 
 This file provides guidance to Claude Code when working with the app-portal Backstage application.
 
+## Prerequisites
+
+```bash
+# Install required tools
+brew install node@20 direnv sops age
+```
+
 ## Quick Start
 
 ```bash

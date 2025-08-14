@@ -5,10 +5,11 @@ A [Backstage](https://backstage.io) based Internal Developer Platform for self-s
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 20 or 22
+- Node.js 20
 - Yarn package manager
 - [direnv](https://direnv.net/) (for automatic environment loading)
 - [SOPS](https://github.com/getsops/sops) (for secret decryption)
+- [age](https://github.com/FiloSottile/age) (SOPS dependency for SSH key support)
 - SSH key configured in GitHub
 
 ### Setup
