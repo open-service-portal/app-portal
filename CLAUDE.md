@@ -147,8 +147,11 @@ Custom action for unique ID generation:
 ### Secrets not loading
 
 ```bash
-# Check SSH key
+# Check if SSH key is loaded
 ssh-add -L
+
+# If "The agent has no identities", add your SSH key:
+ssh-add ~/.ssh/id_ed25519  # or ~/.ssh/id_rsa
 
 # Manually test decryption
 sops -d --input-type dotenv --output-type dotenv .env.enc

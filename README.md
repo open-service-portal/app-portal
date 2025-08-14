@@ -139,8 +139,11 @@ packages/
 If you see authentication errors:
 
 ```bash
-# Verify SSH key is available
+# Check if SSH key is loaded
 ssh-add -L
+
+# If "The agent has no identities", add your SSH key:
+ssh-add ~/.ssh/id_ed25519  # or ~/.ssh/id_rsa
 
 # Test SOPS decryption manually
 sops -d --input-type dotenv --output-type dotenv .env.enc
