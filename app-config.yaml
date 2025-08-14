@@ -141,11 +141,35 @@ kubernetes:
 
 # TeraSky Kubernetes Ingestor configuration
 kubernetesIngestor:
+  # Use Crossplane v1 API (v2 is still preview)
+  crossplane:
+    version: v1  # Force v1 API usage (not v2 preview)
+    # Crossplane claims ingestion
+    claims:
+      # Only ingest claims that are explicitly annotated
+      ingestAllClaims: false
+    # XRD template generation settings
+    xrds:
+      enabled: true
+      publishPhase:
+        # Git servers allowed for publishing
+        allowedTargets: ['github.com']
+        target: github  # Options: github, gitlab, bitbucket, YAML
+      git:
+        # Will be configured per template creation
+        targetBranch: main
+        allowRepoSelection: true
+  
   # Explicitly define which custom resources to watch
   customResources:
     - group: apiextensions.crossplane.io
       apiVersion: v1
-      kinds: ['CompositeResourceDefinition']
+      plural: compositeresourcedefinitions
+    # TODO: Add your custom Crossplane claim types here
+    # Example:
+    # - group: example.io
+    #   apiVersion: v1alpha1
+    #   plural: databases
   
   # Mappings of kubernetes resource metadata to backstage entity metadata
   mappings:
@@ -159,27 +183,11 @@ kubernetesIngestor:
   components:
     enabled: true
   
-  # Crossplane claims ingestion
-  claims:
-    # Only ingest claims that are explicitly annotated
-    ingestAllClaims: false
-  
-  # XRD template generation settings
-  xrds:
-    enabled: true
-    publishPhase:
-      # Git servers allowed for publishing
-      allowedTargets: ['github.com']
-      target: github  # Options: github, gitlab, bitbucket, YAML
-    git:
-      # Will be configured per template creation
-      targetBranch: main
-      allowRepoSelection: true
-  
   # Task runner settings
   taskRunner:
     frequency: 10  # How often to query clusters (in seconds)
     timeout: 600   # Max processing time
+  
 
 # see https://backstage.io/docs/permissions/getting-started for more on the permission framework
 permission:
