@@ -143,7 +143,7 @@ If you see authentication errors:
 ssh-add -L
 
 # Test SOPS decryption manually
-sops -d .env.enc
+sops -d --input-type dotenv --output-type dotenv .env.enc
 
 # Re-allow direnv
 direnv allow

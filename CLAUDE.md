@@ -151,7 +151,7 @@ Custom action for unique ID generation:
 ssh-add -L
 
 # Manually test decryption
-sops -d .env.enc
+sops -d --input-type dotenv --output-type dotenv .env.enc
 
 # Re-allow direnv
 direnv allow
