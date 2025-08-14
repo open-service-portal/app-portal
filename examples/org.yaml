@@ -15,10 +15,3 @@ metadata:
 spec:
   type: team
   children: []
----
-apiVersion: backstage.io/v1alpha1
-kind: User
-metadata:
-  name: felixboehm
-spec:
-  memberOf: [guests]
