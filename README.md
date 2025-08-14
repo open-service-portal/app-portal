@@ -74,19 +74,100 @@ Example: [service-nodejs-template](https://github.com/open-service-portal/servic
 
 ## 🧑‍💻 Development
 
+### Commands
+
 ```bash
-yarn start    # Start both frontend and backend
-yarn build    # Build for production
-yarn test     # Run tests
-yarn lint     # Lint code
+# Development
+yarn start          # Start both frontend and backend
+yarn build:backend  # Build backend only
+yarn build:all      # Build everything for production
+
+# Testing
+yarn test           # Run tests
+yarn test:all       # Run tests with coverage
+yarn test:e2e       # Run E2E tests
+
+# Code Quality
+yarn lint           # Lint changed files
+yarn lint:all       # Lint all files
+yarn prettier:check # Check formatting
+yarn fix            # Auto-fix issues
+
+# Utilities
+yarn clean          # Clean build artifacts
+yarn new            # Create new Backstage plugin
 ```
+
+### Environment Variables
+
+All secrets are managed through SOPS encryption. The `.envrc` file automatically:
+1. Loads Node.js version via nvm
+2. Decrypts `.env.enc` to load GitHub App credentials
+3. Decrypts `github-app-key.pem.enc` for GitHub App authentication
+
+No manual environment variable setup needed!
 
 ## 📦 Project Structure
 
 ```
 packages/
-├── app/          # Frontend application
-└── backend/      # Backend services
+├── app/                    # Frontend React application
+│   ├── src/
+│   │   ├── App.tsx        # Main app component
+│   │   └── components/    # Shared UI components
+│   └── package.json
+└── backend/                # Backend Node.js services
+    ├── src/
+    │   ├── index.ts       # Backend plugin setup
+    │   └── scaffolder/    # Custom scaffolder actions
+    └── package.json
+```
+
+### Configuration Files
+
+- `app-config.yaml` - Base configuration
+- `app-config.production.yaml` - Production overrides
+- `app-config.local.yaml` - Local overrides (gitignored)
+- `.sops.yaml` - SOPS encryption configuration
+- `.envrc` - Direnv auto-loader with SOPS decryption
+
+## 🐛 Troubleshooting
+
+### Secrets Not Loading
+
+If you see authentication errors:
+
+```bash
+# Verify SSH key is available
+ssh-add -L
+
+# Test SOPS decryption manually
+sops -d .env.enc
+
+# Re-allow direnv
+direnv allow
+```
+
+### Port Already in Use
+
+If ports 3000 or 7007 are in use:
+
+```bash
+# Find process using port
+lsof -i :3000
+lsof -i :7007
+
+# Or use different ports in app-config.yaml
+```
+
+### Build Failures
+
+```bash
+# Clean everything and rebuild
+yarn clean
+rm -rf node_modules
+yarn install
+yarn build:backend
 ```
 
 ## 🤝 Contributing
