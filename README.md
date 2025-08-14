@@ -153,6 +153,34 @@ sops -d --input-type dotenv --output-type dotenv .env.enc
 direnv allow
 ```
 
+### SSH Key with Passphrase
+
+If your SSH key is protected with a passphrase, SOPS behavior can be inconsistent:
+
+**Try adding your key to ssh-agent first:**
+```bash
+ssh-add ~/.ssh/id_ed25519
+# Enter passphrase once
+
+cd app-portal
+# May work without passphrase prompt, or may still ask once
+```
+
+**If you still get passphrase prompts:**
+- You might need to enter it once per terminal session
+- Sometimes SOPS uses ssh-agent, sometimes it doesn't
+- This is a known SOPS limitation
+
+**Most reliable solution - Dedicated key without passphrase:**
+```bash
+# Create a separate key for SOPS (development only)
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_sops -N ""
+
+# Add the public key to .sops.yaml
+cat ~/.ssh/id_ed25519_sops.pub
+# Give this to your team lead to add to .sops.yaml
+```
+
 ### Port Already in Use
 
 If ports 3000 or 7007 are in use:

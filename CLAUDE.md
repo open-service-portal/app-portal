@@ -160,6 +160,13 @@ sops -d --input-type dotenv --output-type dotenv .env.enc
 direnv allow
 ```
 
+### SSH key with passphrase
+
+If using a passphrase-protected SSH key, you'll be prompted when entering the directory:
+- Enter the passphrase once per terminal session
+- Or add key to ssh-agent: `ssh-add ~/.ssh/id_ed25519`
+- Alternative: Use a dedicated key without passphrase for development
+
 ### Build issues
 
 ```bash
