@@ -99,56 +99,6 @@ yarn clean          # Clean build artifacts
 yarn new            # Create new Backstage plugin
 ```
 
-### 🐳 Docker Development
-
-Run Backstage in Docker with automatic SOPS secret decryption:
-
-```bash
-# Build the Docker image
-../scripts/backstage-docker.sh build
-
-# Run the container (auto-decrypts secrets)
-../scripts/backstage-docker.sh run
-
-# View logs
-../scripts/backstage-docker.sh logs
-
-# Stop container
-../scripts/backstage-docker.sh stop
-
-# Restart container
-../scripts/backstage-docker.sh restart
-```
-
-The Docker setup:
-- **Automatically decrypts secrets** using SOPS
-- **Mounts app-config.local.yaml** if it exists (for Kubernetes config, etc.)
-- **Uses SQLite** by default (no PostgreSQL needed for development)
-- **Exposes port 7007** - Both API and frontend (frontend served as static files)
-
-#### Manual Docker Commands
-
-If you prefer manual control:
-
-```bash
-# Decrypt secrets first
-sops -d --input-type dotenv --output-type dotenv .env.enc > .env
-sops -d github-app-key.pem.enc > github-app-key.pem
-
-# Build image
-yarn build:backend
-yarn build-image
-
-# Run with local config
-docker run -d --name backstage \
-  --env-file .env \
-  -v $(pwd)/github-app-key.pem:/app/github-app-key.pem:ro \
-  -v $(pwd)/app-config.local.yaml:/app/app-config.local.yaml:ro \
-  -e AUTH_GITHUB_APP_PRIVATE_KEY_FILE=/app/github-app-key.pem \
-  -p 7007:7007 \
-  backstage:latest \
-  node packages/backend --config app-config.yaml --config app-config.local.yaml
-```
 
 ### Environment Variables
 
