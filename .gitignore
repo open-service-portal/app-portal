@@ -1,3 +1,10 @@
+# Claude settings
+.claude/settings.local.json
+
+# SOPS decrypted files
+.env
+github-app-key.pem
+
 # macOS
 .DS_Store
 
@@ -22,13 +29,6 @@ node_modules/
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
-# dotenv environment variables file
-.env
-.env.test
-
-# direnv
-.envrc
 
 # Build output
 dist
