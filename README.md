@@ -124,7 +124,7 @@ The Docker setup:
 - **Automatically decrypts secrets** using SOPS
 - **Mounts app-config.local.yaml** if it exists (for Kubernetes config, etc.)
 - **Uses SQLite** by default (no PostgreSQL needed for development)
-- **Exposes ports** 7007 (backend) and 3000 (frontend)
+- **Exposes port 7007** - Both API and frontend (frontend served as static files)
 
 #### Manual Docker Commands
 
