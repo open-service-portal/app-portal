@@ -141,6 +141,12 @@ kubernetes:
 
 # TeraSky Kubernetes Ingestor configuration
 kubernetesIngestor:
+  # Explicitly define which custom resources to watch
+  customResources:
+    - group: apiextensions.crossplane.io
+      apiVersion: v1
+      kinds: ['CompositeResourceDefinition']
+  
   # Mappings of kubernetes resource metadata to backstage entity metadata
   mappings:
     namespaceModel: 'cluster'        # Options: cluster, namespace, default
@@ -155,8 +161,8 @@ kubernetesIngestor:
   
   # Crossplane claims ingestion
   claims:
-    # Create components for all claim resources (v1) and XRs (v2)
-    ingestAllClaims: true
+    # Only ingest claims that are explicitly annotated
+    ingestAllClaims: false
   
   # XRD template generation settings
   xrds:
