@@ -147,52 +147,44 @@ kubernetes:
 
 # TeraSky Kubernetes Ingestor configuration
 kubernetesIngestor:
-  # Use Crossplane v2 API (we have v2.0 installed)
-  crossplane:
-    version: v2  # Use v2 API since we have Crossplane 2.0
-    # Crossplane claims ingestion
-    claims:
-      # Only ingest claims that are explicitly annotated
-      ingestAllClaims: false
-    # XRD template generation settings
-    xrds:
-      enabled: true
-      publishPhase:
-        # Git servers allowed for publishing
-        allowedTargets: ['github.com']
-        target: github  # Options: github, gitlab, bitbucket, YAML
-      git:
-        # Will be configured per template creation
-        targetBranch: main
-        allowRepoSelection: true
-  
-  # Explicitly define which custom resources to watch
-  customResources:
-    - group: apiextensions.crossplane.io
-      apiVersion: v2
-      plural: compositeresourcedefinitions
-    # TODO: Add your custom Crossplane claim types here
-    # Example:
-    # - group: example.io
-    #   apiVersion: v1alpha1
-    #   plural: databases
-  
   # Mappings of kubernetes resource metadata to backstage entity metadata
   mappings:
     namespaceModel: 'cluster'        # Options: cluster, namespace, default
     nameModel: 'name-cluster'         # Options: name-cluster, name-namespace, name
     titleModel: 'name'                # Options: name, name-cluster, name-namespace
-    systemModel: 'cluster-namespace'  # Options: cluster, namespace, cluster-namespace, default
-    referencesNamespaceModel: 'default'  # Options: default, same
+    systemModel: 'namespace'          # Options: cluster, namespace, cluster-namespace, default
   
   # Component ingestion settings
   components:
     enabled: true
+    taskRunner:
+      frequency: 10  # How often to query clusters (in seconds)
+      timeout: 600   # Max processing time
+    excludedNamespaces:
+      - kube-public
+      - kube-system
+      - kube-node-lease
+      - flux-system
+      - crossplane-system
   
-  # Task runner settings
-  taskRunner:
-    frequency: 10  # How often to query clusters (in seconds)
-    timeout: 600   # Max processing time
+  # Crossplane configuration for v2.0
+  crossplane:
+    enabled: true
+    claims:
+      # Only ingest claims that are explicitly annotated
+      ingestAllClaims: false
+    xrds:
+      enabled: true
+      ingestAllXRDs: true  # Ingest all XRDs with the label
+      convertDefaultValuesToPlaceholders: true
+      publishPhase:
+        # Git servers allowed for publishing
+        allowedTargets: ['github.com']
+        target: github  # Options: github, gitlab, bitbucket, YAML
+        git:
+          # Will be configured per template creation
+          targetBranch: main
+        allowRepoSelection: true
   
 
 # see https://backstage.io/docs/permissions/getting-started for more on the permission framework
