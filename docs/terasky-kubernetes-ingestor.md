@@ -153,7 +153,11 @@ kubectl get xrds
 # Check labels
 kubectl get xrds -o json | jq '.items[].metadata.labels'
 
-# Apply example XRD (create one based on the example above)
+# Apply example XRDs from portal-workspace
+# See: https://github.com/open-service-portal/portal-workspace/tree/main/scripts/xrd-examples
+kubectl apply -f ../scripts/xrd-examples/mongodb-xrd-v2.yaml
+kubectl apply -f ../scripts/xrd-examples/cluster-xrd-v2.yaml
+kubectl apply -f ../scripts/xrd-examples/firewall-xrd-v2.yaml
 ```
 
 ## How It Works
