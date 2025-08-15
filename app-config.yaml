@@ -141,9 +141,9 @@ kubernetes:
 
 # TeraSky Kubernetes Ingestor configuration
 kubernetesIngestor:
-  # Use Crossplane v1 API (v2 is still preview)
+  # Use Crossplane v2 API (we have v2.0 installed)
   crossplane:
-    version: v1  # Force v1 API usage (not v2 preview)
+    version: v2  # Use v2 API since we have Crossplane 2.0
     # Crossplane claims ingestion
     claims:
       # Only ingest claims that are explicitly annotated
@@ -163,7 +163,7 @@ kubernetesIngestor:
   # Explicitly define which custom resources to watch
   customResources:
     - group: apiextensions.crossplane.io
-      apiVersion: v1
+      apiVersion: v2
       plural: compositeresourcedefinitions
     # TODO: Add your custom Crossplane claim types here
     # Example:
