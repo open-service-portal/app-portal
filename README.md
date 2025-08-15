@@ -80,8 +80,13 @@ Example: [service-nodejs-template](https://github.com/open-service-portal/servic
 ```bash
 # Development
 yarn start          # Start both frontend and backend
+yarn start:log      # Start with timestamped logging (Unix/Linux/macOS only)
 yarn build:backend  # Build backend only
 yarn build:all      # Build everything for production
+
+# Installation
+yarn install        # Standard installation
+yarn install:log    # Install with timestamped logging (Unix/Linux/macOS only)
 
 # Testing
 yarn test           # Run tests
@@ -98,6 +103,22 @@ yarn fix            # Auto-fix issues
 yarn clean          # Clean build artifacts
 yarn new            # Create new Backstage plugin
 ```
+
+#### Logging Scripts (Unix/Linux/macOS only)
+
+The `yarn start:log` and `yarn install:log` commands capture timestamped logs for debugging:
+
+```bash
+# Default: logs to ./logs directory
+yarn install:log
+yarn start:log
+
+# Custom log directory via environment variable
+BACKSTAGE_LOG_DIR=/tmp yarn start:log
+BACKSTAGE_LOG_DIR=~/debugging yarn install:log
+```
+
+**Note:** These logging scripts use shell-specific syntax and are only compatible with Unix-based systems (Linux, macOS). Windows users should use the standard `yarn start` and `yarn install` commands.
 
 
 ### Environment Variables
