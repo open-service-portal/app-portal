@@ -22,6 +22,7 @@ backend.add(import('@terasky/backstage-plugin-scaffolder-backend-module-terasky-
 ./scripts/setup-cluster.sh
 # This creates backstage-k8s-sa with necessary permissions
 # AND automatically generates/updates app-config.local.yaml with the token
+# Note: app-config.local.yaml is in .gitignore for security - never commit tokens!
 ```
 
 ## Configuration
@@ -55,6 +56,8 @@ kubernetes:
           skipTLSVerify: true
           serviceAccountToken: <AUTO_GENERATED_TOKEN>
 ```
+
+**Security Note:** `app-config.local.yaml` is gitignored (via `*.local.yaml` pattern) to prevent accidentally committing tokens.
 
 Alternatively, use environment variables:
 ```bash
