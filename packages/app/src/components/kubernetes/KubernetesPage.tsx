@@ -8,6 +8,9 @@ import {
 } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 
+// TODO: Integrate with @backstage/plugin-kubernetes components
+// The plugin doesn't export a standalone page component yet
+// For now, this is a placeholder page
 export const KubernetesPage = () => {
   return (
     <Page themeId="tool">
@@ -19,10 +22,11 @@ export const KubernetesPage = () => {
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <p>
-              Kubernetes integration is configured but no entities with Kubernetes annotations are currently in the catalog.
+              The Kubernetes backend is configured and running. The API is available at:
             </p>
+            <pre>http://localhost:7007/api/kubernetes/clusters</pre>
             <p>
-              To see Kubernetes resources here, add the following annotations to your catalog entities:
+              To see Kubernetes resources for specific entities, add the following annotations to your catalog entities:
             </p>
             <pre>
               {`metadata:
@@ -30,6 +34,9 @@ export const KubernetesPage = () => {
     backstage.io/kubernetes-id: my-service
     backstage.io/kubernetes-namespace: default`}
             </pre>
+            <p>
+              The TeraSky Kubernetes Ingestor is actively discovering XRDs and generating templates automatically.
+            </p>
           </Grid>
         </Grid>
       </Content>
