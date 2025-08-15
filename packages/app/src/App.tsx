@@ -37,7 +37,7 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { githubAuthApiRef } from '@backstage/core-plugin-api';
 import { CrossplanePage } from './components/crossplane/CrossplanePage';
-import { KubernetesPage } from '@backstage/plugin-kubernetes';
+import { KubernetesPage } from './components/kubernetes/KubernetesPage';
 
 const app = createApp({
   apis,

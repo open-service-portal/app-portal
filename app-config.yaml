@@ -142,14 +142,8 @@ kubernetes:
     type: 'multiTenant'
   clusterLocatorMethods:
     - type: 'config'
-      clusters:
-        # Local development cluster configuration
-        # Override these values in app-config.local.yaml or app-config.production.yaml
-        - url: ${KUBERNETES_API_URL}
-          name: ${KUBERNETES_CLUSTER_NAME}
-          authProvider: 'serviceAccount'
-          skipTLSVerify: true
-          serviceAccountToken: ${KUBERNETES_SERVICE_ACCOUNT_TOKEN}
+      clusters: []
+        # Clusters are defined in app-config.local.yaml
 
 # TeraSky Kubernetes Ingestor configuration
 kubernetesIngestor:
