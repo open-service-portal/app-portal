@@ -62,4 +62,8 @@ backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 // kubernetes
 backend.add(import('@backstage/plugin-kubernetes-backend'));
 
+// TeraSky plugins for Kubernetes and Crossplane integration
+backend.add(import('@terasky/backstage-plugin-kubernetes-ingestor'));
+backend.add(import('@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils'));
+
 backend.start();
