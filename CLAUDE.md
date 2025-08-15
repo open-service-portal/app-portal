@@ -50,6 +50,11 @@ sops updatekeys github-app-key.pem.enc
 ```bash
 # Start development server
 yarn start
+yarn start:log      # With timestamped logging (Unix/Linux/macOS only)
+
+# Installation
+yarn install
+yarn install:log    # With timestamped logging (Unix/Linux/macOS only)
 
 # Build for production
 yarn build:backend
@@ -72,6 +77,12 @@ yarn clean
 # Create new plugin
 yarn new
 ```
+
+### Logging Scripts
+The `:log` variants capture timestamped output for debugging:
+- Default location: `./logs/` 
+- Custom: `BACKSTAGE_LOG_DIR=/path yarn start:log`
+- **Platform:** Unix/Linux/macOS only (uses shell-specific syntax)
 
 ## Project Structure
 
