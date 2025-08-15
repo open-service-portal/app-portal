@@ -19,7 +19,10 @@ backend.add(import('@terasky/backstage-plugin-scaffolder-backend-module-terasky-
 
 3. **Run the setup script** to create Kubernetes service account:
 ```bash
-./scripts/setup-cluster.sh
+# Get the script from portal-workspace repository
+# https://github.com/open-service-portal/portal-workspace/tree/main/scripts
+../scripts/setup-cluster.sh
+
 # This creates backstage-k8s-sa with necessary permissions
 # AND automatically generates/updates app-config.local.yaml with the token
 # Note: app-config.local.yaml is in .gitignore for security - never commit tokens!
@@ -134,7 +137,8 @@ metadata:
 ### Service account token expired
 ```bash
 # Option 1: Re-run the setup script (it will update app-config.local.yaml)
-./scripts/setup-cluster.sh
+../scripts/setup-cluster.sh
+# Script from: https://github.com/open-service-portal/portal-workspace
 
 # Option 2: Manually generate new token
 kubectl create token backstage-k8s-sa --duration=365d
