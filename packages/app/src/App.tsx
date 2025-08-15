@@ -37,6 +37,7 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { githubAuthApiRef } from '@backstage/core-plugin-api';
 import { CrossplanePage } from './components/crossplane/CrossplanePage';
+import { KubernetesPage } from '@backstage/plugin-kubernetes';
 
 const app = createApp({
   apis,
@@ -107,6 +108,7 @@ const routes = (
     </Route>
     <Route path="/settings" element={<UserSettingsPage />} />
     <Route path="/catalog-graph" element={<CatalogGraphPage />} />
+    <Route path="/kubernetes" element={<KubernetesPage />} />
     <Route path="/crossplane-resources" element={<CrossplanePage />} />
   </FlatRoutes>
 );
