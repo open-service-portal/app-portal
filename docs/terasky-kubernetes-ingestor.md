@@ -149,8 +149,7 @@ kubectl get xrds
 # Check labels
 kubectl get xrds -o json | jq '.items[].metadata.labels'
 
-# Apply example XRD
-kubectl apply -f scripts/xrd-examples/mongodb-xrd-v2.yaml
+# Apply example XRD (create one based on the example above)
 ```
 
 ## How It Works
@@ -163,10 +162,22 @@ kubectl apply -f scripts/xrd-examples/mongodb-xrd-v2.yaml
 ## Examples
 
 ### XRD that generates a template
-See `scripts/xrd-examples/mongodb-xrd-v2.yaml`:
+Example XRD with the required label:
 - Has label `terasky.backstage.io/generate-form: "true"`
 - Uses Crossplane v2 API
 - Results in template `xmongodbs.platform.example.com-v1alpha1`
+
+```yaml
+apiVersion: apiextensions.crossplane.io/v2
+kind: CompositeResourceDefinition
+metadata:
+  name: xmongodbs.platform.example.com
+  labels:
+    terasky.backstage.io/generate-form: "true"
+spec:
+  group: platform.example.com
+  # ... rest of XRD spec
+```
 
 ### Entity with Kubernetes
 ```yaml
