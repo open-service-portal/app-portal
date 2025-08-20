@@ -11,6 +11,7 @@ import { githubAuthApiRef } from '@backstage/core-plugin-api';
 import { SignInPage } from '@backstage/core-components';
 import { Navigate } from 'react-router-dom';
 import { navModule } from './modules/nav';
+import { CrossplanePage } from './components/crossplane/CrossplanePage';
 
 // Custom SignInPage with GitHub Auth
 const signInPage = SignInPageBlueprint.make({
@@ -42,9 +43,18 @@ const homePage = PageBlueprint.make({
   },
 });
 
+// Crossplane status page
+const crossplanePage = PageBlueprint.make({
+  name: 'crossplane-status',
+  params: {
+    path: '/crossplane-resources',
+    loader: async () => CrossplanePage,
+  },
+});
+
 const authModule = createFrontendModule({
   pluginId: 'app',
-  extensions: [signInPage, homePage],
+  extensions: [signInPage, homePage, crossplanePage],
 });
 
 export default createApp({

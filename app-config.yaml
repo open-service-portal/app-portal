@@ -152,6 +152,42 @@ catalog:
 kubernetes:
   # see https://backstage.io/docs/features/kubernetes/configuration for kubernetes configuration options
 
+# TeraSky Kubernetes Ingestor configuration
+kubernetesIngestor:
+  # Mappings of kubernetes resource metadata to backstage entity metadata
+  mappings:
+    namespaceModel: 'cluster'        # Options: cluster, namespace, default
+    nameModel: 'name-cluster'         # Options: name-cluster, name-namespace, name
+    titleModel: 'name'                # Options: name, name-cluster, name-namespace
+    systemModel: 'namespace'          # Options: cluster, namespace, cluster-namespace, default
+  
+  # Component ingestion settings
+  components:
+    enabled: true
+    taskRunner:
+      frequency: 10  # How often to query clusters (in seconds)
+      timeout: 600   # Max processing time
+    excludedNamespaces:
+      - kube-public
+      - kube-system
+      - kube-node-lease
+      - flux-system
+      - crossplane-system
+      - backstage-system
+  
+  # Crossplane XRD template generation
+  crossplane:
+    enabled: true
+    claims:
+      # Only ingest claims that are explicitly annotated
+      ingestAllClaims: false
+    xrds:
+      enabled: true
+      ingestAllXRDs: true  # Ingest all XRDs with the label
+      convertDefaultValuesToPlaceholders: true
+      taskRunner:
+        frequency: 600  # XRD scanning every 10 minutes
+
 # see https://backstage.io/docs/permissions/getting-started for more on the permission framework
 permission:
   # setting this to `false` will disable permissions
