@@ -1,0 +1,15 @@
+# SOPS configuration for app-portal
+# 
+# This file defines which SSH keys can encrypt/decrypt secrets in this directory.
+# To add a team member:
+# 1. Get their SSH public key: ssh-ed25519 AAAA...
+# 2. Add it to the age list below (comma-separated)
+# 3. Re-encrypt existing files with: sops updatekeys *.enc
+
+creation_rules:
+  # Default rule for all files (no filtering)
+  - age: >-
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILLTEqRmF76xAghGfhAQub2e7/5k8/HnEVfz3ulOUg8e,
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOeNdrJVIE6c4D0hY0BXt4+Ts9PY41nb+kp433SjCp2r,
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHuuTlpWn4ud0ROsu1S2w7BDTZQIlOSFCuilVKdgKFb5,
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICC4AoFz6k30gCGcSlu0OFqPXYTw7w4N5loXXV43GM7Z
