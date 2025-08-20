@@ -42,6 +42,8 @@ site
 
 # Local configuration files
 *.local.yaml
+app-config.local.yaml
+app-config.openportal.yaml
 
 # Sensitive credentials
 *-credentials.yaml
