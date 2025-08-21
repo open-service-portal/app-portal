@@ -151,6 +151,18 @@ catalog:
 
 kubernetes:
   # see https://backstage.io/docs/features/kubernetes/configuration for kubernetes configuration options
+  serviceLocatorMethod:
+    type: 'multiTenant'
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        # Local development cluster configuration
+        # Override these values in app-config.local.yaml or app-config.production.yaml
+        - url: ${KUBERNETES_API_URL}
+          name: ${KUBERNETES_CLUSTER_NAME}
+          authProvider: 'serviceAccount'
+          skipTLSVerify: true
+          serviceAccountToken: ${KUBERNETES_SERVICE_ACCOUNT_TOKEN}
 
 # TeraSky Kubernetes Ingestor configuration
 kubernetesIngestor:
