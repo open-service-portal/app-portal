@@ -20,6 +20,9 @@ backend.add(
   import('@backstage/plugin-scaffolder-backend-module-notifications'),
 );
 
+// custom scaffolder actions
+backend.add(import('./scaffolder'));
+
 // techdocs plugin
 backend.add(import('@backstage/plugin-techdocs-backend'));
 
