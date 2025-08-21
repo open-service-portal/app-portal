@@ -186,7 +186,7 @@ kubernetesIngestor:
       ingestAllXRDs: true  # Ingest all XRDs with the label
       convertDefaultValuesToPlaceholders: true
       taskRunner:
-        frequency: 600  # XRD scanning every 10 minutes
+        frequency: 60  # XRD scanning every 1 minute (faster for testing)
 
 # see https://backstage.io/docs/permissions/getting-started for more on the permission framework
 permission:
