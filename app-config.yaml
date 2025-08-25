@@ -30,7 +30,6 @@ backend:
   database:
     client: better-sqlite3
     connection: ':memory:'
-  # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 integrations:
   github:
@@ -114,8 +113,8 @@ catalog:
           timeout: { minutes: 3 }
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
-    - type: file
-      target: ../../examples/entities.yaml
+      # - type: file
+      #   target: ../../examples/entities.yaml
 
     # Templates are now auto-discovered via GitHub provider
     # Repos matching pattern 'service-*-template' are automatically imported
@@ -181,16 +180,12 @@ kubernetesIngestor:
       ingestAllClaims: false
     xrds:
       enabled: true
-      ingestAllXRDs: true  # Ingest all XRDs with the label
+      taskRunner:
+        frequency: 10  # Check XRDs every 10 seconds
+        timeout: 600
+      ingestAllXRDs: true
+      # labelSelector: "terasky.backstage.io/generate-form=true"  # Use label selector for XRDs
       convertDefaultValuesToPlaceholders: true
-      publishPhase:
-        # Git servers allowed for publishing
-        allowedTargets: ['github.com']
-        target: github  # Options: github, gitlab, bitbucket, YAML
-        git:
-          # Will be configured per template creation
-          targetBranch: main
-        allowRepoSelection: true
   
 
 # see https://backstage.io/docs/permissions/getting-started for more on the permission framework
