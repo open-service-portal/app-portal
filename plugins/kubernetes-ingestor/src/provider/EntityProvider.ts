@@ -122,11 +122,16 @@ export class XRDTemplateEntityProvider implements EntityProvider {
 
       // Fetch all CRDs once
       const crdData = await crdDataProvider.fetchCRDObjects();
+      // Log the number of CRDs fetched
+      this.logger.info(`Ingestor fetched ${crdData.length} CRD objects from clusters`);
 
       if (this.config.getOptionalBoolean('kubernetesIngestor.crossplane.xrds.enabled')) {
         const xrdData = await templateDataProvider.fetchXRDObjects();
+        this.logger.info(`Ingestor fetched ${xrdData.length} XRD objects from clusters`);
         const xrdEntities = xrdData.flatMap(xrd => this.translateXRDVersionsToTemplates(xrd));
+        this.logger.info(`Ingestor found ${xrdEntities.length} XRD Entities`);
         const APIEntities = xrdData.flatMap(xrd => this.translateXRDVersionsToAPI(xrd));
+        this.logger.info(`Ingestor found ${APIEntities.length} XRD API Entities`);
         allEntities = allEntities.concat(xrdEntities, APIEntities);
       }
 
@@ -134,6 +139,8 @@ export class XRDTemplateEntityProvider implements EntityProvider {
       const crdEntities = crdData.flatMap(crd => this.translateCRDToTemplate(crd));
       const CRDAPIEntities = crdData.flatMap(crd => this.translateCRDVersionsToAPI(crd));
       allEntities = allEntities.concat(crdEntities, CRDAPIEntities);
+
+      this.logger.info(`Ingestor found ${allEntities.length} entities`);
 
       await this.connection.applyMutation({
         type: 'full',
