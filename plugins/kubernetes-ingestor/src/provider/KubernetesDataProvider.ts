@@ -1,5 +1,5 @@
 import { Config, JsonObject } from '@backstage/config';
-import { LoggerService, AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
 import { CatalogApi } from '@backstage/catalog-client';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -37,8 +37,6 @@ export class KubernetesDataProvider {
   catalogApi: CatalogApi;
   permissions: PermissionEvaluator;
   discovery: DiscoveryService;
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
 
   private getAnnotationPrefix(): string {
     return (
@@ -53,16 +51,12 @@ export class KubernetesDataProvider {
     catalogApi: CatalogApi,
     permissions: PermissionEvaluator,
     discovery: DiscoveryService,
-    auth?: AuthService,
-    httpAuth?: HttpAuthService,
   ) {
     this.logger = logger;
     this.config = config;
     this.catalogApi = catalogApi;
     this.permissions = permissions;
     this.discovery = discovery;
-    this.auth = auth;
-    this.httpAuth = httpAuth;
   }
 
   async fetchKubernetesObjects(): Promise<any[]> {
@@ -172,15 +166,13 @@ export class KubernetesDataProvider {
             });
             throw new Error(`XrdDataProvider is not a constructor. Type: ${typeof XrdDataProvider}`);
           }
-          // You may need to pass auth/httpAuth if required by your XrdDataProvider constructor
+          // Create XrdDataProvider without auth parameters (they're optional)
           const xrdDataProvider = new XrdDataProvider(
             this.logger,
             this.config,
             this.catalogApi,
             this.discovery,
             this.permissions,
-            this.auth,
-            this.httpAuth,
           );
           const xrdObjects = await xrdDataProvider.fetchXRDObjects();
           for (const xrd of xrdObjects) {

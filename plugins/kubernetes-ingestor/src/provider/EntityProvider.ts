@@ -1963,9 +1963,7 @@ export class KubernetesEntityProvider implements EntityProvider {
           this.config,
           this.catalogApi,
           this.permissions,
-          this.discovery,
-          this.auth,
-          this.httpAuth
+          this.discovery
         );
 
         let compositeKindLookup: { [key: string]: any } = {};
