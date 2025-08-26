@@ -27,8 +27,8 @@ export class XrdDataProvider {
   catalogApi: CatalogApi;
   permissions: PermissionEvaluator;
   discovery: DiscoveryService;
-  auth: AuthService;
-  httpAuth: HttpAuthService;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 
   private getAnnotationPrefix(): string {
     return (
@@ -43,8 +43,8 @@ export class XrdDataProvider {
     catalogApi: CatalogApi,
     discovery: DiscoveryService,
     permissions: PermissionEvaluator,
-    auth: AuthService,
-    httpAuth: HttpAuthService,
+    auth?: AuthService,
+    httpAuth?: HttpAuthService,
   ) {
     this.logger = logger;
     this.config = config;
