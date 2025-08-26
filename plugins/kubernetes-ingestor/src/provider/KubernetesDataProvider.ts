@@ -1,5 +1,5 @@
 import { Config, JsonObject } from '@backstage/config';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { LoggerService, AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
 import { CatalogApi } from '@backstage/catalog-client';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -37,6 +37,8 @@ export class KubernetesDataProvider {
   catalogApi: CatalogApi;
   permissions: PermissionEvaluator;
   discovery: DiscoveryService;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 
   private getAnnotationPrefix(): string {
     return (
@@ -51,12 +53,16 @@ export class KubernetesDataProvider {
     catalogApi: CatalogApi,
     permissions: PermissionEvaluator,
     discovery: DiscoveryService,
+    auth?: AuthService,
+    httpAuth?: HttpAuthService,
   ) {
     this.logger = logger;
     this.config = config;
     this.catalogApi = catalogApi;
     this.permissions = permissions;
     this.discovery = discovery;
+    this.auth = auth;
+    this.httpAuth = httpAuth;
   }
 
   async fetchKubernetesObjects(): Promise<any[]> {
@@ -147,20 +153,38 @@ export class KubernetesDataProvider {
       if (isCrossplaneEnabled) {
         // --- BEGIN: Add all v2/Cluster and v2/Namespaced composite kinds (XRs) to objectTypesToFetch ---
         try {
-          // Import XrdDataProvider here to avoid circular dependency at top
-          const { XrdDataProvider } = await import('./XrdDataProvider');
-          // You may need to pass auth/httpAuth if required by your XrdDataProvider constructor
+          // Use require for better compatibility with TypeScript in dev mode
+          const XrdDataProviderModule = require('./XrdDataProvider');
+          
+          // Debug log to see what's actually imported
+          this.logger.debug('XrdDataProvider module:', {
+            keys: Object.keys(XrdDataProviderModule),
+            hasXrdDataProvider: 'XrdDataProvider' in XrdDataProviderModule,
+          });
+          
+          // Get the XrdDataProvider class
+          const XrdDataProvider = XrdDataProviderModule.XrdDataProvider;
+          
+          // Verify it's a constructor
+          if (!XrdDataProvider || typeof XrdDataProvider !== 'function') {
+            this.logger.error('XrdDataProvider not found or not a constructor', {
+              type: typeof XrdDataProvider,
+              moduleKeys: Object.keys(XrdDataProviderModule),
+            });
+            throw new Error(`XrdDataProvider is not a constructor. Type: ${typeof XrdDataProvider}`);
+          }
+          
+          // Create instance with auth parameters
           const xrdDataProvider = new XrdDataProvider(
             this.logger,
             this.config,
             this.catalogApi,
             this.discovery,
             this.permissions,
-            // @ts-ignore
             this.auth,
-            // @ts-ignore
             this.httpAuth,
           );
+          
           const xrdObjects = await xrdDataProvider.fetchXRDObjects();
           for (const xrd of xrdObjects) {
             const isV2 = !!xrd.spec?.scope;
