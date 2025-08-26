@@ -7269,11 +7269,11 @@ __metadata:
     "@backstage/plugin-kubernetes-node": "npm:^0.3.2"
     "@backstage/plugin-permission-common": "npm:^0.9.1"
     "@backstage/plugin-signals-node": "npm:^0.1.22"
-    "@types/express": "npm:*"
+    "@types/express": "npm:^4.17.21"
     "@types/pluralize": "npm:^0.0.33"
     "@types/react": "npm:*"
     "@types/supertest": "npm:^2.0.12"
-    express: "npm:^4.17.1"
+    express: "npm:^4.21.2"
     express-promise-router: "npm:^4.1.1"
     js-yaml: "npm:^4.1.0"
     msw: "npm:^2.3.1"
@@ -7285,9 +7285,9 @@ __metadata:
     supertest: "npm:^6.2.4"
     typescript: "npm:^5.8.3"
   peerDependencies:
-    react: ^18.0.0
-    react-dom: ^18.0.0
-    react-router-dom: ^6.0.0
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+    react-router-dom: ^6.0.0 || ^7.0.0
   languageName: unknown
   linkType: soft
 
