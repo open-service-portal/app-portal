@@ -1,5 +1,5 @@
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { z } from 'zod';
+// import { z } from 'zod'; // Using z as function parameter instead
 import { randomBytes } from 'crypto';
 
 export const createGenerateIdAction = () => {
@@ -7,12 +7,12 @@ export const createGenerateIdAction = () => {
     id: 'portal:utils:generateId',
     description: 'Generates a random ID suitable for resource naming',
     schema: {
-      input: z.object({
+      input: (z: any) => z.object({
         length: z.number().optional().default(8),
         // Could be 'hex', 'alphanumeric', 'numeric'
         type: z.enum(['hex', 'alphanumeric']).optional().default('hex'),
       }),
-      output: z.object({
+      output: (z: any) => z.object({
         id: z.string(),
       }),
     },

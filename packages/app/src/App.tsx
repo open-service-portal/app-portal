@@ -39,7 +39,7 @@ const homePage = PageBlueprint.make({
   name: 'homepage',
   params: {
     path: '/',
-    loader: async () => () => <Navigate to="/catalog" replace />,
+    loader: async () => <Navigate to="/catalog" replace />,
   },
 });
 
@@ -48,7 +48,7 @@ const crossplanePage = PageBlueprint.make({
   name: 'crossplane-status',
   params: {
     path: '/crossplane-resources',
-    loader: async () => CrossplanePage,
+    loader: async () => <CrossplanePage />,
   },
 });
 

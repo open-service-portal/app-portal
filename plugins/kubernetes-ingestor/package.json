@@ -46,7 +46,7 @@
     "@backstage/plugin-permission-common": "^0.9.1",
     "@backstage/plugin-signals-node": "^0.1.22",
     "@types/pluralize": "^0.0.33",
-    "express": "^4.17.1",
+    "express": "^4.21.2",
     "express-promise-router": "^4.1.1",
     "js-yaml": "^4.1.0",
     "node-fetch": "^2.7.0",
@@ -57,11 +57,20 @@
     "@backstage/cli": "^0.33.1",
     "@backstage/plugin-auth-backend": "^0.25.2",
     "@backstage/plugin-auth-backend-module-guest-provider": "^0.2.10",
-    "@types/express": "*",
+    "@types/express": "^4.17.21",
+    "@types/react": "*",
     "@types/supertest": "^2.0.12",
     "msw": "^2.3.1",
+    "react": "*",
+    "react-dom": "*",
+    "react-router-dom": "*",
     "supertest": "^6.2.4",
     "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "react-router-dom": "^6.0.0 || ^7.0.0"
   },
   "files": [
     "dist"
