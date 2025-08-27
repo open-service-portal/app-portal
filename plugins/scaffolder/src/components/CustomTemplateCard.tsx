@@ -4,12 +4,14 @@ import { TemplateCard } from '@backstage/plugin-scaffolder-react/alpha';
 
 interface CustomTemplateCardProps {
   template: TemplateEntityV1beta3;
+  onTemplateSelected?: (template: TemplateEntityV1beta3) => void;
+  [key: string]: any; // Allow any additional props
 }
 
 /**
  * Custom Template Card component that displays version labels
  */
-export const CustomTemplateCard = ({ template }: CustomTemplateCardProps) => {
+export const CustomTemplateCard = ({ template, ...otherProps }: CustomTemplateCardProps) => {
   // Extract version from labels
   const version = template.metadata.labels?.['openportal.dev/version'];
   
@@ -44,6 +46,6 @@ export const CustomTemplateCard = ({ template }: CustomTemplateCardProps) => {
     console.log(`[CustomTemplateCard] ${template.metadata.name}: v${version.replace(/^v/, '')}`);
   }
   
-  // Use the standard TemplateCard with our modified template
-  return <TemplateCard template={modifiedTemplate} />;
+  // Use the standard TemplateCard with our modified template and pass through all other props
+  return <TemplateCard template={modifiedTemplate} {...otherProps} />;
 };
