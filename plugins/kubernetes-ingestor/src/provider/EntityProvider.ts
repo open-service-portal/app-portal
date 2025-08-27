@@ -191,12 +191,14 @@ export class XRDTemplateEntityProvider implements EntityProvider {
             labels: {
               forEntity: "system",
               source: "crossplane",
+              ...xrd.metadata.labels,
             },
             tags: tags,
             annotations: {
               'backstage.io/managed-by-location': `cluster origin: ${xrd.clusterName}`,
               'backstage.io/managed-by-origin-location': `cluster origin: ${xrd.clusterName}`,
               ...crossplaneAnnotations,
+              ...xrd.metadata.annotations,
             },
           },
           spec: {
