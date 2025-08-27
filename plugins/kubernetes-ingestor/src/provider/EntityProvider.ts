@@ -176,7 +176,7 @@ export class XRDTemplateEntityProvider implements EntityProvider {
         const prefix = this.getAnnotationPrefix();
         const steps = this.extractSteps(version, xrd);
         const clusterTags = clusters.map((cluster: any) => `cluster:${cluster}`);
-        const tags = ['crossplane', ...clusterTags];
+        const tags = ['kubernetes-ingestor', 'crossplane', ...clusterTags];
         const crossplaneAnnotations = {
           [`${prefix}/crossplane-version`]: crossplaneVersion,
           [`${prefix}/crossplane-scope`]: scope,

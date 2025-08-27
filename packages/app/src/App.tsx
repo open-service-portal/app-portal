@@ -1,6 +1,8 @@
+import React from 'react';
 import { createApp } from '@backstage/frontend-defaults';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
-import scaffolderPlugin from '@backstage/plugin-scaffolder/alpha';
+// Use our enhanced local scaffolder plugin
+import scaffolderPlugin from '@internal/plugin-scaffolder/alpha';
 import searchPlugin from '@backstage/plugin-search/alpha';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
@@ -57,16 +59,18 @@ const authModule = createFrontendModule({
   extensions: [signInPage, homePage, crossplanePage],
 });
 
-export default createApp({
+const app = createApp({
   features: [
     catalogPlugin,
-    scaffolderPlugin,
+    scaffolderPlugin,  // Use our enhanced local scaffolder plugin
+    authModule,
     searchPlugin,
     techdocsPlugin,
     userSettingsPlugin,
     kubernetesPlugin,
     apiDocsPlugin,
-    authModule,
     navModule,
   ],
 });
+
+export default app;
