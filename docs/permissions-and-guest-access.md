@@ -12,39 +12,6 @@ We replaced the default "allow-all" policy with a custom policy that provides co
 
 **Location:** `packages/backend/src/permissions/index.ts`
 
-```typescript
-import { createBackendModule } from '@backstage/backend-plugin-api';
-import {
-  PolicyDecision,
-  AuthorizeResult,
-} from '@backstage/plugin-permission-common';
-import { PermissionPolicy } from '@backstage/plugin-permission-node';
-import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
-import {
-  catalogEntityReadPermission,
-  catalogEntityCreatePermission,
-} from '@backstage/plugin-catalog-common/alpha';
-
-class CustomPermissionPolicy implements PermissionPolicy {
-  async handle(request, user) {
-    // Allow guest users to read catalog entities
-    if (request.permission === catalogEntityReadPermission) {
-      return { result: AuthorizeResult.ALLOW };
-    }
-
-    // Allow authenticated users to create entities
-    if (request.permission === catalogEntityCreatePermission) {
-      return user?.identity
-        ? { result: AuthorizeResult.ALLOW }
-        : { result: AuthorizeResult.DENY };
-    }
-
-    // Default allow for other permissions
-    return { result: AuthorizeResult.ALLOW };
-  }
-}
-```
-
 ### Key Features
 
 1. **Guest Read Access:** Unauthenticated users can view catalog entities and templates
@@ -55,29 +22,7 @@ class CustomPermissionPolicy implements PermissionPolicy {
 
 ### Frontend Configuration
 
-Guest authentication is enabled in the sign-in page:
-
-```typescript
-// packages/app/src/App.tsx
-const signInPage = SignInPageBlueprint.make({
-  params: {
-    loader: async () => props => (
-      <SignInPage
-        {...props}
-        providers={[
-          'guest',  // Guest authentication enabled
-          {
-            id: 'github-auth-provider',
-            title: 'GitHub',
-            message: 'Sign in using GitHub',
-            apiRef: githubAuthApiRef,
-          },
-        ]}
-      />
-    ),
-  },
-});
-```
+Guest authentication is enabled in the sign-in page
 
 ### Backend Configuration
 
@@ -225,61 +170,6 @@ curl -X POST http://localhost:7007/api/permission/authorize \
 
 3. **Permission Denied:** Policy blocks the action
    - Solution: Check permission policy implementation
-
-## Testing Script
-
-Create a test script `test-api-access.sh`:
-
-```bash
-#!/bin/bash
-
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-NC='\033[0m' # No Color
-
-echo "Testing Backstage API Access..."
-
-# Get guest token
-echo -n "Getting guest token... "
-TOKEN=$(curl -s -X POST http://localhost:7007/api/auth/guest/refresh \
-  -H "Content-Type: application/json" \
-  -d '{}' | jq -r '.backstageIdentity.token')
-
-if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
-  echo -e "${RED}FAILED${NC}"
-  exit 1
-else
-  echo -e "${GREEN}OK${NC}"
-fi
-
-# Test catalog entities
-echo -n "Testing catalog entities access... "
-ENTITIES=$(curl -s -w "\n%{http_code}" http://localhost:7007/api/catalog/entities \
-  -H "Authorization: Bearer $TOKEN")
-HTTP_CODE=$(echo "$ENTITIES" | tail -n 1)
-if [ "$HTTP_CODE" = "200" ]; then
-  echo -e "${GREEN}OK${NC}"
-  COUNT=$(echo "$ENTITIES" | head -n -1 | jq '.items | length')
-  echo "  Found $COUNT entities"
-else
-  echo -e "${RED}FAILED (HTTP $HTTP_CODE)${NC}"
-fi
-
-# Test templates
-echo -n "Testing template access... "
-TEMPLATES=$(curl -s http://localhost:7007/api/catalog/entities?filter=kind=Template \
-  -H "Authorization: Bearer $TOKEN" | jq '.items | length')
-echo -e "${GREEN}OK${NC}"
-echo "  Found $TEMPLATES templates"
-
-# Test version labels
-echo "Testing version labels on templates:"
-curl -s http://localhost:7007/api/catalog/entities?filter=kind=Template \
-  -H "Authorization: Bearer $TOKEN" \
-  | jq -r '.items[] | "\(.metadata.name): \(.metadata.labels["openportal.dev/version"] // "no version")"' \
-  | head -5
-```
 
 ## Summary
 

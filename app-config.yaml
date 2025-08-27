@@ -201,9 +201,32 @@ kubernetesIngestor:
     xrds:
       enabled: true
       ingestAllXRDs: true  # Ingest all XRDs with the label
-      convertDefaultValuesToPlaceholders: true
       taskRunner:
         frequency: 10  # XRD scanning every 10 seconds (faster for testing)
+        timeout: 600
+      convertDefaultValuesToPlaceholders: true
+      allowedTargets: ['github.com']
+      publishPhase:
+        target: github
+        git:
+          # repoUrl: github.com?owner=open-service-portal&repo=gitops-manifests-xrd
+          targetBranch: main
+        enabled: true
+        allowRepoSelection: true
+  genericCRDTemplates:
+    # Settings related to the final steps of a software template
+    publishPhase:
+      allowedTargets: ['github.com']
+      target: github
+      git:
+        # repoUrl: github.com?owner=open-service-portal&repo=gitops-manifests-crd
+        targetBranch: main
+      allowRepoSelection: true
+    # crdLabelSelector:
+    #   key: terasky.backstage.io/generate-form
+    #   value: "true"
+    # crds:
+    #   - certificates.cert-manager.io
 
 # see https://backstage.io/docs/permissions/getting-started for more on the permission framework
 permission:
