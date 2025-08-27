@@ -272,11 +272,27 @@ export class XrdDataProvider {
             const compositeType = xrd.status?.controllers?.compositeResourceType;
             
             // Check if compositeType exists and has valid values
+            // If not (e.g., Configuration-managed XRDs), fallback to spec values
+            let effectiveKind = compositeType?.kind;
+            let effectiveApiVersion = compositeType?.apiVersion;
+            
             if (!compositeType || !compositeType.kind || !compositeType.apiVersion || compositeType.kind === "" || compositeType.apiVersion === "") {
-              this.logger.error(
-                `XRD ${xrdName} has invalid or missing compositeResourceType controllers status. Kind: ${compositeType?.kind}, ApiVersion: ${compositeType?.apiVersion}. Skipping created a Software Template for this XRD.`,
+              // Fallback to XRD spec for Configuration-managed XRDs
+              effectiveKind = xrd.spec?.names?.kind;
+              effectiveApiVersion = xrd.spec?.group && xrd.spec?.versions?.[0]?.name 
+                ? `${xrd.spec.group}/${xrd.spec.versions[0].name}`
+                : undefined;
+              
+              if (!effectiveKind || !effectiveApiVersion) {
+                this.logger.error(
+                  `XRD ${xrdName} has invalid controllers status and cannot derive composite type from spec. Kind: ${effectiveKind}, ApiVersion: ${effectiveApiVersion}. Skipping Software Template creation.`,
+                );
+                return; // Skip this XRD
+              }
+              
+              this.logger.info(
+                `XRD ${xrdName} has empty controllers status (likely Configuration-managed). Using fallback: Kind: ${effectiveKind}, ApiVersion: ${effectiveApiVersion}`,
               );
-              return; // Skip this XRD
             }
 
             if (!xrdMap.has(xrdName)) {
@@ -288,6 +304,11 @@ export class XrdDataProvider {
                 ],
                 compositions: [],
                 generatedCRD: xrd.generatedCRD, // Attach the generated CRD if present
+                // Store effective values for later use in composition matching
+                effectiveCompositeType: {
+                  kind: effectiveKind,
+                  apiVersion: effectiveApiVersion,
+                },
               });
             } else {
               const existingXrd = xrdMap.get(xrdName);
@@ -305,8 +326,10 @@ export class XrdDataProvider {
           fetchedCompositions.forEach(composition => {
             const { apiVersion, kind } = composition.spec.compositeTypeRef;
             xrdMap.forEach(xrd => {
-              const { apiVersion: xrdApiVersion, kind: xrdKind } =
-                xrd.status.controllers.compositeResourceType;
+              // Use effective values for matching (handles both normal and Configuration-managed XRDs)
+              const effectiveType = xrd.effectiveCompositeType || xrd.status?.controllers?.compositeResourceType;
+              const { apiVersion: xrdApiVersion, kind: xrdKind } = effectiveType || {};
+              
               if (apiVersion === xrdApiVersion && kind === xrdKind) {
                 if (!xrd.compositions.includes(composition.metadata.name)) {
                   xrd.compositions.push(composition.metadata.name);
