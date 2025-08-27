@@ -46,10 +46,8 @@ backend.add(import('@backstage/plugin-catalog-backend-module-logs'));
 
 // permission plugin
 backend.add(import('@backstage/plugin-permission-backend'));
-// See https://backstage.io/docs/permissions/getting-started for how to create your own permission policy
-backend.add(
-  import('@backstage/plugin-permission-backend-module-allow-all-policy'),
-);
+// Custom permission policy that allows guests to read catalog entities
+backend.add(import('./permissions'));
 
 // search plugin
 backend.add(import('@backstage/plugin-search-backend'));

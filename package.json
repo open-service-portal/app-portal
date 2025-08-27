@@ -63,7 +63,8 @@
   },
   "resolutions": {
     "@types/react": "^18",
-    "@types/react-dom": "^18"
+    "@types/react-dom": "^18",
+    "@backstage/plugin-catalog-react": "^1.14.5"
   },
   "prettier": "@backstage/cli/config/prettier",
   "lint-staged": {
