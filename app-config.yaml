@@ -209,19 +209,20 @@ kubernetesIngestor:
       publishPhase:
         target: github
         git:
-          # repoUrl: github.com?owner=open-service-portal&repo=gitops-manifests-xrd
+          repoUrl: github.com?owner=open-service-portal&repo=catalog-orders
           targetBranch: main
         enabled: true
-        allowRepoSelection: true
+        # allowRepoSelection: true  # Users can override if needed
   genericCRDTemplates:
     # Settings related to the final steps of a software template
     publishPhase:
       allowedTargets: ['github.com']
       target: github
       git:
-        # repoUrl: github.com?owner=open-service-portal&repo=gitops-manifests-crd
+        repoUrl: github.com?owner=open-service-portal&repo=catalog-orders
         targetBranch: main
-      allowRepoSelection: true
+        targetPath: 'crds'  # Put generic CRDs in a subdirectory
+      # allowRepoSelection: true
     # crdLabelSelector:
     #   key: terasky.backstage.io/generate-form
     #   value: "true"
