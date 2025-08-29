@@ -66,11 +66,16 @@ export class SourceTagProcessor implements CatalogProcessor {
     }
 
     // Add discovery timestamp as annotation (not tag)
-    const annotations = {
+    // Only add source-location if it's a URL (not for kubernetes origins)
+    const annotations: Record<string, string> = {
       ...entity.metadata.annotations,
-      'backstage.io/source-location': location.target || 'unknown',
       'backstage.io/discovered-at': new Date().toISOString(),
     };
+    
+    // Only set source-location for URL-based locations
+    if (location.type === 'url' && location.target) {
+      annotations['backstage.io/source-location'] = location.target;
+    }
 
     // Log the tagging for debugging (only in debug mode)
     if (tags.size > existingTags.length) {
