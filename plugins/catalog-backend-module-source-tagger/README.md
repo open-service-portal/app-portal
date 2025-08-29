@@ -18,7 +18,7 @@ Automatically adds tags to Templates and other entities:
 - `auto-discovered` - for entities found via automatic discovery
 
 Also adds annotations:
-- `backstage.io/source-location` - the original import location
+- `backstage.io/source-location` - the original import location (only for URL-based imports, not for kubernetes-ingestor)
 - `backstage.io/discovered-at` - timestamp when the entity was discovered
 
 ## Installation
@@ -57,6 +57,18 @@ The `SourceTagProcessor` implements the Backstage `CatalogProcessor` interface a
 3. Adds appropriate tags without modifying existing ones
 4. Logs tag additions for debugging (when logger is in debug mode)
 5. Removes duplicate tags in post-processing
+
+### Location Types Handled
+
+- **URL-based locations** (e.g., `url:https://github.com/...`):
+  - Sets `backstage.io/source-location` annotation
+  - Adds source tags like `source:github-discovered` or `source:github-url`
+  - Extracts organization tags from URLs
+
+- **Kubernetes-ingestor locations** (e.g., `cluster origin: rancher-desktop`):
+  - Does NOT set `backstage.io/source-location` (prevents scaffolder errors)
+  - Source tags handled by kubernetes-ingestor plugin itself
+  - Only adds `backstage.io/discovered-at` timestamp
 
 ### Technical Implementation
 
