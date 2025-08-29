@@ -41,6 +41,9 @@ backend.add(
 backend.add(import('@backstage/plugin-catalog-backend-module-github'));
 backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
 
+// Custom catalog module for automatic source tagging
+backend.add(import('../../../plugins/catalog-backend-module-source-tagger/src/index.ts'));
+
 // See https://backstage.io/docs/features/software-catalog/configuration#subscribing-to-catalog-errors
 backend.add(import('@backstage/plugin-catalog-backend-module-logs'));
 
