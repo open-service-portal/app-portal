@@ -191,6 +191,11 @@ kubernetesIngestor:
       - flux-system
       - crossplane-system
       - backstage-system
+      - calico-system
+      - calico-apiserver
+      - tigera-operator
+      - ingress-nginx
+      - kubernetes-dashboard
   
   # Crossplane XRD template generation
   crossplane:
