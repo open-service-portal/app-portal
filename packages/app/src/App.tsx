@@ -15,7 +15,7 @@ import { Navigate } from 'react-router-dom';
 import { navModule } from './modules/nav';
 import { CrossplanePage } from './components/crossplane/CrossplanePage';
 import { 
-  // crossplaneOverviewCard, // TEMPORARILY DISABLED
+  crossplaneOverviewCard,
   crossplaneResourcesContent,
   crossplaneGraphContent,
 } from './extensions/crossplaneEntityExtensions';
@@ -68,7 +68,7 @@ const authModule = createFrontendModule({
 const crossplaneEntityModule = createFrontendModule({
   pluginId: 'catalog',
   extensions: [
-    // crossplaneOverviewCard, // TEMPORARILY DISABLED - causes TypeError
+    crossplaneOverviewCard,
     crossplaneResourcesContent,
     crossplaneGraphContent,
   ],

@@ -37,12 +37,18 @@ const hasCrossplaneAnnotations = (entity: Entity) => {
     annotations['crossplane.io/xr-name'] ||
     annotations['crossplane.io/xr-namespace'] ||
     
-    // TeraSky specific annotations (from your CrossplanePage.tsx)
+    // TeraSky specific annotations for claims
     annotations['crossplane.terasky.io/claim-name'] ||
     annotations['crossplane.terasky.io/claim-namespace'] ||
     annotations['crossplane.terasky.io/xr-name'] ||
     annotations['crossplane.terasky.io/xr-apiversion'] ||
     annotations['crossplane.terasky.io/xr-kind'] ||
+    
+    // TeraSky specific annotations for XRs/composites
+    annotations['terasky.backstage.io/composite-name'] ||
+    annotations['terasky.backstage.io/composite-kind'] ||
+    annotations['terasky.backstage.io/crossplane-resource'] === 'true' ||
+    annotations['terasky.backstage.io/component-type'] === 'crossplane-xr' ||
     
     // Check if entity is marked as having Crossplane resources
     annotations['backstage.io/has-crossplane-resources'] === 'true'
@@ -50,9 +56,6 @@ const hasCrossplaneAnnotations = (entity: Entity) => {
 };
 
 // Create entity card blueprint for overview
-// TEMPORARILY DISABLED due to TeraSky plugin bug with undefined split
-// The plugin expects specific annotation format that we need to debug
-/*
 export const crossplaneOverviewCard = EntityCardBlueprint.make({
   name: 'entity-card-crossplane-overview',
   params: {
@@ -66,7 +69,6 @@ export const crossplaneOverviewCard = EntityCardBlueprint.make({
     },
   },
 });
-*/
 
 // Create entity content blueprint for resources table
 export const crossplaneResourcesContent = EntityContentBlueprint.make({

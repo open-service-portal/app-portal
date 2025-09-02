@@ -208,8 +208,8 @@ kubernetesIngestor:
   crossplane:
     enabled: true
     claims:
-      # Only ingest claims that are explicitly annotated
-      ingestAllClaims: false
+      # Ingest all claims and XRs from the cluster
+      ingestAllClaims: true
     xrds:
       enabled: true
       ingestAllXRDs: true  # Ingest all XRDs with the label
