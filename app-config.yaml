@@ -195,6 +195,7 @@ kubernetesIngestor:
       - calico-apiserver
       - tigera-operator
       - ingress-nginx
+      - external-dns
       - kubernetes-dashboard
   
   # Crossplane XRD template generation

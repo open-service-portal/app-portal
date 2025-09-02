@@ -50,9 +50,10 @@ sops updatekeys github-app-key.pem.enc
 ## Development Commands
 
 ```bash
-# Start development server
-yarn start
-yarn start:log      # With timestamped logging (Unix/Linux/macOS only)
+# Start development server (auto-detects kubectl context)
+yarn start              # Loads app-config.{context}.local.yaml automatically
+yarn start:log          # Same as above, with timestamped logging
+yarn start --log        # Alternative syntax for logging
 
 # Installation
 yarn install
@@ -80,11 +81,24 @@ yarn clean
 yarn new
 ```
 
-### Logging Scripts
-The `:log` variants capture timestamped output for debugging:
-- Default location: `./logs/` 
-- Custom: `BACKSTAGE_LOG_DIR=/path yarn start:log`
-- **Platform:** Unix/Linux/macOS only (uses shell-specific syntax)
+### Dynamic Start Script
+
+The `yarn start` command uses a Node.js script (`start.js` in root) that:
+1. Detects current kubectl context via `kubectl config current-context`
+2. Looks for context-specific config: `app-config.{context}.local.yaml`
+3. Automatically loads both base and context configs
+4. Shows which configuration is being used
+5. Falls back gracefully if no context or config found
+
+**Example:**
+- Context: `rancher-desktop` → Loads: `app-config.rancher-desktop.local.yaml`
+- Context: `rackspace-openportal` → Loads: `app-config.rackspace-openportal.local.yaml`
+
+### Logging Support
+The start script supports logging via `--log` flag:
+- Creates timestamped log files in `./logs/` directory
+- Custom location: `BACKSTAGE_LOG_DIR=/path yarn start:log`
+- Captures both stdout and stderr for debugging
 
 ## 🆕 New Frontend System Architecture (v1.42.0)
 
