@@ -188,7 +188,6 @@ export class KubernetesDataProvider {
             const scope = xrd.spec?.scope || (isV2 ? 'LegacyCluster' : 'Cluster');
             if (isV2 && scope !== 'LegacyCluster') {
               for (const version of xrd.spec.versions || []) {
-                this.logger.info(`Adding XR type to fetch: ${xrd.spec.group}/${version.name}/${xrd.spec.names.plural}`);
                 objectTypesToFetch.add({
                   group: xrd.spec.group,
                   apiVersion: version.name,
@@ -303,7 +302,6 @@ export class KubernetesDataProvider {
             });
           }
 
-          this.logger.info(`Fetching objects for cluster ${cluster.name}. Types to fetch: ${Array.from(objectTypesToFetch).map(t => `${t.group}/${t.apiVersion}/${t.plural}`).join(', ')}`);
           const fetchedObjects = await fetcher.fetchObjectsForService({
             serviceId: cluster.name,
             clusterDetails: cluster,
