@@ -14,6 +14,11 @@ import { SignInPage } from '@backstage/core-components';
 import { Navigate } from 'react-router-dom';
 import { navModule } from './modules/nav';
 import { CrossplanePage } from './components/crossplane/CrossplanePage';
+import { 
+  crossplaneOverviewCard,
+  crossplaneResourcesContent,
+  crossplaneGraphContent,
+} from './extensions/crossplaneEntityExtensions';
 
 // Custom SignInPage with GitHub Auth
 const signInPage = SignInPageBlueprint.make({
@@ -59,6 +64,16 @@ const authModule = createFrontendModule({
   extensions: [signInPage, homePage, crossplanePage],
 });
 
+// Crossplane entity extensions module
+const crossplaneEntityModule = createFrontendModule({
+  pluginId: 'catalog',
+  extensions: [
+    crossplaneOverviewCard,
+    crossplaneResourcesContent,
+    crossplaneGraphContent,
+  ],
+});
+
 const app = createApp({
   features: [
     catalogPlugin,
@@ -70,6 +85,7 @@ const app = createApp({
     kubernetesPlugin,
     apiDocsPlugin,
     navModule,
+    crossplaneEntityModule,  // Add Crossplane entity extensions
   ],
 });
 

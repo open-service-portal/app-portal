@@ -195,8 +195,8 @@ export class XRDTemplateEntityProvider implements EntityProvider {
             },
             tags: tags,
             annotations: {
-              'backstage.io/managed-by-location': `cluster origin: ${xrd.clusterName}`,
-              'backstage.io/managed-by-origin-location': `cluster origin: ${xrd.clusterName}`,
+              'backstage.io/managed-by-location': `cluster: ${xrd.clusterName}`,
+              'backstage.io/managed-by-origin-location': `cluster: ${xrd.clusterName}`,
               ...crossplaneAnnotations,
               ...xrd.metadata.annotations,
             },
@@ -244,8 +244,8 @@ export class XRDTemplateEntityProvider implements EntityProvider {
           },
           tags: tags,
           annotations: {
-            'backstage.io/managed-by-location': `cluster origin: ${xrd.clusterName}`,
-            'backstage.io/managed-by-origin-location': `cluster origin: ${xrd.clusterName}`,
+            'backstage.io/managed-by-location': `cluster: ${xrd.clusterName}`,
+            'backstage.io/managed-by-origin-location': `cluster: ${xrd.clusterName}`,
             [`${prefix}/crossplane-claim`]: 'true',
             ...crossplaneAnnotations,
           },
@@ -494,8 +494,8 @@ export class XRDTemplateEntityProvider implements EntityProvider {
           name: `${resourceKind?.toLowerCase()}-${xrd.spec.group}--${version.name}`,
           title: `${resourceKind?.toLowerCase()}-${xrd.spec.group}--${version.name}`,
           annotations: {
-            'backstage.io/managed-by-location': `cluster origin: ${xrd.clusterName}`,
-            'backstage.io/managed-by-origin-location': `cluster origin: ${xrd.clusterName}`,
+            'backstage.io/managed-by-location': `cluster: ${xrd.clusterName}`,
+            'backstage.io/managed-by-origin-location': `cluster: ${xrd.clusterName}`,
           },
         },
         spec: {
@@ -1183,8 +1183,8 @@ export class XRDTemplateEntityProvider implements EntityProvider {
           source: "kubernetes",
         },
         annotations: {
-          'backstage.io/managed-by-location': `cluster origin: ${crd.clusterName}`,
-          'backstage.io/managed-by-origin-location': `cluster origin: ${crd.clusterName}`,
+          'backstage.io/managed-by-location': `cluster: ${crd.clusterName}`,
+          'backstage.io/managed-by-origin-location': `cluster: ${crd.clusterName}`,
         },
       },
       spec: {
@@ -2262,8 +2262,8 @@ export class KubernetesEntityProvider implements EntityProvider {
     const prefix = this.getAnnotationPrefix();
     const customAnnotationsKey = `${prefix}/component-annotations`;
     const defaultAnnotations: Record<string, string> = {
-      'backstage.io/managed-by-location': `cluster origin: ${clusterName}`,
-      'backstage.io/managed-by-origin-location': `cluster origin: ${clusterName}`,
+      'backstage.io/managed-by-location': `cluster: ${clusterName}`,
+      'backstage.io/managed-by-origin-location': `cluster: ${clusterName}`,
     };
 
     if (!annotations[customAnnotationsKey]) {

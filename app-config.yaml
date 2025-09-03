@@ -26,6 +26,13 @@ backend:
   #   keys:
   #     - secret: ${BACKEND_SECRET}
   baseUrl: http://localhost:7007
+  
+  # Allow reading from GitHub Gist and other sources
+  reading:
+    allow:
+      - host: gist.githubusercontent.com
+      - host: github.com
+      - host: raw.githubusercontent.com
   listen:
     port: 7007
     # Uncomment the following host directive to bind to specific interfaces
@@ -202,8 +209,8 @@ kubernetesIngestor:
   crossplane:
     enabled: true
     claims:
-      # Only ingest claims that are explicitly annotated
-      ingestAllClaims: false
+      # Ingest all claims and XRs from the cluster
+      ingestAllClaims: true
     xrds:
       enabled: true
       ingestAllXRDs: true  # Ingest all XRDs with the label
