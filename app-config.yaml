@@ -180,11 +180,11 @@ kubernetes:
 kubernetesIngestor:
   # Mappings of kubernetes resource metadata to backstage entity metadata
   mappings:
-    namespaceModel: 'cluster'        # Options: cluster, namespace, default
+    namespaceModel: 'namespace'       # Options: cluster, namespace, default
     nameModel: 'name-cluster'         # Options: name-cluster, name-namespace, name
     titleModel: 'name'                # Options: name, name-cluster, name-namespace
-    systemModel: 'namespace'          # Options: cluster, namespace, cluster-namespace, default
-  
+    systemModel: 'cluster'            # Options: cluster, namespace, cluster-namespace, default
+
   # Component ingestion settings
   components:
     enabled: true
