@@ -2093,7 +2093,11 @@ export class KubernetesEntityProvider implements EntityProvider {
         annotations: this.extractCustomAnnotations(annotations, resource.clusterName),
       },
       spec: {
-        owner: annotations[`${prefix}/owner`] ? `${systemReferencesNamespaceValue}/${annotations[`${prefix}/owner`]}` : `${systemReferencesNamespaceValue}/kubernetes-auto-ingested`,
+        owner: annotations[`${prefix}/owner`]?.includes(':') || annotations[`${prefix}/owner`]?.includes('/')
+          ? annotations[`${prefix}/owner`]  // Already a full entity reference
+          : annotations[`${prefix}/owner`]
+            ? `${systemReferencesNamespaceValue}/${annotations[`${prefix}/owner`]}`  // Add namespace prefix
+            : `${systemReferencesNamespaceValue}/kubernetes-auto-ingested`,  // Default fallback
         type: annotations[`${prefix}/system-type`] || 'kubernetes-namespace',
         ...(annotations[`${prefix}/domain`]
           ? { domain: annotations[`${prefix}/domain`] }
@@ -2228,7 +2232,11 @@ export class KubernetesEntityProvider implements EntityProvider {
       spec: {
         type: annotations[`${prefix}/component-type`] || 'service',
         lifecycle: annotations[`${prefix}/lifecycle`] || 'production',
-        owner: annotations[`${prefix}/owner`] ? `${referencesNamespaceModel}/${annotations[`${prefix}/owner`]}` : `${referencesNamespaceValue}/kubernetes-auto-ingested`,
+        owner: annotations[`${prefix}/owner`]?.includes(':') || annotations[`${prefix}/owner`]?.includes('/')
+          ? annotations[`${prefix}/owner`]  // Already a full entity reference
+          : annotations[`${prefix}/owner`]
+            ? `${referencesNamespaceModel}/${annotations[`${prefix}/owner`]}`  // Add namespace prefix
+            : `${referencesNamespaceValue}/kubernetes-auto-ingested`,  // Default fallback
         system: annotations[`${prefix}/system`] || `${referencesNamespaceValue}/${systemValue}`,
         dependsOn: annotations[`${prefix}/dependsOn`]?.split(','),
         providesApis: annotations[`${prefix}/providesApis`]?.split(','),
@@ -2407,7 +2415,11 @@ export class KubernetesEntityProvider implements EntityProvider {
       spec: {
         type: 'crossplane-claim',
         lifecycle: annotations[`${prefix}/lifecycle`] || 'production',
-        owner: annotations[`${prefix}/owner`] ? `${referencesNamespaceModel}/${annotations[`${prefix}/owner`]}` : `${referencesNamespaceValue}/kubernetes-auto-ingested`,
+        owner: annotations[`${prefix}/owner`]?.includes(':') || annotations[`${prefix}/owner`]?.includes('/')
+          ? annotations[`${prefix}/owner`]  // Already a full entity reference
+          : annotations[`${prefix}/owner`]
+            ? `${referencesNamespaceModel}/${annotations[`${prefix}/owner`]}`  // Add namespace prefix
+            : `${referencesNamespaceValue}/kubernetes-auto-ingested`,  // Default fallback
         system: annotations[`${prefix}/system`] || `${referencesNamespaceValue}/${systemValue}`,
         consumesApis: [`${referencesNamespaceValue}/${claim.kind}-${claim.apiVersion.split('/').join('--')}`],
         ...(annotations[`${prefix}/subcomponent-of`] && {
@@ -2546,7 +2558,9 @@ export class KubernetesEntityProvider implements EntityProvider {
       spec: {
         type: 'crossplane-xr',
         lifecycle: annotations[`${prefix}/lifecycle`] || 'production',
-        owner: annotations[`${prefix}/owner`] || 'kubernetes-auto-ingested',
+        owner: annotations[`${prefix}/owner`]?.includes(':') || annotations[`${prefix}/owner`]?.includes('/')
+          ? annotations[`${prefix}/owner`]  // Already a full entity reference
+          : annotations[`${prefix}/owner`] || 'kubernetes-auto-ingested',  // Default or add prefix
         system: annotations[`${prefix}/system`] || `${referencesNamespaceValue}/${systemValue}`,
         consumesApis: [`${referencesNamespaceValue}/${xr.kind}-${xr.apiVersion.split('/').join('--')}`],
         ...(annotations[`${prefix}/subcomponent-of`] && {
