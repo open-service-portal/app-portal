@@ -28,7 +28,7 @@ import {
   JSONSchema7Definition,
   JSONSchema7Type,
 } from 'json-schema';
-import { capitalize } from 'lodash';
+import capitalize from 'lodash/capitalize';
 import { useState } from 'react';
 import { Expanded, SchemaRenderStrategy } from '.';
 import { RenderEnum, RenderSchema } from './RenderSchema';
