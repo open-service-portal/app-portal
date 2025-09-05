@@ -100,6 +100,31 @@ The start script supports logging via `--log` flag:
 - Custom location: `BACKSTAGE_LOG_DIR=/path yarn start:log`
 - Captures both stdout and stderr for debugging
 
+## API Access for Claude Code
+
+Claude Code can access Backstage programmatically using the API token configured for each environment:
+
+**Finding the API token:**
+```bash
+# Token is stored in the context-specific config file
+grep "token:" app-config.*.local.yaml | grep static
+# Location: app-config.{context}.local.yaml under backend.auth.externalAccess[].options.token
+```
+
+**Using the API:**
+```bash
+# Extract token from config file
+TOKEN=$(grep -A2 "type: static" app-config.openportal.local.yaml | grep "token:" | awk '{print $2}')
+
+# Access catalog entities
+curl -H "Authorization: Bearer $TOKEN" http://localhost:7007/api/catalog/entities
+
+# Filter for specific entity types
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:7007/api/catalog/entities?filter=kind=Template"
+```
+
+The API provides read access to all catalog entities including templates, components, and systems.
+
 ## 🆕 New Frontend System Architecture (v1.42.0)
 
 This app uses Backstage's **New Frontend System** with significant architecture changes:
