@@ -540,10 +540,11 @@ export class XRDTemplateEntityProvider implements EntityProvider {
       mainParameterGroup.required.push('xrNamespace');
       mainParameterGroup.properties.xrNamespace = {
         title: 'Namespace',
-        description: 'The namespace in which to create the resource',
+        description: 'The namespace in which to create the resource (default: demo)',
         pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
         maxLength: 63,
         type: 'string',
+        default: 'demo',  // Default namespace for convenience
       };
     }
     mainParameterGroup.properties.owner = {
