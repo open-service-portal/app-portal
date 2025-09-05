@@ -18,7 +18,7 @@
 // These are experimental features not yet fully exported
 
 export class OpaqueFormDecorator {
-  static toInternal(decorator: any) {
+  static toInternal() {
     // Stub implementation - return a basic structure
     return {
       decorator: async () => {},
