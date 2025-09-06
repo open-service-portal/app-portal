@@ -1,0 +1,23 @@
+# Authentication configuration
+# This file contains all authentication-related settings
+
+auth:
+  # see https://backstage.io/docs/auth/ to learn about auth providers
+  environment: development
+  providers:
+    # See https://backstage.io/docs/auth/guest/provider
+    guest:
+      # Give guest users a specific identity that has read permissions
+      userEntityRef: user:default/guest
+      ownershipEntityRefs: 
+        - user:default/guest
+        - group:default/all-users
+    github:
+      development:
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+        signIn:
+          resolvers:
+            # Matches the GitHub username with the Backstage user entity name.
+            # See https://backstage.io/docs/auth/github/provider#resolvers for more resolvers.
+            - resolver: usernameMatchingUserEntityName

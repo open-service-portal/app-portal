@@ -11,6 +11,9 @@ const { execSync, spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+// Increase max listeners to handle multiple config files without warnings
+require('events').EventEmitter.defaultMaxListeners = 20;
+
 // Check for --log flag
 const withLogging = process.argv.includes('--log') || process.argv.includes('--with-log');
 
@@ -40,22 +43,92 @@ if (!fs.existsSync(baseConfigPath)) {
 }
 backstageArgs.push('--config', baseConfigPath);
 
+// Read includes from app-config.yaml
+let configFilesToLoad = [];
+
+try {
+  const yaml = require('js-yaml');
+  const configContent = fs.readFileSync(baseConfigPath, 'utf8');
+  const configData = yaml.load(configContent);
+  
+  if (configData && configData.includes && Array.isArray(configData.includes)) {
+    configFilesToLoad = configData.includes;
+    console.log(`📋 Loading includes from app-config.yaml`);
+  }
+} catch (error) {
+  // If js-yaml is not installed or parsing fails, fall back to auto-discovery
+  console.warn(`⚠️  Could not parse app-config.yaml for includes: ${error.message}`);
+  console.log(`    Falling back to auto-discovery`);
+}
+
+// If no includes in config or parsing failed, auto-discover config files
+if (configFilesToLoad.length === 0) {
+  // Try app-config/ first, then fall back to config/ for backwards compatibility
+  const configDirs = ['app-config', 'config'];
+  for (const dirName of configDirs) {
+    const configDir = path.join(appPortalRoot, dirName);
+    if (fs.existsSync(configDir)) {
+      configFilesToLoad = fs.readdirSync(configDir)
+        .filter(file => file.endsWith('.yaml') || file.endsWith('.yml'))
+        .sort() // Sort for consistent loading order
+        .map(file => path.join(dirName, file));
+      
+      if (configFilesToLoad.length > 0) {
+        console.log(`📁 Auto-discovering config files from ${dirName}/ directory`);
+        break; // Use the first directory that exists and has files
+      }
+    }
+  }
+}
+
+// Load the config files
+if (configFilesToLoad.length > 0) {
+  console.log(`📚 Loading configuration files:`);
+  const loadedConfigs = [];
+  configFilesToLoad.forEach(file => {
+    const configPath = path.isAbsolute(file) ? file : path.join(appPortalRoot, file);
+    
+    if (fs.existsSync(configPath)) {
+      const displayName = path.relative(appPortalRoot, configPath);
+      console.log(`   ✅ ${displayName}`);
+      loadedConfigs.push(path.basename(displayName, '.yaml'));
+      backstageArgs.push('--config', configPath);
+    } else {
+      console.log(`   ⚠️  ${file} (not found, skipping)`);
+    }
+  });
+  
+  // Show a clean summary of what will be loaded
+  console.log(`\n📋 Config loading order: ${loadedConfigs.join(' → ')}\n`);
+}
+
+// Load context-specific config if available
 if (context) {
   const configFile = `app-config.${context}.local.yaml`;
   const configPath = path.join(appPortalRoot, configFile);
   
   if (fs.existsSync(configPath)) {
-    console.log(`✅ Found config: ${configFile}`);
+    console.log(`✅ Found context config: ${configFile}`);
     backstageArgs.push('--config', configPath);
   } else {
     console.log(`⚠️  No config found for context: ${context}`);
     console.log(`    Expected: ${configFile}`);
-    console.log('    Using base configuration only');
   }
 }
 
 // Prepare command and logging
 let command, commandArgs, spawnOptions;
+
+// Set Node options for better performance
+const nodeOptions = '--max-old-space-size=4096';
+const currentNodeOptions = process.env.NODE_OPTIONS || '';
+const envWithNodeOptions = {
+  ...process.env,
+  NODE_OPTIONS: `${currentNodeOptions} ${nodeOptions}`.trim(),
+  LOG_LEVEL: process.env.LOG_LEVEL || 'info'  // Control Backstage logging verbosity
+  // Note: MaxListenersExceededWarning is harmless with multiple config files
+  // We don't suppress it to ensure other warnings are still visible
+};
 
 if (withLogging) {
   const logDir = process.env.BACKSTAGE_LOG_DIR || 'logs';
@@ -72,13 +145,13 @@ if (withLogging) {
   // Build the full command with logging using shell
   command = `yarn ${backstageArgs.join(' ')} 2>&1 | tee ${logFile}`;
   commandArgs = [];
-  spawnOptions = { stdio: 'inherit', shell: true };
+  spawnOptions = { stdio: 'inherit', shell: true, env: envWithNodeOptions };
   console.log('🚀 Starting Backstage with logging...\n');
 } else {
   // Simple command without logging
   command = 'yarn';
   commandArgs = backstageArgs;
-  spawnOptions = { stdio: 'inherit', shell: true };
+  spawnOptions = { stdio: 'inherit', shell: true, env: envWithNodeOptions };
   console.log('🚀 Starting Backstage...\n');
 }
 

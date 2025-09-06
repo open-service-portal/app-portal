@@ -6,6 +6,11 @@
  * Happy hacking!
  */
 
+// Increase max listeners to handle multiple config files without warnings
+// This prevents "MaxListenersExceededWarning" when loading 10+ config files
+import { setMaxListeners } from 'events';
+setMaxListeners(20);
+
 import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
@@ -67,7 +72,10 @@ backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 backend.add(import('@backstage/plugin-kubernetes-backend'));
 
 // TeraSky plugins for Kubernetes and Crossplane integration
-backend.add(import('@internal/plugin-kubernetes-ingestor'));
+// Both ingestors are loaded, but only one runs based on ingestorSelector config
+// Configure in app-config.yaml with ingestorSelector: 'kubernetes-ingestor' or 'crossplane-ingestor'
+backend.add(import('../../../plugins/kubernetes-ingestor/src'));
+// backend.add(import('../../../plugins/crossplane-ingestor/src'));
 backend.add(import('@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils'));
 
 // notifications and signals plugins
