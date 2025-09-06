@@ -1,15 +1,4 @@
-/*
- * Hi!
- *
- * Note that this is an EXAMPLE Backstage backend. Please check the README.
- *
- * Happy hacking!
- */
-
-// Increase max listeners to handle multiple config files without warnings
-// This prevents "MaxListenersExceededWarning" when loading 10+ config files
-import { setMaxListeners } from 'events';
-setMaxListeners(20);
+console.log('[Backend Init] Starting backend...');
 
 import { createBackend } from '@backstage/backend-defaults';
 
@@ -74,8 +63,8 @@ backend.add(import('@backstage/plugin-kubernetes-backend'));
 // TeraSky plugins for Kubernetes and Crossplane integration
 // Both ingestors are loaded, but only one runs based on ingestorSelector config
 // Configure in app-config.yaml with ingestorSelector: 'kubernetes-ingestor' or 'crossplane-ingestor'
-backend.add(import('../../../plugins/kubernetes-ingestor/src'));
-// backend.add(import('../../../plugins/crossplane-ingestor/src'));
+backend.add(import('@internal/plugin-kubernetes-ingestor'));
+backend.add(import('@internal/plugin-crossplane-ingestor'));
 backend.add(import('@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils'));
 
 // notifications and signals plugins
