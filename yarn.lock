@@ -7662,6 +7662,7 @@ __metadata:
     "@backstage/plugin-permission-common": "npm:^0.9.1"
     "@backstage/plugin-signals-node": "npm:^0.1.22"
     "@types/express": "npm:^4.17.21"
+    "@types/node": "npm:^24.3.1"
     "@types/pluralize": "npm:^0.0.33"
     "@types/react": "npm:*"
     "@types/supertest": "npm:^2.0.12"
@@ -7675,6 +7676,7 @@ __metadata:
     react-dom: "npm:*"
     react-router-dom: "npm:*"
     supertest: "npm:^6.2.4"
+    ts-node: "npm:^10.9.2"
     typescript: "npm:^5.8.3"
   peerDependencies:
     react: ^18.0.0 || ^19.0.0
@@ -16276,6 +16278,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~6.21.0"
   checksum: 10c0/23cd13aa35da6322a6d66cf4b3a45dbd40764ba726ab8681960270156c3abba776dd8dc173250c467f708d40612ecd725755d7659b775b513904680d5205eaff
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^24.3.1":
+  version: 24.3.1
+  resolution: "@types/node@npm:24.3.1"
+  dependencies:
+    undici-types: "npm:~7.10.0"
+  checksum: 10c0/99b86fc32294fcd61136ca1f771026443a1e370e9f284f75e243b29299dd878e18c193deba1ce29a374932db4e30eb80826e1049b9aad02d36f5c30b94b6f928
   languageName: node
   linkType: hard
 
@@ -35757,7 +35768,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.9.1":
+"ts-node@npm:^10.9.1, ts-node@npm:^10.9.2":
   version: 10.9.2
   resolution: "ts-node@npm:10.9.2"
   dependencies:

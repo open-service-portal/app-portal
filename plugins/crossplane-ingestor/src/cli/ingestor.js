@@ -18,8 +18,7 @@
  *   --output, -o <dir>    Output directory for templates (default: ./output)
  *   --preview, -p         Preview mode - show what would be generated
  *   --validate, -v        Validate only, don't generate templates
- *   --config, -c <file>   Configuration file (JSON or YAML)
- *   --format, -f <type>   Output format: yaml, json (default: yaml)
+ *   --config, -c <file>   Configuration file
  *   --help, -h            Show help
  */
 
@@ -28,29 +27,25 @@ const path = require('path');
 const { execSync } = require('child_process');
 const yaml = require('js-yaml');
 
-// Import the transformer from the compiled plugin
-// This will work after the plugin is built with `yarn build`
-let CLITransformer;
-let cliTransformer;
-
-try {
-  // Try to import from the compiled TypeScript
-  const cliModule = require('../../dist/cli/index.cjs.js');
-  CLITransformer = cliModule.CLITransformer;
-  cliTransformer = cliModule.cliTransformer;
-} catch (error) {
-  // Fallback to direct CLI folder import
-  try {
-    const cliModule = require('../../dist/cli/cli');
-    CLITransformer = cliModule.CLITransformer;
-    cliTransformer = cliModule.cliTransformer;
-  } catch (error2) {
-    console.error('Error: Plugin not built. Please run "yarn build" first.');
-    console.error('From the plugin directory: cd app-portal/plugins/kubernetes-ingestor && yarn build');
-    console.error('Debug:', error2.message);
-    process.exit(1);
+// Register ts-node to compile TypeScript on the fly
+require('ts-node').register({
+  transpileOnly: true, // Skip type checking for speed
+  compilerOptions: {
+    module: 'commonjs',
+    target: 'es2017',
+    esModuleInterop: true,
+    allowSyntheticDefaultImports: true,
+    resolveJsonModule: true,
+    strict: false,
+    skipLibCheck: true,
+    downlevelIteration: true
   }
-}
+});
+
+// Load the TypeScript module directly
+const cliModule = require('./index.ts');
+const CLITransformer = cliModule.CLITransformer;
+const cliTransformer = cliModule.cliTransformer;
 
 // Parse command line arguments
 function parseArgs() {
@@ -61,7 +56,6 @@ function parseArgs() {
     preview: false,
     validate: false,
     config: null,
-    format: 'yaml',
     help: false
   };
 
@@ -78,8 +72,6 @@ function parseArgs() {
       options.validate = true;
     } else if (arg === '--config' || arg === '-c') {
       options.config = args[++i];
-    } else if (arg === '--format' || arg === '-f') {
-      options.format = args[++i];
     } else if (!options.source) {
       options.source = arg;
     }
@@ -94,7 +86,8 @@ function showHelp() {
 XRD to Backstage Template Ingestor
 
 This script transforms Crossplane XRDs into Backstage Software Templates
-using the kubernetes-ingestor plugin's transformation logic.
+using the crossplane-ingestor plugin's transformation logic.
+Runs TypeScript source directly without compilation.
 
 Usage:
   ingestor.js <source> [options]
@@ -109,7 +102,6 @@ Options:
   --preview, -p         Preview mode - show what would be generated
   --validate, -v        Validate only, don't generate templates
   --config, -c <file>   Configuration file (JSON or YAML)
-  --format, -f <type>   Output format: yaml, json (default: yaml)
   --help, -h            Show this help message
 
 Examples:
@@ -130,7 +122,7 @@ Examples:
 `);
 }
 
-// Load configuration from file
+// Load configuration from file with includes support
 function loadConfig(configPath) {
   if (!fs.existsSync(configPath)) {
     console.error(`Configuration file not found: ${configPath}`);
@@ -138,12 +130,94 @@ function loadConfig(configPath) {
   }
 
   const content = fs.readFileSync(configPath, 'utf8');
+  const config = yaml.load(content) || {};
   
-  if (configPath.endsWith('.json')) {
-    return JSON.parse(content);
-  } else {
-    return yaml.load(content);
+  // Process includes if present
+  if (config.includes && Array.isArray(config.includes)) {
+    const baseDir = path.dirname(configPath);
+    for (const includePath of config.includes) {
+      const fullIncludePath = path.resolve(baseDir, includePath);
+      if (fs.existsSync(fullIncludePath)) {
+        const includeContent = fs.readFileSync(fullIncludePath, 'utf8');
+        const includeConfig = yaml.load(includeContent) || {};
+        // Deep merge the config
+        mergeConfig(config, includeConfig);
+      }
+    }
   }
+  
+  return config;
+}
+
+// Deep merge configuration objects
+function mergeConfig(target, source) {
+  for (const key in source) {
+    if (source.hasOwnProperty(key)) {
+      if (key === 'includes') {
+        // Skip includes in merged configs
+        continue;
+      }
+      if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
+        if (!target[key]) {
+          target[key] = {};
+        }
+        mergeConfig(target[key], source[key]);
+      } else {
+        target[key] = source[key];
+      }
+    }
+  }
+  return target;
+}
+
+// Load default Backstage configuration following start.js pattern
+function loadBackstageConfig() {
+  const pluginDir = path.resolve(__dirname, '../..');
+  const appPortalDir = path.resolve(pluginDir, '../..');
+  
+  let merged = {};
+  
+  // 1. Load base app-config.yaml
+  const baseConfigPath = path.join(appPortalDir, 'app-config.yaml');
+  if (!fs.existsSync(baseConfigPath)) {
+    console.error(`Base config not found at ${baseConfigPath}`);
+    return {};
+  }
+  
+  const baseConfig = yaml.load(fs.readFileSync(baseConfigPath, 'utf8')) || {};
+  mergeConfig(merged, baseConfig);
+  
+  // 2. Load includes from base config
+  if (baseConfig.includes && Array.isArray(baseConfig.includes)) {
+    console.log('📋 Loading configuration includes:');
+    for (const includePath of baseConfig.includes) {
+      const fullIncludePath = path.join(appPortalDir, includePath);
+      if (fs.existsSync(fullIncludePath)) {
+        const includeContent = fs.readFileSync(fullIncludePath, 'utf8');
+        const includeConfig = yaml.load(includeContent) || {};
+        const relativePath = path.relative(appPortalDir, fullIncludePath);
+        console.log(`   ✅ ${relativePath}`);
+        mergeConfig(merged, includeConfig);
+      }
+    }
+  }
+  
+  // 3. Load context-specific config (overrides)
+  try {
+    const context = execSync('kubectl config current-context', { encoding: 'utf8' }).trim();
+    if (context) {
+      const contextConfigPath = path.join(appPortalDir, `app-config.${context}.local.yaml`);
+      if (fs.existsSync(contextConfigPath)) {
+        const contextConfig = yaml.load(fs.readFileSync(contextConfigPath, 'utf8')) || {};
+        console.log(`   ✅ app-config.${context}.local.yaml (context override)`);
+        mergeConfig(merged, contextConfig);
+      }
+    }
+  } catch (e) {
+    // kubectl not available or no context, skip
+  }
+  
+  return merged;
 }
 
 // Fetch XRDs from Kubernetes cluster
@@ -169,17 +243,15 @@ function fetchXRDsFromCluster() {
   }
 }
 
-// Format output based on format option
-function formatOutput(data, format) {
-  if (format === 'json') {
-    return JSON.stringify(data, null, 2);
-  } else {
-    return yaml.dump(data, {
+function formatOutput(data) {
+  return yaml.dump(
+    data, 
+    {
       lineWidth: -1,
       noRefs: true,
       sortKeys: false
-    });
-  }
+    }
+  );
 }
 
 // Main function
@@ -197,15 +269,54 @@ async function main() {
     process.exit(1);
   }
   
-  // Load configuration if provided
-  let config = null;
+  // Load configuration
+  let fullConfig = null;
   if (options.config) {
-    config = loadConfig(options.config);
+    // User provided a specific config file
+    fullConfig = loadConfig(options.config);
     console.log('Loaded configuration from', options.config);
+  } else {
+    // Load default Backstage config with includes and context
+    fullConfig = loadBackstageConfig();
+    const context = (() => {
+      try {
+        return execSync('kubectl config current-context', { encoding: 'utf8' }).trim();
+      } catch (e) {
+        return null;
+      }
+    })();
+    if (context) {
+      console.log(`Loaded Backstage configuration with context: ${context}`);
+    } else {
+      console.log('Loaded Backstage configuration (no kubectl context)');
+    }
   }
   
-  // Create transformer with config
-  const transformer = config ? new CLITransformer(config) : cliTransformer;
+  // Extract ingestor-specific config from kubernetesIngestor.crossplane
+  const crossplaneConfig = fullConfig?.kubernetesIngestor?.crossplane || {};
+  
+  // Build transformer config from Backstage config
+  const ingestorConfig = crossplaneConfig.xrds ? {
+    extractorConfig: {
+      includePublishing: crossplaneConfig.xrds?.publishPhase?.enabled || false,
+      publishPhase: crossplaneConfig.xrds?.publishPhase || {}
+    },
+    stepGeneratorConfig: {
+      includeFetch: true,
+      includeRegister: false,
+      includePublishing: crossplaneConfig.xrds?.publishPhase?.enabled || false
+    },
+    templateBuilderConfig: {
+      templateType: 'crossplane-resource',
+      owner: 'platform-team',
+      additionalTags: ['cli-generated'],
+      kubernetesUIEnabled: true,
+      publishingEnabled: crossplaneConfig.xrds?.publishPhase?.enabled || false
+    }
+  } : null;
+  
+  // Create transformer with ingestor config
+  const transformer = ingestorConfig ? new CLITransformer(ingestorConfig) : cliTransformer;
   
   try {
     let xrds = [];
@@ -319,9 +430,9 @@ async function main() {
           
           // Save each template
           for (const template of templates) {
-            const fileName = `${template.metadata.name}.${options.format === 'json' ? 'json' : 'yaml'}`;
+            const fileName = `${template.metadata.name}.yaml`;
             const filePath = path.join(options.output, fileName);
-            const content = formatOutput(template, options.format);
+            const content = formatOutput(template);
             
             fs.writeFileSync(filePath, content);
             console.log(`  Created: ${fileName}`);
