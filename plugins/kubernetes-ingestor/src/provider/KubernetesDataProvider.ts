@@ -154,24 +154,7 @@ export class KubernetesDataProvider {
         // --- BEGIN: Add all v2/Cluster and v2/Namespaced composite kinds (XRs) to objectTypesToFetch ---
         try {
           // Import XrdDataProvider here to avoid circular dependency at top
-          // Use TypeScript source loading compatible import pattern
-          const XrdDataProviderModule = await import('./XrdDataProvider');
-          
-          // TypeScript source loading puts named exports inside default object
-          const XrdDataProvider = XrdDataProviderModule.XrdDataProvider || 
-                                   XrdDataProviderModule.default?.XrdDataProvider ||
-                                   XrdDataProviderModule.default || 
-                                   XrdDataProviderModule;
-          
-          // Verify it's a constructor for better error messages
-          if (!XrdDataProvider || typeof XrdDataProvider !== 'function') {
-            this.logger.error('XrdDataProvider not found or not a constructor', {
-              type: typeof XrdDataProvider,
-              moduleKeys: Object.keys(XrdDataProviderModule),
-              defaultKeys: Object.keys(XrdDataProviderModule.default || {}),
-            });
-            throw new Error(`XrdDataProvider is not a constructor. Type: ${typeof XrdDataProvider}`);
-          }
+          const { XrdDataProvider } = await import('./XrdDataProvider');
           // You may need to pass auth/httpAuth if required by your XrdDataProvider constructor
           const xrdDataProvider = new XrdDataProvider(
             this.logger,
