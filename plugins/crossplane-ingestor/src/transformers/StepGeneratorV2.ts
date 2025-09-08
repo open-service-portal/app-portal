@@ -22,7 +22,7 @@ export class StepGeneratorV2 {
   generate(
     xrd: XRD,
     version: XRDVersion,
-    parameterSections: ParameterSection[]
+    _parameterSections: ParameterSection[]
   ): BackstageTemplateStep[] {
     const steps: BackstageTemplateStep[] = [];
 
@@ -88,12 +88,12 @@ export class StepGeneratorV2 {
     };
 
     // Add cluster parameter if multiple clusters
-    if (xrd.clusters && xrd.clusters.length > 1) {
+    if (xrd.clusters && xrd.clusters.length > 1 && step.input) {
       step.input.cluster = '${{ parameters.cluster }}';
     }
 
     // Add namespace for Namespaced XRs
-    if (isNamespaced) {
+    if (isNamespaced && step.input) {
       step.input.namespace = '${{ parameters.namespace }}';
     }
 
@@ -218,9 +218,13 @@ export class StepGeneratorV2 {
 
       // Add PR creation flag if specified
       if (publishConfig.git.createPR !== undefined) {
-        gitStep.input.createPr = publishConfig.git.createPR;
+        if (gitStep.input) {
+          gitStep.input.createPr = publishConfig.git.createPR;
+        }
       } else {
-        gitStep.input.createPr = '${{ parameters.createPr }}';
+        if (gitStep.input) {
+          gitStep.input.createPr = '${{ parameters.createPr }}';
+        }
       }
 
       steps.push(gitStep);

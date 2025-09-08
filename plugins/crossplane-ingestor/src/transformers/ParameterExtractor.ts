@@ -46,7 +46,7 @@ export class ParameterExtractor {
   /**
    * Creates the metadata parameter section
    */
-  private extractMetadataSection(xrd: XRD, version: CrossplaneVersion): ParameterSection {
+  private extractMetadataSection(xrd: XRD, _version: CrossplaneVersion): ParameterSection {
     const properties: Record<string, ParameterProperty> = {
       xrName: {
         title: 'Name',
@@ -95,7 +95,7 @@ export class ParameterExtractor {
   /**
    * Extracts resource configuration from OpenAPI schema
    */
-  private extractResourceSection(version: XRDVersion, crossplaneVersion: CrossplaneVersion): ParameterSection | null {
+  private extractResourceSection(version: XRDVersion, _crossplaneVersion: CrossplaneVersion): ParameterSection | null {
     if (!version.schema?.openAPIV3Schema) {
       return null;
     }

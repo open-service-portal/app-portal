@@ -209,11 +209,29 @@ app-portal/
 │       │       ├── index.ts    # Module registration
 │       │       └── generateId.ts # Custom action implementation
 │       └── package.json
+├── plugins/                    # Custom Backstage plugins
+│   ├── crossplane-ingestor/   # Advanced Crossplane XRD discovery (16k+ lines)
+│   │   ├── src/               # Source code
+│   │   ├── tests/             # Comprehensive test suite
+│   │   └── docs/              # Detailed documentation
+│   └── ...                     # Other custom plugins
+├── docs/                       # Application documentation
+│   ├── modular-config.md      # Modular configuration guide
+│   └── crossplane-ingestor.md # Crossplane ingestor guide
+├── app-config/                 # Modular configuration directory (NEW!)
+│   ├── auth.yaml              # Authentication providers
+│   ├── backend.yaml           # Backend settings
+│   ├── catalog.yaml           # Catalog configuration
+│   ├── ingestor.yaml          # Ingestor plugins config
+│   ├── integrations.yaml      # SCM integrations
+│   ├── kubernetes.yaml        # K8s clusters
+│   ├── scaffolder.yaml        # Scaffolder settings
+│   └── techdocs.yaml          # Documentation platform
 ├── examples/                    # Example data for development
 │   ├── entities.yaml           # Example catalog entities
 │   ├── org.yaml                # Example users/groups
 │   └── template/               # Example template
-├── app-config.yaml             # Base configuration (Updated for New Backend System)
+├── app-config.yaml             # Base configuration (legacy/reference)
 ├── app-config.production.yaml  # Production overrides
 ├── app-config.local.yaml       # Local overrides (gitignored) with serviceLocatorMethod
 ├── .envrc                      # Direnv config (auto-loads secrets)
@@ -222,6 +240,27 @@ app-portal/
 ```
 
 ## Configuration
+
+### 🆕 Modular Configuration Architecture
+
+Configuration is now split into focused modules in the `app-config/` directory:
+
+```yaml
+# The start.js script loads all modules automatically:
+yarn start  # Loads: app-config.yaml + app-config/*.yaml + app-config.{context}.local.yaml
+```
+
+**Configuration Modules:**
+- `auth.yaml` - Authentication providers (GitHub, GitLab, OAuth)
+- `backend.yaml` - Backend settings (ports, CORS, database)
+- `catalog.yaml` - Catalog providers and locations
+- `ingestor.yaml` - Kubernetes and Crossplane ingestors
+- `integrations.yaml` - SCM integrations
+- `kubernetes.yaml` - Cluster connections
+- `scaffolder.yaml` - Template settings
+- `techdocs.yaml` - Documentation platform
+
+See [Modular Configuration Guide](./docs/modular-config.md) for details.
 
 ### New Backend System Requirements
 
@@ -266,6 +305,29 @@ Credentials are stored encrypted in `.env.enc`.
 - **Production:** GitHub OAuth only
 
 ## Custom Features
+
+### 🆕 Crossplane Ingestor Plugin
+
+A comprehensive Crossplane integration plugin with 16,000+ lines of production code:
+
+**Features:**
+- Discovers XRDs from multiple Kubernetes clusters
+- Generates Backstage template entities automatically
+- Creates API documentation entities
+- Tracks Composition relationships
+- Includes CLI tools for debugging and testing
+
+**CLI Tools:**
+```bash
+cd plugins/crossplane-ingestor
+yarn cli discover --cluster local        # Discover XRDs
+yarn cli transform --xrd ./xrd.yaml     # Transform XRD to template
+yarn cli export --cluster local         # Export all entities
+yarn cli validate --xrd ./xrd.yaml      # Validate XRD compatibility
+```
+
+**Configuration:** See `app-config/ingestor.yaml` for settings.
+**Documentation:** See [Crossplane Ingestor Guide](./docs/crossplane-ingestor.md) and `plugins/crossplane-ingestor/docs/` for detailed documentation.
 
 ### Scaffolder Actions (New Module System)
 

@@ -55,7 +55,7 @@ export class TemplateBuilder {
 
     // Extract metadata from XRD annotations and labels
     const xrdAnnotations = xrd.metadata.annotations || {};
-    const xrdLabels = xrd.metadata.labels || {};
+    // const xrdLabels = xrd.metadata.labels || {}; // Unused
 
     const metadata: BackstageTemplate['metadata'] = {
       name: this.generateTemplateName(xrd),
@@ -69,31 +69,34 @@ export class TemplateBuilder {
       annotations: {}
     };
 
+    // Ensure annotations is defined
+    const annotations = metadata.annotations!;
+
     // Add XRD reference annotation
-    metadata.annotations['crossplane.io/xrd'] = xrd.metadata.name;
-    metadata.annotations['crossplane.io/version'] = version.name;
+    annotations['crossplane.io/xrd'] = xrd.metadata.name;
+    annotations['crossplane.io/version'] = version.name;
 
     // Add icon if specified
     if (xrdAnnotations['backstage.io/icon']) {
-      metadata.annotations['backstage.io/icon'] = xrdAnnotations['backstage.io/icon'];
+      annotations['backstage.io/icon'] = xrdAnnotations['backstage.io/icon'];
     }
 
     // Add documentation link if specified
     if (xrdAnnotations['backstage.io/docs-url']) {
-      metadata.annotations['backstage.io/docs-url'] = xrdAnnotations['backstage.io/docs-url'];
+      annotations['backstage.io/docs-url'] = xrdAnnotations['backstage.io/docs-url'];
     }
 
     // Add source location if specified
     if (xrdAnnotations['backstage.io/source-location']) {
-      metadata.annotations['backstage.io/source-location'] = xrdAnnotations['backstage.io/source-location'];
+      annotations['backstage.io/source-location'] = xrdAnnotations['backstage.io/source-location'];
     }
 
     // Add lifecycle annotation
-    metadata.annotations['backstage.io/lifecycle'] = xrdAnnotations['backstage.io/lifecycle'] || 'production';
+    annotations['backstage.io/lifecycle'] = xrdAnnotations['backstage.io/lifecycle'] || 'production';
 
     // Add custom annotations from config
     if (this.config.additionalAnnotations) {
-      Object.assign(metadata.annotations, this.config.additionalAnnotations);
+      Object.assign(annotations, this.config.additionalAnnotations);
     }
 
     // Add links section

@@ -5,7 +5,7 @@
 
 import { XRDTransformer } from '../transformers';
 import { XRD, XRDTransformerConfig, BackstageTemplate, BackstageApiEntity } from '../types';
-import { parseYaml, parseYamlDocuments, toYaml } from '../utils';
+import { parseYaml, toYaml } from '../utils';
 import * as fs from 'fs';
 import * as path from 'path';
 

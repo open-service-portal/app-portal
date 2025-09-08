@@ -30,7 +30,7 @@ export class ApiEntityBuilder {
   /**
    * Builds API entity metadata
    */
-  private buildMetadata(xrd: XRD, version: XRDVersion): {
+  private buildMetadata(xrd: XRD, _version: XRDVersion): {
     name: string;
     title: string;
     description: string;

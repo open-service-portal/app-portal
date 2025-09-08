@@ -38,6 +38,25 @@ The secrets are automatically decrypted using SOPS when you enter the directory 
 Frontend: http://localhost:3000  
 Backend API: http://localhost:7007
 
+## 🆕 Key Features
+
+### Modular Configuration
+Configuration is now split into focused modules for better maintainability:
+- `app-config/auth.yaml` - Authentication providers
+- `app-config/backend.yaml` - Backend settings
+- `app-config/catalog.yaml` - Catalog configuration
+- `app-config/ingestor.yaml` - Kubernetes/Crossplane ingestors
+- `app-config/integrations.yaml` - GitHub/GitLab integrations
+- See [Modular Config Documentation](./docs/modular-config.md) for details
+
+### Crossplane Ingestor Plugin
+Advanced Crossplane integration with 16,000+ lines of code:
+- Discovers XRDs from Kubernetes clusters
+- Generates Backstage templates automatically
+- Creates API documentation entities
+- Includes CLI tools for debugging
+- See [Crossplane Ingestor Documentation](./docs/crossplane-ingestor.md) for details
+
 ## 🔐 Secret Management
 
 This project uses [SOPS](https://github.com/getsops/sops) for secret encryption. Secrets are stored encrypted in the repository and automatically decrypted when you enter the directory.
@@ -285,6 +304,30 @@ rm -rf node_modules
 yarn install
 yarn build:backend
 ```
+
+## 📚 Documentation
+
+### Configuration Guides
+- [Modular Configuration](./docs/modular-config.md) - How configuration is organized
+- [Environment Variables](./docs/environment-variables.md) - Required environment variables
+- [Secret Management](./docs/secret-management.md) - SOPS encryption setup
+
+### Plugin Documentation
+- [Crossplane Ingestor](./docs/crossplane-ingestor.md) - Advanced XRD discovery and transformation
+- [Kubernetes Ingestor](./docs/kubernetes-ingestor.md) - Basic Kubernetes resource discovery
+- [Custom Scaffolder Actions](./docs/scaffolder-actions.md) - Custom template actions
+
+### Development Guides
+- [CLAUDE.md](./CLAUDE.md) - AI assistant guidance for this repository
+- [Testing Guide](./docs/testing.md) - Running tests and writing new ones
+- [Troubleshooting](./docs/troubleshooting.md) - Common issues and solutions
+
+### Crossplane Ingestor Documentation
+Detailed guides in `plugins/crossplane-ingestor/docs/`:
+- [CLI Usage](./plugins/crossplane-ingestor/docs/CLI-USAGE.md) - Using CLI tools
+- [Developer Guide](./plugins/crossplane-ingestor/docs/DEVELOPER-GUIDE.md) - Architecture and development
+- [Metadata Flow](./plugins/crossplane-ingestor/docs/METADATA-FLOW.md) - How metadata is processed
+- [XRD Ingestion](./plugins/crossplane-ingestor/docs/XRD_INGESTION.md) - Ingestion pipeline
 
 ## 🤝 Contributing
 

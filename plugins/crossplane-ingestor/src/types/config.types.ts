@@ -2,7 +2,7 @@
  * Configuration related types
  */
 
-import { Config } from '@backstage/config';
+// Config type from @backstage/config - removed as it's not used in this file
 
 export interface IngestorConfig {
   annotationPrefix?: string;

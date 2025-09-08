@@ -201,6 +201,11 @@ export class XRDTransformer {
       template.metadata.title = `${template.metadata.title} (${version.name})`;
     }
     
+    // Ensure annotations exist
+    if (!template.metadata.annotations) {
+      template.metadata.annotations = {};
+    }
+    
     // Add Crossplane version info to annotations
     template.metadata.annotations['crossplane.io/api-version'] = crossplaneVersion.version;
     template.metadata.annotations['crossplane.io/scope'] = crossplaneVersion.scope;

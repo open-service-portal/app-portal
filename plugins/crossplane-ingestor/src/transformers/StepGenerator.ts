@@ -24,7 +24,7 @@ export class StepGenerator {
   generate(
     xrd: XRD,
     version: XRDVersion,
-    parameterSections: ParameterSection[]
+    _parameterSections: ParameterSection[]
   ): BackstageTemplateStep[] {
     const crossplaneVersion = this.detector.detect(xrd);
     const steps: BackstageTemplateStep[] = [];
@@ -77,7 +77,7 @@ export class StepGenerator {
     crossplaneVersion: CrossplaneVersion
   ): BackstageTemplateStep {
     const resourceKind = this.detector.getResourceKind(xrd);
-    const resourcePlural = this.detector.getResourcePlural(xrd);
+    // const resourcePlural = this.detector.getResourcePlural(xrd); // Unused
     const needsNamespace = this.detector.needsNamespaceParameter(xrd);
 
     // Build the manifest for the resource
@@ -99,12 +99,12 @@ export class StepGenerator {
     };
 
     // Add cluster parameter if multiple clusters
-    if (xrd.clusters && xrd.clusters.length > 1) {
+    if (xrd.clusters && xrd.clusters.length > 1 && step.input) {
       step.input.cluster = '${{ parameters.cluster }}';
     }
 
     // Add namespace if needed
-    if (needsNamespace) {
+    if (needsNamespace && step.input) {
       step.input.namespace = '${{ parameters.namespace }}';
     }
 
@@ -153,7 +153,7 @@ export class StepGenerator {
     if (version.schema?.openAPIV3Schema?.properties?.spec) {
       const specProperties = version.schema.openAPIV3Schema.properties.spec.properties || {};
       
-      for (const [key, schema] of Object.entries(specProperties)) {
+      for (const [key, _schema] of Object.entries(specProperties)) {
         // Add parameter reference for each field
         manifest.spec[key] = `\${{ parameters.${key} }}`;
       }
@@ -248,7 +248,7 @@ export class StepGenerator {
   /**
    * Generates the manifest template for publishing
    */
-  private generateManifestTemplate(xrd: XRD): string {
+  private generateManifestTemplate(_xrd: XRD): string {
     // This would typically be a more complex template
     // For now, returning a simple placeholder
     return `---

@@ -17,7 +17,7 @@ import {
 import { XrdDataProvider } from './XrdDataProvider';
 import { CRDDataProvider } from './CRDDataProvider';
 import { XRDTransformer } from '../transformers';
-import { XRD, BackstageTemplate, BackstageApiEntity } from '../types';
+import { XRD } from '../types';
 
 /**
  * Crossplane Ingestor - Refactored XRD Template Entity Provider
@@ -170,7 +170,7 @@ export class XRDTemplateEntityProvider implements EntityProvider {
           };
         });
 
-        entities.push(...entitiesWithMetadata);
+        entities.push(...(entitiesWithMetadata as Entity[]));
 
         this.logger.debug(
           `Transformed XRD ${xrd.metadata.name} into ${transformedEntities.length} entities`
@@ -231,7 +231,7 @@ export class XRDTemplateEntityProvider implements EntityProvider {
             };
           });
 
-          entities.push(...entitiesWithMetadata);
+          entities.push(...(entitiesWithMetadata as Entity[]));
         }
       } catch (error) {
         this.logger.error(
@@ -283,7 +283,7 @@ export class XRDTemplateEntityProvider implements EntityProvider {
   private convertCRDToXRDFormat(crd: any): XRD {
     return {
       apiVersion: crd.apiVersion || 'apiextensions.k8s.io/v1',
-      kind: 'CustomResourceDefinition',
+      kind: 'CompositeResourceDefinition',
       metadata: crd.metadata,
       spec: {
         group: crd.spec.group,

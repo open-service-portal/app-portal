@@ -22,7 +22,7 @@ export class StepGeneratorV1 {
   generate(
     xrd: XRD,
     version: XRDVersion,
-    parameterSections: ParameterSection[]
+    _parameterSections: ParameterSection[]
   ): BackstageTemplateStep[] {
     const steps: BackstageTemplateStep[] = [];
 
@@ -75,7 +75,7 @@ export class StepGeneratorV1 {
   ): BackstageTemplateStep {
     // V1 always uses claims if defined, otherwise falls back to XR
     const claimKind = xrd.spec.claimNames?.kind || xrd.spec.names.kind;
-    const claimPlural = xrd.spec.claimNames?.plural || xrd.spec.names.plural;
+    // const claimPlural = xrd.spec.claimNames?.plural || xrd.spec.names.plural; // Unused
 
     // Build the claim manifest
     const manifest = this.buildClaimManifest(xrd, version, claimKind);
@@ -91,7 +91,7 @@ export class StepGeneratorV1 {
     };
 
     // Add cluster parameter if multiple clusters
-    if (xrd.clusters && xrd.clusters.length > 1) {
+    if (xrd.clusters && xrd.clusters.length > 1 && step.input) {
       step.input.cluster = '${{ parameters.cluster }}';
     }
 
@@ -206,9 +206,13 @@ export class StepGeneratorV1 {
 
       // Add PR creation flag if specified
       if (publishConfig.git.createPR !== undefined) {
-        gitStep.input.createPr = publishConfig.git.createPR;
+        if (gitStep.input) {
+          gitStep.input.createPr = publishConfig.git.createPR;
+        }
       } else {
-        gitStep.input.createPr = '${{ parameters.createPr }}';
+        if (gitStep.input) {
+          gitStep.input.createPr = '${{ parameters.createPr }}';
+        }
       }
 
       steps.push(gitStep);
