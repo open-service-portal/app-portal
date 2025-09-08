@@ -15,7 +15,7 @@
  */
 
 import { convertLegacyRouteRefs } from '@backstage/core-compat-api';
-import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { createFrontendPlugin, FrontendPlugin } from '@backstage/frontend-plugin-api';
 import {
   rootRouteRef,
   actionsRouteRef,
@@ -49,7 +49,7 @@ const scaffolderEntityIconLink = EntityIconLinkBlueprint.make({
 });
 
 /** @alpha */
-export default createFrontendPlugin({
+const scaffolderPlugin: FrontendPlugin = createFrontendPlugin({
   pluginId: 'scaffolder',
   info: { packageJson: () => import('../../package.json') },
   routes: convertLegacyRouteRefs({
@@ -75,3 +75,5 @@ export default createFrontendPlugin({
     repoUrlPickerFormField,
   ],
 });
+
+export default scaffolderPlugin;

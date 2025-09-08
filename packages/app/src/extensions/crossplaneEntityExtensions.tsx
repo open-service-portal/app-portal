@@ -74,8 +74,8 @@ export const crossplaneOverviewCard = EntityCardBlueprint.make({
 export const crossplaneResourcesContent = EntityContentBlueprint.make({
   name: 'entity-content-crossplane-resources',
   params: {
-    defaultPath: '/crossplane',
-    defaultTitle: 'Infrastructure',
+    path: '/crossplane',
+    title: 'Infrastructure',
     filter: hasCrossplaneAnnotations,
     loader: async () => {
       return (
@@ -91,8 +91,8 @@ export const crossplaneResourcesContent = EntityContentBlueprint.make({
 export const crossplaneGraphContent = EntityContentBlueprint.make({
   name: 'entity-content-crossplane-graph',
   params: {
-    defaultPath: '/crossplane-graph',
-    defaultTitle: 'Dependencies',
+    path: '/crossplane-graph',
+    title: 'Dependencies',
     filter: hasCrossplaneAnnotations,
     loader: async () => {
       return (

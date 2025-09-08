@@ -1,7 +1,5 @@
 import { 
-  CatalogProcessor, 
-  CatalogProcessorEmit,
-  processingResult
+  CatalogProcessor
 } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
@@ -26,8 +24,7 @@ export class SourceTagProcessor implements CatalogProcessor {
 
   async preProcessEntity(
     entity: Entity,
-    location: LocationSpec,
-    emit: CatalogProcessorEmit,
+    location: LocationSpec
   ): Promise<Entity> {
     // Only process Templates for now (can be extended to other kinds)
     if (entity.kind !== 'Template') {
@@ -96,9 +93,7 @@ export class SourceTagProcessor implements CatalogProcessor {
 
   // Optional: Post-process to validate tags
   async postProcessEntity(
-    entity: Entity,
-    location: LocationSpec,
-    emit: CatalogProcessorEmit,
+    entity: Entity
   ): Promise<Entity> {
     // Remove duplicate tags if any
     if (entity.metadata.tags) {

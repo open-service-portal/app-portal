@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { Routes, Route, useOutlet } from 'react-router-dom';
 import { CustomTemplateCard } from '../CustomTemplateCard';
 
@@ -48,11 +48,12 @@ import {
 import { ActionsPage } from '../../components/ActionsPage';
 import { ListTasksPage } from '../../components/ListTasksPage';
 
-import {
+import { 
+  TemplateListPage, 
+  TemplateWizardPage,
   TemplateListPageProps,
   TemplateWizardPageProps,
-} from '@backstage/plugin-scaffolder/alpha';
-import { TemplateListPage, TemplateWizardPage } from '../../alpha/components';
+} from '../../alpha/components';
 import { OngoingTask } from '../OngoingTask';
 import {
   TemplateFormPage,

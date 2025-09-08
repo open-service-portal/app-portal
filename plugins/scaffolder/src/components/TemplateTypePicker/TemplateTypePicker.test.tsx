@@ -15,7 +15,7 @@
  */
 
 import { fireEvent } from '@testing-library/react';
-import { capitalize } from 'lodash';
+import capitalize from 'lodash/capitalize';
 import { Entity } from '@backstage/catalog-model';
 import { TemplateTypePicker } from './TemplateTypePicker';
 import {

@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { fireEvent, within } from '@testing-library/react';
-import { capitalize } from 'lodash';
+import capitalize from 'lodash/capitalize';
 import { rootRouteRef } from '../../routes';
 import { TemplatingExtensionsPage } from './TemplatingExtensionsPage';
 import { ExtensionKind } from './navigation';

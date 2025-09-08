@@ -170,7 +170,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
           ),
         );
       } catch (e) {
-        setErrorText(e.message);
+        setErrorText((e as Error).message);
       }
     },
     250,
@@ -229,7 +229,7 @@ export function TemplateEditorFormDirectoryEditorDryRun(
       });
       setErrorText();
     } catch (e) {
-      setErrorText(String(e.cause || e));
+      setErrorText(String((e as any).cause || e));
       throw e;
     }
   };
