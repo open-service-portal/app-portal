@@ -154,7 +154,16 @@ export class KubernetesDataProvider {
         // --- BEGIN: Add all v2/Cluster and v2/Namespaced composite kinds (XRs) to objectTypesToFetch ---
         try {
           // Import XrdDataProvider here to avoid circular dependency at top
-          const { XrdDataProvider } = await import('./XrdDataProvider');
+          const XrdDataProviderModule = await import('./XrdDataProvider');
+
+          // Access the default export from the module
+          // @ts-ignore
+          const { XrdDataProvider } = XrdDataProviderModule.default;
+
+          if (!XrdDataProvider || typeof XrdDataProvider !== 'function') {
+            throw new Error(`XrdDataProvider is not properly exported. Found type: ${typeof XrdDataProvider}`);
+          }
+
           // You may need to pass auth/httpAuth if required by your XrdDataProvider constructor
           const xrdDataProvider = new XrdDataProvider(
             this.logger,
