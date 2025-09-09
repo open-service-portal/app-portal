@@ -1,0 +1,17 @@
+# Integrations configuration
+# This file contains all external service integrations (GitHub, GitLab, etc.)
+
+integrations:
+  github:
+    - host: github.com
+      apps:
+        - appId: ${AUTH_GITHUB_APP_ID}
+          clientId: ${AUTH_GITHUB_CLIENT_ID}
+          clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+          installationId: ${AUTH_GITHUB_APP_INSTALLATION_ID}
+          privateKey:
+            $file: ../${AUTH_GITHUB_APP_PRIVATE_KEY_FILE}
+    ### Example for how to add your GitHub Enterprise instance using the API:
+    # - host: ghe.example.net
+    #   apiBaseUrl: https://ghe.example.net/api/v3
+    #   token: ${GHE_TOKEN}

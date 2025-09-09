@@ -1,10 +1,4 @@
-/*
- * Hi!
- *
- * Note that this is an EXAMPLE Backstage backend. Please check the README.
- *
- * Happy hacking!
- */
+console.log('[Backend Init] Starting backend...');
 
 import { createBackend } from '@backstage/backend-defaults';
 
@@ -67,7 +61,10 @@ backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 backend.add(import('@backstage/plugin-kubernetes-backend'));
 
 // TeraSky plugins for Kubernetes and Crossplane integration
+// Both ingestors are loaded, but only one runs based on ingestorSelector config
+// Configure in app-config.yaml with ingestorSelector: 'kubernetes-ingestor' or 'crossplane-ingestor'
 backend.add(import('@internal/plugin-kubernetes-ingestor'));
+backend.add(import('@internal/plugin-crossplane-ingestor'));
 backend.add(import('@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils'));
 
 // notifications and signals plugins

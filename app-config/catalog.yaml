@@ -1,0 +1,49 @@
+# Catalog configuration
+# This file contains all catalog-related settings including providers and locations
+
+catalog:
+  import:
+    entityFilename: catalog-info.yaml
+    pullRequestBranchName: backstage-integration
+  rules:
+    - allow: [Component, System, API, Resource, Location, User, Group, Template]
+  providers:
+    githubOrg:
+      - id: production
+        githubUrl: https://github.com
+        orgs: ['open-service-portal']
+        schedule:
+          frequency: { minutes: 30 }
+          timeout: { minutes: 3 }
+    github:
+      templateDiscovery:
+        organization: 'open-service-portal'
+        catalogPath: '/template.yaml'  # Look for template.yaml in repo root
+        filters:
+          repository: '^service-.*-template$'  # Match repos like service-nodejs-template
+        schedule:
+          frequency: { minutes: 30 }
+          timeout: { minutes: 3 }
+  locations:
+    # Local example data, file locations are relative to the backend process, typically `packages/backend`
+    # - type: file
+    #   target: ../../examples/entities.yaml
+
+    # Templates are now auto-discovered via GitHub provider
+    # Repos matching pattern 'service-*-template' are automatically imported
+
+    # Local example organizational data
+    - type: file
+      target: ../../examples/org.yaml
+      rules:
+        - allow: [User, Group]
+
+    ## Uncomment these lines to add more example data
+    # - type: url
+    #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all.yaml
+
+    ## Uncomment these lines to add an example org
+    # - type: url
+    #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
+    #   rules:
+    #     - allow: [User, Group]
