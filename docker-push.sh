@@ -5,11 +5,10 @@ set -e
 REGISTRY="ghcr.io"
 ORG="open-service-portal"
 IMAGE_NAME="backstage"
-BASE_TAG="dev-sqlite"
-IMAGE_BASE="${REGISTRY}/${ORG}/${IMAGE_NAME}"
 
 echo "🚀 Pushing Docker images to GitHub Container Registry"
-echo "===================================================="
+echo "====================================================="
+echo ""
 
 # Check if already logged in to GitHub Container Registry
 echo "🔐 Checking GitHub Container Registry login..."
@@ -31,30 +30,25 @@ else
     echo "✅ Already logged in to ghcr.io"
 fi
 
-# Try to get tags from file first, then from Docker
-if [ -f ".docker-tags" ]; then
-    echo "📋 Reading tags from .docker-tags file..."
-    TAGS_TO_PUSH=$(cat .docker-tags)
-else
-    echo "🔍 Looking for tagged images in Docker..."
-    # Get all images matching our pattern
-    TAGS_TO_PUSH=$(docker images --filter "reference=${IMAGE_BASE}:${BASE_TAG}-*" --format "{{.Repository}}:{{.Tag}}" | head -3)
-    
-    if [ -z "$TAGS_TO_PUSH" ]; then
-        echo "❌ No images found to push!"
-        echo "   Run ./docker-build.sh first to build and tag images"
-        exit 1
-    fi
+# Get tags from file
+if [ ! -f ".docker-tags" ]; then
+    echo "❌ No .docker-tags file found!"
+    echo "   Run ./docker-build.sh first"
+    exit 1
 fi
+
+echo "📋 Reading tags from .docker-tags file..."
+TAGS_TO_PUSH=$(cat .docker-tags)
 
 echo ""
 echo "📤 Images to push:"
 echo "$TAGS_TO_PUSH" | sed 's/^/  - /'
 echo ""
 
-# Push each tag
+# Push each image tag
+echo "📤 Pushing images..."
 for TAG in $TAGS_TO_PUSH; do
-    echo "Pushing ${TAG}..."
+    echo "  Pushing: ${TAG}"
     docker push ${TAG}
 done
 
@@ -85,7 +79,7 @@ if [ -f ".env.kubernetes" ]; then
     fi
 fi
 
-# Clean up tags file
+# Clean up temporary files
 if [ -f ".docker-tags" ]; then
     rm .docker-tags
 fi

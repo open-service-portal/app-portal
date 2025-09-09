@@ -31,9 +31,11 @@ if [ ! -f "packages/backend/dist/bundle.tar.gz" ]; then
     exit 1
 fi
 
-# Build the Docker image with the SHA tag
-echo "📦 Building image..."
-docker image build . -f packages/backend/Dockerfile --tag ${IMAGE_SHA}
+# Build the Docker image for linux/amd64
+echo "📦 Building image for linux/amd64..."
+docker build . -f packages/backend/Dockerfile \
+    --platform linux/amd64 \
+    --tag ${IMAGE_SHA}
 
 # Tag additional versions
 echo "🏷️  Creating additional tags..."
@@ -52,4 +54,4 @@ echo "Tagged images:"
 docker images --filter "reference=${IMAGE_BASE}:${BASE_TAG}-*" --format "  - {{.Repository}}:{{.Tag}}"
 echo ""
 echo "📝 Tags saved to .docker-tags for push script"
-echo "🐳 Now run: ./docker-push.sh"
+echo "🚀 To push: ./docker-push.sh"
