@@ -71,3 +71,4 @@ e2e-test-report/
 .local/
 *.local.*
 
+.docker-tags

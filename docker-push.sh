@@ -6,24 +6,10 @@ REGISTRY="ghcr.io"
 ORG="open-service-portal"
 IMAGE_NAME="backstage"
 BASE_TAG="dev-sqlite"
-
-# Get git commit short SHA
-GIT_SHA=$(git rev-parse --short HEAD)
-DATE=$(date +%Y%m%d)
-
-# Full image paths
 IMAGE_BASE="${REGISTRY}/${ORG}/${IMAGE_NAME}"
-IMAGE_SHA="${IMAGE_BASE}:${BASE_TAG}-${GIT_SHA}"
-IMAGE_DATE="${IMAGE_BASE}:${BASE_TAG}-${DATE}"
-IMAGE_LATEST="${IMAGE_BASE}:${BASE_TAG}-latest"
 
-echo "🚀 Building and pushing Backstage image (SQLite testing version)"
-echo "================================================"
-echo "Image tags:"
-echo "  - ${IMAGE_SHA}"
-echo "  - ${IMAGE_DATE}"
-echo "  - ${IMAGE_LATEST}"
-echo ""
+echo "🚀 Pushing Docker images to GitHub Container Registry"
+echo "===================================================="
 
 # Check if already logged in to GitHub Container Registry
 echo "🔐 Checking GitHub Container Registry login..."
@@ -45,17 +31,40 @@ else
     echo "✅ Already logged in to ghcr.io"
 fi
 
-# Push all tags
-echo "📤 Pushing images to registry..."
-docker push ${IMAGE_SHA}
-docker push ${IMAGE_DATE}
-docker push ${IMAGE_LATEST}
+# Try to get tags from file first, then from Docker
+if [ -f ".docker-tags" ]; then
+    echo "📋 Reading tags from .docker-tags file..."
+    TAGS_TO_PUSH=$(cat .docker-tags)
+else
+    echo "🔍 Looking for tagged images in Docker..."
+    # Get all images matching our pattern
+    TAGS_TO_PUSH=$(docker images --filter "reference=${IMAGE_BASE}:${BASE_TAG}-*" --format "{{.Repository}}:{{.Tag}}" | head -3)
+    
+    if [ -z "$TAGS_TO_PUSH" ]; then
+        echo "❌ No images found to push!"
+        echo "   Run ./docker-build.sh first to build and tag images"
+        exit 1
+    fi
+fi
 
 echo ""
-echo "✅ Successfully pushed images!"
+echo "📤 Images to push:"
+echo "$TAGS_TO_PUSH" | sed 's/^/  - /'
 echo ""
-echo "📝 To deploy to Kubernetes, use:"
-echo "  ${IMAGE_SHA}"
+
+# Push each tag
+for TAG in $TAGS_TO_PUSH; do
+    echo "Pushing ${TAG}..."
+    docker push ${TAG}
+done
+
 echo ""
-echo "Or in your Kubernetes manifest:"
-echo "  image: ${IMAGE_SHA}"
+echo "✅ Successfully pushed all images!"
+echo ""
+echo "📝 To deploy to Kubernetes, use one of these images:"
+echo "$TAGS_TO_PUSH" | sed 's/^/  - /'
+
+# Clean up tags file
+if [ -f ".docker-tags" ]; then
+    rm .docker-tags
+fi
