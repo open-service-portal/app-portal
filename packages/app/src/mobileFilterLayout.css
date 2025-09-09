@@ -1,0 +1,21 @@
+/* Force mobile filter layout - button above table, not beside it */
+/* ONLY apply to containers that have the filter button as direct child */
+
+/* Only target Grid containers that have a Filter button as first child */
+[class*="MuiGrid-container"][class*="spacing-xs-2"]:has(> button:first-child) {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+}
+
+/* Style the filter button */
+[class*="MuiGrid-container"][class*="spacing-xs-2"] > button:first-child {
+  margin-bottom: 16px !important;
+  align-self: flex-start !important;
+}
+
+/* Grid items in containers with filter button */
+[class*="MuiGrid-container"][class*="spacing-xs-2"]:has(> button:first-child) > [class*="MuiGrid-item"] {
+  max-width: 100% !important;
+  flex-basis: 100% !important;
+  width: 100% !important;
+}
