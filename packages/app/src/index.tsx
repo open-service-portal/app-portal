@@ -5,5 +5,6 @@ import App from './App';
 import '@backstage/ui/css/styles.css';
 import './mobileFilterLayout.css';
 import './mermaid-init';
+import './hideLifecycle.js';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(App.createRoot());
