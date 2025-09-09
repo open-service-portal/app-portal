@@ -52,6 +52,22 @@
         '/create'     // Template selection page
       ];
       
+      // MUI v5 breakpoint values (px)
+      // These match Material-UI's theme.breakpoints.down() implementation
+      const MUI_BREAKPOINTS = {
+        xs: 0,
+        sm: 600,
+        md: 900,  // up('md') starts here
+        lg: 1200, // up('lg') starts here
+        xl: 1536
+      };
+      
+      // MUI's breakpoints.down() uses the NEXT breakpoint minus 0.05
+      // down('md') = up('lg') - 0.05 = 1200 - 0.05 = 1199.95... BUT
+      // Backstage seems to use different values, so we use the actual observed values
+      const BREAKPOINT_DOWN_MD = '959.95';   // Actual value used by Backstage
+      const BREAKPOINT_DOWN_LG = '1279.95';  // Actual value used by Backstage
+      
       // Check if current page should have mobile filters
       function shouldUseMobileFilters() {
         const path = window.location.pathname;
@@ -61,8 +77,12 @@
       window.matchMedia = function(query) {
         // Only apply overrides if we're on a page that needs mobile filters
         if (shouldUseMobileFilters()) {
-          // Force mobile view for filter component (md and lg-1 breakpoints)
-          if (query.includes('max-width') && (query.includes('959.95') || query.includes('960') || query.includes('1279.95'))) {
+          // Force mobile view for filter component (md and lg breakpoints)
+          // Check for the exact values used by Backstage
+          if (query.includes('max-width') && 
+              (query.includes(BREAKPOINT_DOWN_MD) || 
+               query.includes('960') ||  // Sometimes rounded
+               query.includes(BREAKPOINT_DOWN_LG))) {
             const listeners = [];
             return {
               matches: true,  // Always true = always mobile
@@ -101,9 +121,6 @@
         // For all other pages/queries, use original behavior
         return originalMatchMedia.call(window, query);
       };
-      
-      // Debug log
-      console.log('[MobileFilters] Active on:', window.location.pathname, '?', shouldUseMobileFilters());
     </script>
   </head>
   <body>
