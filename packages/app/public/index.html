@@ -42,6 +42,69 @@
       color="#5bbad5"
     />
     <title><%= config.getOptionalString('app.title') ?? 'Backstage' %></title>
+    <script>
+      // Force mobile filter drawer only on specific pages
+      const originalMatchMedia = window.matchMedia;
+      
+      // Allow-list: Pages where we want mobile filters
+      const MOBILE_FILTER_PAGES = [
+        '/catalog',   // Catalog and all sub-pages
+        '/create'     // Template selection page
+      ];
+      
+      // Check if current page should have mobile filters
+      function shouldUseMobileFilters() {
+        const path = window.location.pathname;
+        return MOBILE_FILTER_PAGES.some(page => path.startsWith(page));
+      }
+      
+      window.matchMedia = function(query) {
+        // Only apply overrides if we're on a page that needs mobile filters
+        if (shouldUseMobileFilters()) {
+          // Force mobile view for filter component (md and lg-1 breakpoints)
+          if (query.includes('max-width') && (query.includes('959.95') || query.includes('960') || query.includes('1279.95'))) {
+            const listeners = [];
+            return {
+              matches: true,  // Always true = always mobile
+              media: query,
+              addListener: (fn) => listeners.push(fn),
+              removeListener: (fn) => {
+                const idx = listeners.indexOf(fn);
+                if (idx > -1) listeners.splice(idx, 1);
+              },
+              addEventListener: (type, fn) => {
+                if (type === 'change') listeners.push(fn);
+              },
+              removeEventListener: (type, fn) => {
+                if (type === 'change') {
+                  const idx = listeners.indexOf(fn);
+                  if (idx > -1) listeners.splice(idx, 1);
+                }
+              },
+              dispatchEvent: () => true
+            };
+          }
+          // Also force lg to be false on these pages
+          if (query.includes('min-width') && query.includes('1280')) {
+            return {
+              matches: false,  // Never desktop
+              media: query,
+              addListener: () => {},
+              removeListener: () => {},
+              addEventListener: () => {},
+              removeEventListener: () => {},
+              dispatchEvent: () => true
+            };
+          }
+        }
+        
+        // For all other pages/queries, use original behavior
+        return originalMatchMedia.call(window, query);
+      };
+      
+      // Debug log
+      console.log('[MobileFilters] Active on:', window.location.pathname, '?', shouldUseMobileFilters());
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
