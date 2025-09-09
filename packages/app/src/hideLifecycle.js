@@ -4,7 +4,7 @@
 let hideTimeout;
 
 function hideLifecycle() {
-  document.querySelectorAll('table:not([data-processed])').forEach(table => {
+  document.querySelectorAll('table').forEach(table => {
     const ths = table.querySelectorAll('th');
     let lifecycleIndex = -1;
     
@@ -21,8 +21,6 @@ function hideLifecycle() {
         if (cell) cell.style.display = 'none';
       });
     }
-    
-    table.dataset.processed = "1";
   });
 }
 
