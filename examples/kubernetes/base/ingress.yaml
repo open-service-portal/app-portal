@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-portal
+  namespace: app-portal
+  labels:
+    app.kubernetes.io/name: app-portal
+    app.kubernetes.io/component: backend
+  annotations:
+    # ExternalDNS will automatically create/update DNS record (if configured)
+    external-dns.alpha.kubernetes.io/hostname: ${APP_HOSTNAME}
+    external-dns.alpha.kubernetes.io/ttl: "300"
+    
+    # cert-manager annotations for Let's Encrypt
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    
+    # Adjust these based on your ingress controller
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: ${APP_HOSTNAME}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app-portal
+            port:
+              name: http
+  tls:
+  - hosts:
+    - ${APP_HOSTNAME}
+    secretName: app-portal-tls

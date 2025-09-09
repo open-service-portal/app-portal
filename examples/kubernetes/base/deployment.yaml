@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-portal
+  namespace: app-portal
+  labels:
+    app.kubernetes.io/name: app-portal
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: app-portal
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: app-portal
+        app.kubernetes.io/component: backend
+    spec:
+      containers:
+      - name: app-portal
+        image: ${DOCKER_IMAGE}
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 7007
+          protocol: TCP
+        env:
+        # GitHub App configuration from secret
+        - name: AUTH_GITHUB_APP_ID
+          valueFrom:
+            secretKeyRef:
+              name: app-portal-github-app
+              key: AUTH_GITHUB_APP_ID
+        - name: AUTH_GITHUB_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: app-portal-github-app
+              key: AUTH_GITHUB_CLIENT_ID
+        - name: AUTH_GITHUB_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: app-portal-github-app
+              key: AUTH_GITHUB_CLIENT_SECRET
+        - name: AUTH_GITHUB_APP_INSTALLATION_ID
+          valueFrom:
+            secretKeyRef:
+              name: app-portal-github-app
+              key: AUTH_GITHUB_APP_INSTALLATION_ID
+        # Path to the mounted private key file
+        - name: AUTH_GITHUB_APP_PRIVATE_KEY_FILE
+          value: "/secrets/github-app-key.pem"
+        # Base URLs from config secret
+        - name: APP_BASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: app-portal-config
+              key: APP_BASE_URL
+        - name: BACKEND_BASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: app-portal-config
+              key: BACKEND_BASE_URL
+        # Production mode
+        - name: NODE_ENV
+          value: "production"
+        volumeMounts:
+        # Mount the GitHub App private key
+        - name: github-app-key
+          mountPath: /secrets
+          readOnly: true
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: http
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 3
+      volumes:
+      # Volume for GitHub App private key
+      - name: github-app-key
+        secret:
+          secretName: app-portal-github-app
+          items:
+          - key: github-app-key.pem
+            path: github-app-key.pem
+            mode: 0400

@@ -64,6 +64,27 @@ echo ""
 echo "📝 To deploy to Kubernetes, use one of these images:"
 echo "$TAGS_TO_PUSH" | sed 's/^/  - /'
 
+# Update .env.kubernetes if it exists
+if [ -f ".env.kubernetes" ]; then
+    echo ""
+    echo "📝 Updating .env.kubernetes with latest image..."
+    
+    # Get the first (most recent) tag
+    LATEST_IMAGE=$(echo "$TAGS_TO_PUSH" | head -1)
+    
+    # Update DOCKER_IMAGE in .env.kubernetes
+    if grep -q "^export DOCKER_IMAGE=" .env.kubernetes; then
+        # Update existing line
+        sed -i.bak "s|^export DOCKER_IMAGE=.*|export DOCKER_IMAGE=${LATEST_IMAGE}|" .env.kubernetes
+        rm .env.kubernetes.bak
+        echo "✅ Updated DOCKER_IMAGE in .env.kubernetes to: ${LATEST_IMAGE}"
+    else
+        # Add if not present
+        echo "export DOCKER_IMAGE=${LATEST_IMAGE}" >> .env.kubernetes
+        echo "✅ Added DOCKER_IMAGE to .env.kubernetes: ${LATEST_IMAGE}"
+    fi
+fi
+
 # Clean up tags file
 if [ -f ".docker-tags" ]; then
     rm .docker-tags
