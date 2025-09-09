@@ -7,6 +7,14 @@
 techdocs:
   builder: 'local' # Alternatives - 'external'
   generator:
-    runIn: 'docker' # Alternatives - 'local'
+    runIn: 'local' # Alternatives - 'local', 'docker'
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
+    local:
+      # Directory to store generated documentation (relative to backend working directory)
+      publishDirectory: '../../build-mkdocs'
+  # Cache configuration (disabled to avoid invalidation errors)
+  # Uncomment to enable caching when the invalidation issue is resolved
+  # cache:
+  #   ttl: 60 # 1 minute for testing, increase for production
+  #   readTimeout: 5000

@@ -73,6 +73,7 @@ const crossplaneEntityModule = createFrontendModule({
   ],
 });
 
+
 const app = createApp({
   features: [
     catalogPlugin,
