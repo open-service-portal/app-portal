@@ -95,8 +95,8 @@ spec:
       # Volume for GitHub App private key
       - name: github-app-key
         secret:
-          secretName: app-portal-github-app
+          secretName: app-portal-github-key
+          defaultMode: 0444
           items:
           - key: github-app-key.pem
             path: github-app-key.pem
-            mode: 0400

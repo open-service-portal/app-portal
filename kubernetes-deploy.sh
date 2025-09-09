@@ -37,7 +37,7 @@ REQUIRED ENVIRONMENT VARIABLES (from .envrc):
     AUTH_GITHUB_CLIENT_ID           GitHub App Client ID
     AUTH_GITHUB_CLIENT_SECRET       GitHub App Client Secret
     AUTH_GITHUB_APP_INSTALLATION_ID GitHub App Installation ID
-    AUTH_GITHUB_APP_PRIVATE_KEY     GitHub App private key (PEM format)
+    AUTH_GITHUB_APP_PRIVATE_KEY_B64 GitHub App private key (base64 encoded)
 
 REQUIRED DEPLOYMENT SETTINGS (via --hostname/--image or config file):
     APP_HOSTNAME                    Application hostname
@@ -128,13 +128,14 @@ fi
 export APP_BASE_URL="${APP_BASE_URL:-https://${APP_HOSTNAME}}"
 export BACKEND_BASE_URL="${BACKEND_BASE_URL:-https://${APP_HOSTNAME}}"
 
+
 # Validate GitHub auth variables (should come from .envrc)
 github_vars=(
     "AUTH_GITHUB_APP_ID"
     "AUTH_GITHUB_CLIENT_ID"
     "AUTH_GITHUB_CLIENT_SECRET"
     "AUTH_GITHUB_APP_INSTALLATION_ID"
-    "AUTH_GITHUB_APP_PRIVATE_KEY"
+    "AUTH_GITHUB_APP_PRIVATE_KEY_B64"
 )
 
 missing_github_vars=()
@@ -195,6 +196,12 @@ for template in examples/kubernetes/base/*.yaml; do
     fi
     
     filename=$(basename "$template")
+    
+    # Skip kustomization.yaml as it's not a Kubernetes resource
+    if [[ "$filename" == "kustomization.yaml" ]]; then
+        continue
+    fi
+    
     output="$OUTPUT_DIR/$filename"
     
     # Use envsubst to replace variables
@@ -226,7 +233,7 @@ else
         exit 1
     fi
     
-    # Apply using kubectl
+    # Apply manifests
     kubectl apply -f "$OUTPUT_DIR/"
     
     echo
