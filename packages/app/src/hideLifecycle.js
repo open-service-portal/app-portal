@@ -1,23 +1,34 @@
 // Minimal script to hide Lifecycle column
 // Find and hide by text content (more reliable than nth-child)
 
+let hideTimeout;
+
 function hideLifecycle() {
-  document.querySelectorAll('th').forEach((th, index) => {
-    if (th.textContent?.trim() === 'Lifecycle') {
-      // Hide header
-      th.style.display = 'none';
-      
-      // Hide all cells in this column
-      const table = th.closest('table');
-      table?.querySelectorAll('tr').forEach(row => {
-        const cell = row.children[index];
+  document.querySelectorAll('table:not([data-processed])').forEach(table => {
+    const ths = table.querySelectorAll('th');
+    let lifecycleIndex = -1;
+    
+    ths.forEach((th, idx) => {
+      if (th.textContent?.trim() === 'Lifecycle') {
+        lifecycleIndex = idx;
+        th.style.display = 'none';
+      }
+    });
+    
+    if (lifecycleIndex !== -1) {
+      table.querySelectorAll('tr').forEach(row => {
+        const cell = row.children[lifecycleIndex];
         if (cell) cell.style.display = 'none';
       });
     }
+    
+    table.dataset.processed = "1";
   });
 }
 
-// Run on load and DOM changes
+// Run on load and DOM changes (debounced)
 hideLifecycle();
-new MutationObserver(() => setTimeout(hideLifecycle, 50))
-  .observe(document.body, { childList: true, subtree: true });
+new MutationObserver(() => {
+  clearTimeout(hideTimeout);
+  hideTimeout = setTimeout(hideLifecycle, 50);
+}).observe(document.body, { childList: true, subtree: true });
