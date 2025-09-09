@@ -5,6 +5,9 @@
 .env
 github-app-key.pem
 
+# TechDocs build cache
+build-mkdocs/
+
 # macOS
 .DS_Store
 
