@@ -68,6 +68,8 @@ e2e-test-report/
 .cache/
 
 # Local resources
-.local/
+*.local
 *.local.*
 
+.docker-tags
+.env.kubernetes
