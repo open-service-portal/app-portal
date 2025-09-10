@@ -1,6 +1,7 @@
 console.log('[Backend Init] Starting backend...');
 
 import { createBackend } from '@backstage/backend-defaults';
+import { loadOptionalPlugins } from './optional-plugins';
 
 const backend = createBackend();
 
@@ -62,14 +63,12 @@ backend.add(import('@backstage/plugin-kubernetes-backend'));
 
 // Kubernetes and Crossplane ingestor plugins
 // Configure in app-config/ingestor.yaml with ingestorSelector:
-// - 'kubernetes-ingestor' - Upstream TeraSky version
-// - 'kubernetes-ingestor-custom' - Our customized fork
-// - 'kubernetes-ingestor-own' - Legacy internal version
-// - 'crossplane-ingestor' - Refactored Crossplane-focused version
+// - 'kubernetes-ingestor' - Upstream TeraSky version (requires backstage-plugins fork)
+// - 'kubernetes-ingestor-custom' - Our customized fork (requires backstage-plugins-custom fork)
+// - 'kubernetes-ingestor-own' - Legacy internal version (always available)
+// - 'crossplane-ingestor' - Refactored Crossplane-focused version (always available)
 
-// Load all available ingestors - they self-select based on config
-backend.add(import('@terasky/backstage-plugin-kubernetes-ingestor')); // Upstream TeraSky version
-backend.add(import('@terasky/backstage-plugin-kubernetes-ingestor-custom')); // Our customized fork
+// Load internal ingestors (always available)
 backend.add(import('@internal/plugin-kubernetes-ingestor-own')); // Legacy internal version
 backend.add(import('@internal/plugin-crossplane-ingestor')); // Refactored Crossplane-focused version
 
@@ -80,4 +79,15 @@ backend.add(import('@terasky/backstage-plugin-scaffolder-backend-module-terasky-
 backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 
-backend.start();
+// Load optional fork ingestors and start backend
+// These are loaded conditionally to avoid startup failures when forks aren't cloned
+(async () => {
+  try {
+    await loadOptionalPlugins(backend);
+  } catch (error) {
+    console.error('[Optional Plugins] Failed to load optional plugins:', error);
+  }
+  
+  // Start backend after all plugins are loaded
+  backend.start();
+})();
