@@ -1,6 +1,10 @@
 # Ingestor Selection - Choose which XRD ingestor to use
-# Options: 'kubernetes-ingestor' (original) or 'crossplane-ingestor' (refactored)
-ingestorSelector: 'kubernetes-ingestor'
+# Options: 
+# - 'kubernetes-ingestor' - Upstream TeraSky version
+# - 'kubernetes-ingestor-custom' - Our customized fork
+# - 'kubernetes-ingestor-own' - Legacy internal version  
+# - 'crossplane-ingestor' - Refactored Crossplane-focused version
+ingestorSelector: 'kubernetes-ingestor-custom'
 
 # Both ingestors share the same configuration below
 # Only the ingestorSelector above determines which one runs

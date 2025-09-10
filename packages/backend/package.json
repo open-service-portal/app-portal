@@ -46,12 +46,15 @@
     "@backstage/plugin-signals-backend": "^0.3.7",
     "@backstage/plugin-techdocs-backend": "^2.0.5",
     "@internal/plugin-crossplane-ingestor": "link:../../plugins/crossplane-ingestor",
-    "@internal/plugin-kubernetes-ingestor": "link:../../plugins/kubernetes-ingestor",
+    "@internal/plugin-kubernetes-ingestor-own": "link:../../plugins/kubernetes-ingestor-own",
+    "@terasky/backstage-plugin-kubernetes-ingestor": "workspace:*",
+    "@terasky/backstage-plugin-kubernetes-ingestor-custom": "workspace:*",
     "@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils": "^1.7.1",
     "app": "link:../app",
     "better-sqlite3": "^9.0.0",
     "node-gyp": "^10.0.0",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "yaml": "^2.8.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.34.0"
