@@ -18,6 +18,8 @@ import {
   crossplaneResourcesContent,
   crossplaneGraphContent,
 } from './extensions/crossplaneEntityExtensions';
+import { TestNewUI } from './components/TestNewUI';
+import { TestMixedUI } from './components/TestMixedUI';
 
 // Custom SignInPage with GitHub Auth
 const signInPage = SignInPageBlueprint.make({
@@ -58,9 +60,27 @@ const crossplanePage = PageBlueprint.make({
   },
 });
 
+// Test New UI Page
+const testNewUIPage = PageBlueprint.make({
+  name: 'test-new-ui',
+  params: {
+    path: '/test-new-ui',
+    loader: async () => <TestNewUI />,
+  },
+});
+
+// Test Mixed UI Page
+const testMixedUIPage = PageBlueprint.make({
+  name: 'test-mixed-ui',
+  params: {
+    path: '/test-mixed-ui',
+    loader: async () => <TestMixedUI />,
+  },
+});
+
 const authModule = createFrontendModule({
   pluginId: 'app',
-  extensions: [signInPage, homePage, crossplanePage],
+  extensions: [signInPage, homePage, crossplanePage, testNewUIPage, testMixedUIPage],
 });
 
 // Crossplane entity extensions module
