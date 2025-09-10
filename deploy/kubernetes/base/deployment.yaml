@@ -51,6 +51,22 @@ spec:
         # Path to the mounted private key file
         - name: AUTH_GITHUB_APP_PRIVATE_KEY_FILE
           value: "/secrets/github-app-key.pem"
+        # Kubernetes configuration
+        - name: KUBERNETES_API_URL
+          valueFrom:
+            secretKeyRef:
+              name: app-portal-kubernetes
+              key: KUBERNETES_API_URL
+        - name: KUBERNETES_CLUSTER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: app-portal-kubernetes
+              key: KUBERNETES_CLUSTER_NAME
+        - name: KUBERNETES_SERVICE_ACCOUNT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: app-portal-kubernetes
+              key: KUBERNETES_SERVICE_ACCOUNT_TOKEN
         # Base URLs from config secret
         - name: APP_BASE_URL
           valueFrom:

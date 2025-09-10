@@ -39,6 +39,11 @@ REQUIRED ENVIRONMENT VARIABLES (from .envrc):
     AUTH_GITHUB_APP_INSTALLATION_ID GitHub App Installation ID
     AUTH_GITHUB_APP_PRIVATE_KEY_B64 GitHub App private key (base64 encoded)
 
+REQUIRED KUBERNETES VARIABLES (from environment or .env.kubernetes):
+    KUBERNETES_API_URL              Kubernetes API server URL
+    KUBERNETES_CLUSTER_NAME         Kubernetes cluster name
+    KUBERNETES_SERVICE_ACCOUNT_TOKEN Backstage service account token
+
 REQUIRED DEPLOYMENT SETTINGS (via --hostname/--image or config file):
     APP_HOSTNAME                    Application hostname
     DOCKER_IMAGE                    Docker image to deploy
@@ -52,7 +57,7 @@ EXAMPLE:
     $0 --hostname app.example.com --image ghcr.io/org/app:v1.0.0
 
     # Deploy using config file
-    cp examples/kubernetes/.env.kubernetes.example .env.kubernetes
+    cp deploy/kubernetes/.env.kubernetes.example .env.kubernetes
     vim .env.kubernetes  # update with your values
     $0
 
@@ -155,6 +160,34 @@ if [[ ${#missing_github_vars[@]} -gt 0 ]]; then
     exit 1
 fi
 
+# Validate Kubernetes configuration variables
+kubernetes_vars=(
+    "KUBERNETES_API_URL"
+    "KUBERNETES_CLUSTER_NAME"
+    "KUBERNETES_SERVICE_ACCOUNT_TOKEN"
+)
+
+missing_kubernetes_vars=()
+for var in "${kubernetes_vars[@]}"; do
+    if [[ -z "${!var}" ]]; then
+        missing_kubernetes_vars+=("$var")
+    fi
+done
+
+if [[ ${#missing_kubernetes_vars[@]} -gt 0 ]]; then
+    error "Missing Kubernetes configuration variables:"
+    for var in "${missing_kubernetes_vars[@]}"; do
+        echo "  - $var"
+    done
+    echo
+    echo "These should be set in your environment or .env.kubernetes file"
+    echo "Example:"
+    echo "  export KUBERNETES_API_URL=\"https://your-cluster-api.example.com\""
+    echo "  export KUBERNETES_CLUSTER_NAME=\"your-cluster-name\""
+    echo "  export KUBERNETES_SERVICE_ACCOUNT_TOKEN=\"your-sa-token\""
+    exit 1
+fi
+
 # Validate deployment settings
 deployment_vars=(
     "APP_HOSTNAME"
@@ -177,7 +210,7 @@ if [[ ${#missing_deployment_vars[@]} -gt 0 ]]; then
     echo "Provide these via command-line options or config file:"
     echo "  $0 --hostname app.example.com --image ghcr.io/org/app:v1.0.0"
     echo "  or"
-    echo "  cp examples/kubernetes/.env.kubernetes.example .env.kubernetes"
+    echo "  cp deploy/kubernetes/.env.kubernetes.example .env.kubernetes"
     echo "  vim .env.kubernetes  # update with your values"
     echo "  $0"
     exit 1
@@ -189,9 +222,9 @@ mkdir -p "$OUTPUT_DIR"
 
 # Process templates
 info "Processing Kubernetes manifests..."
-for template in examples/kubernetes/base/*.yaml; do
+for template in deploy/kubernetes/base/*.yaml; do
     if [[ ! -f "$template" ]]; then
-        error "Template files not found in examples/kubernetes/base/"
+        error "Template files not found in deploy/kubernetes/base/"
         exit 1
     fi
     
