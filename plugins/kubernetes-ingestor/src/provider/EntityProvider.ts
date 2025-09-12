@@ -2538,6 +2538,11 @@ export class KubernetesEntityProvider implements EntityProvider {
     }
     // --- End: Config-based naming/namespace logic ---
 
+    // Generate links from XR status if available
+    const statusLinks = this.generateLinksFromXRStatus(xr);
+    const annotationLinks = this.parseBackstageLinks(xr.metadata.annotations || {});
+    const allLinks = [...annotationLinks, ...statusLinks];
+
     const entity: Entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
@@ -2547,7 +2552,7 @@ export class KubernetesEntityProvider implements EntityProvider {
         description: `${kind} ${xr.metadata.name} from ${clusterName}`,
         tags: [`cluster:${clusterName}`, `kind:${kind}`, 'crossplane-xr'],
         namespace: namespaceValue,
-        links: this.parseBackstageLinks(xr.metadata.annotations || {}),
+        links: allLinks,
         annotations: {
           ...Object.fromEntries(
             Object.entries({ ...xr.metadata.annotations, ...annotations }).filter(([key]) => key !== `${prefix}/links`)
@@ -2598,5 +2603,58 @@ export class KubernetesEntityProvider implements EntityProvider {
       this.logger.warn(`Raw annotation value: ${linksAnnotation}`)
       return [];
     }
+  }
+
+  private generateLinksFromXRStatus(xr: any): BackstageLink[] {
+    const links: BackstageLink[] = [];
+    
+    // Check for WhoAmIService XRs with domain in status
+    if (xr.kind === 'WhoAmIService' && xr.status?.domain) {
+      links.push({
+        url: `https://${xr.status.domain}`,
+        title: 'Service URL',
+        icon: 'WebAsset'
+      });
+      this.logger.debug(`Generated service URL link for ${xr.metadata.name}: https://${xr.status.domain}`);
+    }
+    
+    // Check for generic domain field in status
+    if (xr.status?.domain && xr.kind !== 'WhoAmIService') {
+      links.push({
+        url: `https://${xr.status.domain}`,
+        title: 'Service URL',
+        icon: 'WebAsset'
+      });
+    }
+    
+    // Check for ingress.host field in status
+    if (xr.status?.ingress?.host) {
+      links.push({
+        url: `https://${xr.status.ingress.host}`,
+        title: 'Ingress URL',
+        icon: 'WebAsset'
+      });
+    }
+    
+    // Check for endpoint field in status
+    if (xr.status?.endpoint) {
+      const endpoint = xr.status.endpoint;
+      // Handle both string and object formats
+      if (typeof endpoint === 'string') {
+        links.push({
+          url: endpoint.startsWith('http') ? endpoint : `https://${endpoint}`,
+          title: 'Endpoint',
+          icon: 'WebAsset'
+        });
+      } else if (endpoint.url) {
+        links.push({
+          url: endpoint.url,
+          title: endpoint.title || 'Endpoint',
+          icon: endpoint.icon || 'WebAsset'
+        });
+      }
+    }
+    
+    return links;
   }
 }
