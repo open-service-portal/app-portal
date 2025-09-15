@@ -349,36 +349,27 @@ Custom action for unique ID generation:
 - **Kubernetes** (configured in app-config.local.yaml with New Backend System)
 - **TechDocs** (local builder)
 - **TeraSky Crossplane Plugin** (@terasky/backstage-plugin-crossplane-resources-frontend)
-- **TeraSky Kubernetes Ingestor** (@terasky/backstage-plugin-kubernetes-ingestor) - Optional, requires fork
 - **TeraSky Scaffolder Utils** (@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils)
 
-### Optional Fork Plugins
+### Ingestor Plugins
 
-The backend supports optional TeraSky fork plugins that are only loaded if their repositories are cloned:
-
-**Setup (Optional):**
-```bash
-# Clone TeraSky forks (optional - backend works without them)
-cd portal-workspace
-git clone git@github.com:open-service-portal/backstage-plugins.git
-
-# For customized version (optional)
-git worktree add backstage-plugins-custom backstage-plugins/feat/open-service-portal-customizations
-```
-
-**Available Fork Plugins:**
-- `@terasky/backstage-plugin-kubernetes-ingestor` - Upstream TeraSky version
-- `@terasky/backstage-plugin-kubernetes-ingestor-custom` - Our customized fork
-
-**Behavior:**
-- If forks are cloned: Plugins load automatically, selectable via `ingestorSelector` config
-- If forks are missing: Backend starts normally using internal ingestors only
-- Check backend logs for `[Optional Plugin]` messages to see loading status
-
-**Fallback Options:**
-When forks aren't available, these internal ingestors still work:
+The backend includes two internal ingestor plugins:
 - `kubernetes-ingestor-own` - Legacy internal version
 - `crossplane-ingestor` - Refactored Crossplane-focused version
+
+These can be selected via the `ingestorSelector` config in `app-config/ingestor.yaml`.
+
+**Adding External Ingestors:**
+Additional ingestor plugins can be installed via NPM:
+```bash
+# Example: Install a published ingestor plugin
+yarn add @organization/backstage-plugin-some-ingestor
+```
+
+Then add to `packages/backend/src/index.ts`:
+```typescript
+backend.add(import('@organization/backstage-plugin-some-ingestor'));
+```
 
 ## Troubleshooting
 

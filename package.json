@@ -51,9 +51,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "plugins/*",
-      "../backstage-plugins/plugins/kubernetes-ingestor",
-      "../backstage-plugins-custom/plugins/kubernetes-ingestor"
+      "plugins/*"
     ]
   },
   "devDependencies": {

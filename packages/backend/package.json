@@ -47,8 +47,6 @@
     "@backstage/plugin-techdocs-backend": "^2.0.5",
     "@internal/plugin-crossplane-ingestor": "link:../../plugins/crossplane-ingestor",
     "@internal/plugin-kubernetes-ingestor-own": "link:../../plugins/kubernetes-ingestor-own",
-    "@terasky/backstage-plugin-kubernetes-ingestor": "workspace:*",
-    "@terasky/backstage-plugin-kubernetes-ingestor-custom": "workspace:*",
     "@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils": "^1.7.1",
     "app": "link:../app",
     "better-sqlite3": "^9.0.0",
