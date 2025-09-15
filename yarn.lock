@@ -2121,7 +2121,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/backend-test-utils@npm:^1.7.0, @backstage/backend-test-utils@npm:^1.8.0":
+"@backstage/backend-test-utils@npm:^1.7.0":
   version: 1.8.0
   resolution: "@backstage/backend-test-utils@npm:1.8.0"
   dependencies:
@@ -8647,6 +8647,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@open-service-portal/backstage-plugin-kubernetes-ingestor@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@open-service-portal/backstage-plugin-kubernetes-ingestor@npm:1.0.0"
+  dependencies:
+    "@backstage/backend-defaults": "npm:^0.12.0"
+    "@backstage/backend-plugin-api": "npm:^1.4.2"
+    "@backstage/catalog-client": "npm:^1.11.0"
+    "@backstage/catalog-model": "npm:^1.7.5"
+    "@backstage/config": "npm:^1.3.3"
+    "@backstage/plugin-catalog-import": "npm:^0.13.4"
+    "@backstage/plugin-catalog-node": "npm:^1.18.0"
+    "@backstage/plugin-kubernetes": "npm:^0.12.10"
+    "@backstage/plugin-kubernetes-backend": "npm:^0.20.1"
+    "@backstage/plugin-kubernetes-common": "npm:^0.9.6"
+    "@backstage/plugin-kubernetes-node": "npm:^0.3.3"
+    "@backstage/plugin-permission-common": "npm:^0.9.1"
+    "@backstage/plugin-signals-node": "npm:^0.1.23"
+    "@types/pluralize": "npm:^0.0.33"
+    express: "npm:^4.17.1"
+    express-promise-router: "npm:^4.1.1"
+    js-yaml: "npm:^4.1.0"
+    node-fetch: "npm:^2.7.0"
+    pluralize: "npm:^8.0.0"
+  checksum: 10c0/1928ae7c27ef4a21f5dd0a28c50109eca1ab079bd1fbc9ed66d18c439946a0fc78ee2677ccd93a5834d08f56441e585e500724ac19b8b319da86fba52a4a445b
+  languageName: node
+  linkType: hard
+
 "@openapi-contrib/openapi-schema-to-json-schema@npm:~3.2.0":
   version: 3.2.0
   resolution: "@openapi-contrib/openapi-schema-to-json-schema@npm:3.2.0"
@@ -13308,76 +13335,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terasky/backstage-plugin-kubernetes-ingestor-custom@workspace:*, @terasky/backstage-plugin-kubernetes-ingestor-custom@workspace:../backstage-plugins-custom/plugins/kubernetes-ingestor":
-  version: 0.0.0-use.local
-  resolution: "@terasky/backstage-plugin-kubernetes-ingestor-custom@workspace:../backstage-plugins-custom/plugins/kubernetes-ingestor"
-  dependencies:
-    "@backstage/backend-defaults": "npm:^0.12.0"
-    "@backstage/backend-plugin-api": "npm:^1.4.2"
-    "@backstage/backend-test-utils": "npm:^1.8.0"
-    "@backstage/catalog-client": "npm:^1.11.0"
-    "@backstage/catalog-model": "npm:^1.7.5"
-    "@backstage/cli": "npm:^0.34.1"
-    "@backstage/config": "npm:^1.3.3"
-    "@backstage/plugin-auth-backend": "npm:^0.25.3"
-    "@backstage/plugin-auth-backend-module-guest-provider": "npm:^0.2.11"
-    "@backstage/plugin-catalog-import": "npm:^0.13.4"
-    "@backstage/plugin-catalog-node": "npm:^1.18.0"
-    "@backstage/plugin-kubernetes": "npm:^0.12.10"
-    "@backstage/plugin-kubernetes-backend": "npm:^0.20.1"
-    "@backstage/plugin-kubernetes-common": "npm:^0.9.6"
-    "@backstage/plugin-kubernetes-node": "npm:^0.3.3"
-    "@backstage/plugin-permission-common": "npm:^0.9.1"
-    "@backstage/plugin-signals-node": "npm:^0.1.23"
-    "@types/express": "npm:*"
-    "@types/pluralize": "npm:^0.0.33"
-    "@types/supertest": "npm:^2.0.12"
-    express: "npm:^4.17.1"
-    express-promise-router: "npm:^4.1.1"
-    js-yaml: "npm:^4.1.0"
-    msw: "npm:^2.3.1"
-    node-fetch: "npm:^2.7.0"
-    pluralize: "npm:^8.0.0"
-    supertest: "npm:^6.2.4"
-    typescript: "npm:^5.8.3"
-  languageName: unknown
-  linkType: soft
-
-"@terasky/backstage-plugin-kubernetes-ingestor@workspace:*, @terasky/backstage-plugin-kubernetes-ingestor@workspace:../backstage-plugins/plugins/kubernetes-ingestor":
-  version: 0.0.0-use.local
-  resolution: "@terasky/backstage-plugin-kubernetes-ingestor@workspace:../backstage-plugins/plugins/kubernetes-ingestor"
-  dependencies:
-    "@backstage/backend-defaults": "npm:^0.12.0"
-    "@backstage/backend-plugin-api": "npm:^1.4.2"
-    "@backstage/backend-test-utils": "npm:^1.8.0"
-    "@backstage/catalog-client": "npm:^1.11.0"
-    "@backstage/catalog-model": "npm:^1.7.5"
-    "@backstage/cli": "npm:^0.34.1"
-    "@backstage/config": "npm:^1.3.3"
-    "@backstage/plugin-auth-backend": "npm:^0.25.3"
-    "@backstage/plugin-auth-backend-module-guest-provider": "npm:^0.2.11"
-    "@backstage/plugin-catalog-import": "npm:^0.13.4"
-    "@backstage/plugin-catalog-node": "npm:^1.18.0"
-    "@backstage/plugin-kubernetes": "npm:^0.12.10"
-    "@backstage/plugin-kubernetes-backend": "npm:^0.20.1"
-    "@backstage/plugin-kubernetes-common": "npm:^0.9.6"
-    "@backstage/plugin-kubernetes-node": "npm:^0.3.3"
-    "@backstage/plugin-permission-common": "npm:^0.9.1"
-    "@backstage/plugin-signals-node": "npm:^0.1.23"
-    "@types/express": "npm:*"
-    "@types/pluralize": "npm:^0.0.33"
-    "@types/supertest": "npm:^2.0.12"
-    express: "npm:^4.17.1"
-    express-promise-router: "npm:^4.1.1"
-    js-yaml: "npm:^4.1.0"
-    msw: "npm:^2.3.1"
-    node-fetch: "npm:^2.7.0"
-    pluralize: "npm:^8.0.0"
-    supertest: "npm:^6.2.4"
-    typescript: "npm:^5.8.3"
-  languageName: unknown
-  linkType: soft
-
 "@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils@npm:^1.7.1":
   version: 1.7.1
   resolution: "@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils@npm:1.7.1"
@@ -16325,8 +16282,6 @@ __metadata:
     "@backstage/plugin-techdocs-backend": "npm:^2.0.5"
     "@internal/plugin-crossplane-ingestor": "link:../../plugins/crossplane-ingestor"
     "@internal/plugin-kubernetes-ingestor-own": "link:../../plugins/kubernetes-ingestor-own"
-    "@terasky/backstage-plugin-kubernetes-ingestor": "workspace:*"
-    "@terasky/backstage-plugin-kubernetes-ingestor-custom": "workspace:*"
     "@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils": "npm:^1.7.1"
     app: "link:../app"
     better-sqlite3: "npm:^9.0.0"
@@ -31566,6 +31521,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "npm:^0.34.0"
     "@backstage/e2e-test-utils": "npm:^0.1.1"
+    "@open-service-portal/backstage-plugin-kubernetes-ingestor": "npm:1.0.0"
     "@playwright/test": "npm:^1.32.3"
     "@types/lodash": "npm:^4.17.20"
     node-gyp: "npm:^10.0.0"

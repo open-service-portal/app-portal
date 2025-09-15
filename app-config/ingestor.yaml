@@ -4,12 +4,18 @@
 # - 'kubernetes-ingestor-custom' - Our customized fork
 # - 'kubernetes-ingestor-own' - Legacy internal version  
 # - 'crossplane-ingestor' - Refactored Crossplane-focused version
+# Available ingestor selectors:
+# - 'kubernetes-ingestor-own' - Internal workspace version (legacy)
+# - 'kubernetes-ingestor-custom' - TeraSky fork from backstage-plugins-custom workspace (current)
+# - 'kubernetes-ingestor' - Open Service Portal NPM package v1.0.0 (new)
+# - 'open-service-portal-ingestor' - Alternative selector for NPM package
+# - 'crossplane-ingestor' - Refactored Crossplane-focused version
 ingestorSelector: 'kubernetes-ingestor-custom'
 
-# Both ingestors share the same configuration below
+# All ingestors share the same configuration below
 # Only the ingestorSelector above determines which one runs
 
-# TeraSky Kubernetes Ingestor configuration (original version)
+# Kubernetes Ingestor configuration
 kubernetesIngestor:
   # Mappings of kubernetes resource metadata to backstage entity metadata
   mappings:
