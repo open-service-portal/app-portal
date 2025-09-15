@@ -11,7 +11,7 @@
     "start:default": "backstage-cli repo start",
     "start:default:log": "mkdir -p ${BACKSTAGE_LOG_DIR:-logs} && backstage-cli repo start 2>&1 | tee ${BACKSTAGE_LOG_DIR:-logs}/backstage-$(date +%Y%m%d_%H%M%S).log",
     "install:log": "mkdir -p ${BACKSTAGE_LOG_DIR:-logs} && yarn install 2>&1 | tee ${BACKSTAGE_LOG_DIR:-logs}/yarn-install-$(date +%Y%m%d_%H%M%S).log",
-    "build:plugins": "yarn workspace @internal/plugin-kubernetes-ingestor-own tsc && yarn workspace @internal/plugin-kubernetes-ingestor-own build",
+    "build:plugins": "yarn workspace @internal/plugin-kubernetes-ingestor tsc && yarn workspace @internal/plugin-kubernetes-ingestor build",
     "build:backend": "yarn build:plugins && yarn workspace backend build",
     "build:all": "backstage-cli repo build --all",
     "build-image": "yarn workspace backend build-image",

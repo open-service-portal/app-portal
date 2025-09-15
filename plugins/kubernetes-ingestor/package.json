@@ -1,5 +1,5 @@
 {
-  "name": "@internal/plugin-kubernetes-ingestor-own",
+  "name": "@internal/plugin-kubernetes-ingestor",
   "version": "1.19.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -12,14 +12,14 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/open-service-portal/portal-workspace.git",
-    "directory": "app-portal/plugins/kubernetes-ingestor-own"
+    "directory": "app-portal/plugins/kubernetes-ingestor"
   },
   "homepage": "https://github.com/open-service-portal/portal-workspace",
   "backstage": {
     "role": "backend-plugin",
-    "pluginId": "backstage-plugin-kubernetes-ingestor-own",
+    "pluginId": "backstage-plugin-kubernetes-ingestor",
     "pluginPackages": [
-      "@internal/plugin-kubernetes-ingestor-own"
+      "@internal/plugin-kubernetes-ingestor"
     ]
   },
   "scripts": {

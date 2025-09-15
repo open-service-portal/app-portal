@@ -37,11 +37,11 @@ export const catalogModuleKubernetes = createBackendModule({
       }) {
         // Check if this plugin should run based on selector
         const ingestorSelector = config.getOptionalString('ingestorSelector') ?? 'kubernetes-ingestor';
-        if (ingestorSelector !== 'kubernetes-ingestor-own') {
-          logger.info(`Kubernetes Ingestor (own) skipped - using ${ingestorSelector}`);
+        if (ingestorSelector !== 'kubernetes-ingestor') {
+          logger.info(`Kubernetes Ingestor skipped - using ${ingestorSelector}`);
           return;
         }
-        logger.info('Kubernetes Ingestor (own) selected and starting');
+        logger.info('Kubernetes Ingestor selected and starting');
 
         const taskRunner = scheduler.createScheduledTaskRunner({
           frequency: {

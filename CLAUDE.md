@@ -354,7 +354,7 @@ Custom action for unique ID generation:
 ### Ingestor Plugins
 
 The backend includes two internal ingestor plugins:
-- `kubernetes-ingestor-own` - Legacy internal version
+- `kubernetes-ingestor` - Legacy internal version
 - `crossplane-ingestor` - Refactored Crossplane-focused version
 
 These can be selected via the `ingestorSelector` config in `app-config/ingestor.yaml`.

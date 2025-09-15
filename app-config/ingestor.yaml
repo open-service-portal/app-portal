@@ -1,14 +1,8 @@
 # Ingestor Selection - Choose which XRD ingestor to use
-# Options: 
-# - 'kubernetes-ingestor' - Upstream TeraSky version
-# - 'kubernetes-ingestor-custom' - Our customized fork
-# - 'kubernetes-ingestor-own' - Legacy internal version  
-# - 'crossplane-ingestor' - Refactored Crossplane-focused version
 # Available ingestor selectors:
-# - 'kubernetes-ingestor-own' - Internal workspace version (legacy)
+# - 'kubernetes-ingestor' - Internal workspace version (legacy)
 # - 'kubernetes-ingestor-custom' - TeraSky fork from backstage-plugins-custom workspace (current)
-# - 'kubernetes-ingestor' - Open Service Portal NPM package v1.0.0 (new)
-# - 'open-service-portal-ingestor' - Alternative selector for NPM package
+# - 'open-service-portal-ingestor' - Open Service Portal NPM package v1.0.0 (new)
 # - 'crossplane-ingestor' - Refactored Crossplane-focused version
 ingestorSelector: 'kubernetes-ingestor-custom'
 
