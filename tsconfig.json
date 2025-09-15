@@ -8,7 +8,11 @@
     "plugins/*/dev",
     "plugins/*/migrations"
   ],
-  "exclude": ["node_modules"],
+  "exclude": [
+    "node_modules",
+    "../backstage-plugins",
+    "../backstage-plugins-custom"
+  ],
   "compilerOptions": {
     "outDir": "dist-types",
     "rootDir": ".",

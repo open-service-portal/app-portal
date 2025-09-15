@@ -66,7 +66,9 @@
   "resolutions": {
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@backstage/plugin-catalog-react": "^1.14.5"
+    "@backstage/plugin-catalog-react": "^1.14.5",
+    "@backstage/cli": "^0.34.0",
+    "@backstage/plugin-kubernetes-backend": "^0.19.8"
   },
   "prettier": "@backstage/cli/config/prettier",
   "lint-staged": {
@@ -78,5 +80,8 @@
       "prettier --write"
     ]
   },
-  "packageManager": "yarn@4.9.4"
+  "packageManager": "yarn@4.9.4",
+  "dependencies": {
+    "@open-service-portal/backstage-plugin-kubernetes-ingestor": "1.0.0"
+  }
 }

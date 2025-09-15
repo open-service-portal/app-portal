@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TeraSky-OSS/backstage-plugins.git",
-    "directory": "plugins/kubernetes-ingestor"
+    "url": "git+https://github.com/open-service-portal/portal-workspace.git",
+    "directory": "app-portal/plugins/kubernetes-ingestor"
   },
-  "homepage": "https://terasky.com",
+  "homepage": "https://github.com/open-service-portal/portal-workspace",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "backstage-plugin-kubernetes-ingestor",
     "pluginPackages": [
-      "@terasky/backstage-plugin-kubernetes-ingestor"
+      "@internal/plugin-kubernetes-ingestor"
     ]
   },
   "scripts": {

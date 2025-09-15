@@ -349,8 +349,27 @@ Custom action for unique ID generation:
 - **Kubernetes** (configured in app-config.local.yaml with New Backend System)
 - **TechDocs** (local builder)
 - **TeraSky Crossplane Plugin** (@terasky/backstage-plugin-crossplane-resources-frontend)
-- **TeraSky Kubernetes Ingestor** (@terasky/backstage-plugin-kubernetes-ingestor)
 - **TeraSky Scaffolder Utils** (@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils)
+
+### Ingestor Plugins
+
+The backend includes two internal ingestor plugins:
+- `kubernetes-ingestor` - Legacy internal version
+- `crossplane-ingestor` - Refactored Crossplane-focused version
+
+These can be selected via the `ingestorSelector` config in `app-config/ingestor.yaml`.
+
+**Adding External Ingestors:**
+Additional ingestor plugins can be installed via NPM:
+```bash
+# Example: Install a published ingestor plugin
+yarn add @organization/backstage-plugin-some-ingestor
+```
+
+Then add to `packages/backend/src/index.ts`:
+```typescript
+backend.add(import('@organization/backstage-plugin-some-ingestor'));
+```
 
 ## Troubleshooting
 
