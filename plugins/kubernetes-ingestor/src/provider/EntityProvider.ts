@@ -2538,6 +2538,11 @@ export class KubernetesEntityProvider implements EntityProvider {
     }
     // --- End: Config-based naming/namespace logic ---
 
+    // Generate links from XR status if available
+    const statusLinks = this.generateLinksFromXRStatus(xr);
+    const annotationLinks = this.parseBackstageLinks(xr.metadata.annotations || {});
+    const allLinks = [...annotationLinks, ...statusLinks];
+
     const entity: Entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
@@ -2547,7 +2552,7 @@ export class KubernetesEntityProvider implements EntityProvider {
         description: `${kind} ${xr.metadata.name} from ${clusterName}`,
         tags: [`cluster:${clusterName}`, `kind:${kind}`, 'crossplane-xr'],
         namespace: namespaceValue,
-        links: this.parseBackstageLinks(xr.metadata.annotations || {}),
+        links: allLinks,
         annotations: {
           ...Object.fromEntries(
             Object.entries({ ...xr.metadata.annotations, ...annotations }).filter(([key]) => key !== `${prefix}/links`)
@@ -2598,5 +2603,151 @@ export class KubernetesEntityProvider implements EntityProvider {
       this.logger.warn(`Raw annotation value: ${linksAnnotation}`)
       return [];
     }
+  }
+
+  private generateLinksFromXRStatus(xr: any): BackstageLink[] {
+    const links: BackstageLink[] = [];
+    
+    if (!xr.status) {
+      return links;
+    }
+    
+    // Check for domain field in status (most common pattern)
+    if (xr.status.domain) {
+      links.push({
+        url: `https://${xr.status.domain}`,
+        title: 'Service URL',
+        icon: 'WebAsset'
+      });
+      this.logger.debug(`Generated service URL link for ${xr.metadata.name}: https://${xr.status.domain}`);
+    }
+    
+    // Check for fqdn field in status (common for DNS records)
+    if (xr.status.fqdn && !xr.status.domain) {
+      // For DNS records, don't assume HTTPS - just show the FQDN as informational
+      if (xr.kind === 'CloudflareDNSRecord' || xr.kind?.includes('DNS')) {
+        links.push({
+          url: `https://dns.google/query?name=${xr.status.fqdn}`,
+          title: `DNS: ${xr.status.fqdn}`,
+          icon: 'Dns'
+        });
+      } else {
+        // For other resources, assume it's a web service
+        links.push({
+          url: `https://${xr.status.fqdn}`,
+          title: 'Service URL',
+          icon: 'WebAsset'
+        });
+      }
+    }
+    
+    // Check for url field in status
+    if (xr.status.url) {
+      const url = xr.status.url;
+      links.push({
+        url: url.startsWith('http') ? url : `https://${url}`,
+        title: 'Service URL',
+        icon: 'WebAsset'
+      });
+    }
+    
+    // Check for ingress.host field in status
+    if (xr.status.ingress?.host) {
+      links.push({
+        url: `https://${xr.status.ingress.host}`,
+        title: 'Ingress URL',
+        icon: 'WebAsset'
+      });
+    }
+    
+    // Check for endpoint field in status
+    if (xr.status.endpoint) {
+      const endpoint = xr.status.endpoint;
+      // Handle both string and object formats
+      if (typeof endpoint === 'string') {
+        links.push({
+          url: endpoint.startsWith('http') ? endpoint : `https://${endpoint}`,
+          title: 'Endpoint',
+          icon: 'WebAsset'
+        });
+      } else if (endpoint.url) {
+        links.push({
+          url: endpoint.url,
+          title: endpoint.title || 'Endpoint',
+          icon: endpoint.icon || 'WebAsset'
+        });
+      }
+    }
+    
+    // Check for endpoints array in status
+    if (Array.isArray(xr.status.endpoints)) {
+      xr.status.endpoints.forEach((ep: any, index: number) => {
+        if (typeof ep === 'string') {
+          links.push({
+            url: ep.startsWith('http') ? ep : `https://${ep}`,
+            title: `Endpoint ${index + 1}`,
+            icon: 'WebAsset'
+          });
+        } else if (ep.url) {
+          links.push({
+            url: ep.url,
+            title: ep.title || ep.name || `Endpoint ${index + 1}`,
+            icon: ep.icon || 'WebAsset'
+          });
+        }
+      });
+    }
+    
+    // Check for urls array in status
+    if (Array.isArray(xr.status.urls)) {
+      xr.status.urls.forEach((url: any, index: number) => {
+        if (typeof url === 'string') {
+          links.push({
+            url: url.startsWith('http') ? url : `https://${url}`,
+            title: `URL ${index + 1}`,
+            icon: 'WebAsset'
+          });
+        } else if (url.href || url.url) {
+          links.push({
+            url: url.href || url.url,
+            title: url.title || url.name || `URL ${index + 1}`,
+            icon: url.icon || 'WebAsset'
+          });
+        }
+      });
+    }
+    
+    // Check for address field in status (common for databases, services)
+    if (xr.status.address) {
+      const address = xr.status.address;
+      // Only add if it looks like a URL or domain
+      if (address.includes('.') || address.startsWith('http')) {
+        links.push({
+          url: address.startsWith('http') ? address : `https://${address}`,
+          title: 'Service Address',
+          icon: 'WebAsset'
+        });
+      }
+    }
+    
+    // Check for hostname field in status
+    if (xr.status.hostname) {
+      links.push({
+        url: `https://${xr.status.hostname}`,
+        title: 'Service Hostname',
+        icon: 'WebAsset'
+      });
+    }
+    
+    // Check for externalURL field in status (common for monitoring tools)
+    if (xr.status.externalURL) {
+      links.push({
+        url: xr.status.externalURL,
+        title: 'External URL',
+        icon: 'WebAsset'
+      });
+    }
+    
+    return links;
   }
 }
