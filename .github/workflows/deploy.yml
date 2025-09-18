@@ -1,0 +1,161 @@
+name: Deploy to Kubernetes
+
+on:
+  workflow_dispatch:  # Manual triggering
+    inputs:
+      image:
+        description: 'Docker image to deploy (e.g., ghcr.io/org/app:v1.0.0)'
+        required: true
+        type: string
+      environment:
+        description: 'Target environment'
+        required: false
+        type: choice
+        default: 'production'
+        options:
+          - production
+          - staging
+          - development
+  workflow_call:  # Can be called from other workflows
+    inputs:
+      image:
+        description: 'Docker image to deploy'
+        required: true
+        type: string
+      environment:
+        description: 'Target environment'
+        required: false
+        type: string
+        default: 'production'
+
+jobs:
+  deploy:
+    name: 🚀 Deploy to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'latest'
+
+      - name: Configure kubectl
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Verify cluster connection
+        run: |
+          kubectl version --client
+          kubectl get nodes
+
+      - name: Extract version from image
+        id: version
+        run: |
+          # Extract version from image tag (e.g., ghcr.io/org/app:v1.0.0 -> v1.0.0)
+          VERSION=$(echo "${{ inputs.image }}" | sed 's/.*://')
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Extracted version: ${VERSION}"
+
+      - name: Deploy to Kubernetes
+        env:
+          DOCKER_IMAGE: ${{ inputs.image }}
+          APP_HOSTNAME: ${{ secrets.APP_HOSTNAME }}
+          APP_BASE_URL: https://${{ secrets.APP_HOSTNAME }}
+          BACKEND_BASE_URL: https://${{ secrets.APP_HOSTNAME }}
+          AUTH_GITHUB_APP_ID: ${{ secrets.AUTH_GITHUB_APP_ID }}
+          AUTH_GITHUB_CLIENT_ID: ${{ secrets.AUTH_GITHUB_CLIENT_ID }}
+          AUTH_GITHUB_CLIENT_SECRET: ${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
+          AUTH_GITHUB_APP_INSTALLATION_ID: ${{ secrets.AUTH_GITHUB_APP_INSTALLATION_ID }}
+          AUTH_GITHUB_APP_PRIVATE_KEY_B64: ${{ secrets.AUTH_GITHUB_APP_PRIVATE_KEY_B64 }}
+          KUBERNETES_API_URL: ${{ secrets.KUBERNETES_API_URL }}
+          KUBERNETES_CLUSTER_NAME: ${{ secrets.KUBERNETES_CLUSTER_NAME }}
+          KUBERNETES_SERVICE_ACCOUNT_TOKEN: ${{ secrets.KUBERNETES_SERVICE_ACCOUNT_TOKEN }}
+        run: |
+          echo "🚀 Deploying image: ${{ inputs.image }}"
+          echo "📌 Version: ${{ steps.version.outputs.version }}"
+          echo "🎯 Environment: ${{ inputs.environment }}"
+          
+          # Apply manifests with envsubst
+          for manifest in deploy/kubernetes/base/*.yaml; do
+            if [[ $(basename "$manifest") != "kustomization.yaml" ]]; then
+              echo "Applying $(basename $manifest)..."
+              envsubst < "$manifest" | kubectl apply -f -
+            fi
+          done
+
+      - name: Wait for deployment
+        run: |
+          kubectl rollout status deployment/app-portal -n app-portal --timeout=300s
+
+      - name: Verify deployment
+        run: |
+          echo "✅ Deployment Status:"
+          kubectl get deployment app-portal -n app-portal
+          echo ""
+          echo "🔍 Running Pods:"
+          kubectl get pods -n app-portal
+          echo ""
+          echo "🌐 Ingress:"
+          kubectl get ingress -n app-portal
+          echo ""
+          echo "📊 Latest Events:"
+          kubectl get events -n app-portal --sort-by='.lastTimestamp' | tail -10
+
+      - name: Create deployment annotation
+        if: success()
+        run: |
+          kubectl annotate deployment app-portal -n app-portal \
+            "deployment.kubernetes.io/revision-${{ github.run_number }}=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            "deployment.kubernetes.io/deployer=github-actions" \
+            "deployment.kubernetes.io/version=${{ steps.version.outputs.version }}" \
+            "deployment.kubernetes.io/image=${{ inputs.image }}" \
+            "deployment.kubernetes.io/environment=${{ inputs.environment }}" \
+            --overwrite
+
+      - name: Send deployment notification
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Successfully deployed version ${{ steps.version.outputs.version }} to ${{ inputs.environment }}"
+            echo "🌐 Application available at: https://${{ secrets.APP_HOSTNAME }}"
+          else
+            echo "❌ Failed to deploy version ${{ steps.version.outputs.version }} to ${{ inputs.environment }}"
+            echo "Check the logs above for details"
+          fi
+
+  smoke-test:
+    name: 🧪 Smoke Test
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Wait for application to be ready
+        run: sleep 30
+
+      - name: Health check
+        run: |
+          echo "🏥 Checking application health..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://${{ secrets.APP_HOSTNAME }}/healthcheck || echo "000")
+          
+          if [ "$response" == "200" ]; then
+            echo "✅ Health check passed (HTTP $response)"
+          else
+            echo "❌ Health check failed (HTTP $response)"
+            exit 1
+          fi
+
+      - name: Basic availability test
+        run: |
+          echo "🌐 Testing application availability..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://${{ secrets.APP_HOSTNAME }} || echo "000")
+          
+          if [ "$response" == "200" ] || [ "$response" == "302" ]; then
+            echo "✅ Application is responding (HTTP $response)"
+          else
+            echo "⚠️ Application returned HTTP $response"
+          fi
