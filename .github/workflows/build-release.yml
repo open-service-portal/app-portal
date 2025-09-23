@@ -168,8 +168,7 @@ jobs:
           prerelease: ${{ contains(github.ref_name, '-') }}
           generate_release_notes: false  # We're using our own changelog
           name: Release ${{ github.ref_name }}
-          tag_name: ${{ github.ref }}
-
+          tag_name: ${{ github.ref_name }}
   trigger-deployment:
     name: 🔄 Trigger Deployment
     needs: [build-and-push, create-release]
