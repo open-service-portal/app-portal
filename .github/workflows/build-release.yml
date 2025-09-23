@@ -104,8 +104,8 @@ jobs:
       - name: Generate changelog
         id: changelog
         run: |
-          # Get the previous tag
-          PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${{ github.ref }}^ 2>/dev/null || echo "")
+          # Get the previous tag (using ref_name for the tag name, not the full ref)
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 "${{ github.ref_name }}^" 2>/dev/null || echo "")
           
           if [ -z "$PREVIOUS_TAG" ]; then
             echo "No previous tag found, showing all commits"
