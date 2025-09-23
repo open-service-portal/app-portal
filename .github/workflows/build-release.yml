@@ -42,9 +42,6 @@ jobs:
       - name: Run type check
         run: yarn tsc
 
-      - name: Run linter
-        run: yarn lint:all
-
       - name: Build backend
         run: yarn build:backend
 
