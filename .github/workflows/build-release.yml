@@ -175,20 +175,8 @@ jobs:
     name: 🔄 Trigger Deployment
     needs: [build-and-push, create-release]
     if: success() && !contains(github.ref_name, '-')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger deployment workflow
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'deploy.yml',
-              ref: 'main',
-              inputs: {
-                image: '${{ needs.build-and-push.outputs.image }}',
-                version: '${{ needs.build-and-push.outputs.version }}'
-              }
-            })
+    uses: ./.github/workflows/deploy.yml
+    with:
+      image: ${{ needs.build-and-push.outputs.image }}
+      environment: production
+    secrets: inherit
