@@ -166,7 +166,7 @@ jobs:
         with:
           body_path: CHANGELOG.md
           draft: false
-          prerelease: ${{ contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') }}
+          prerelease: ${{ contains(github.ref_name, '-') }}
           generate_release_notes: false  # We're using our own changelog
           name: Release ${{ github.ref_name }}
           tag_name: ${{ github.ref }}
@@ -174,7 +174,7 @@ jobs:
   trigger-deployment:
     name: 🔄 Trigger Deployment
     needs: [build-and-push, create-release]
-    if: always() && needs.build-and-push.result == 'success' && !contains(github.ref_name, '-rc') && !contains(github.ref_name, '-beta') && !contains(github.ref_name, '-alpha')
+    if: success() && !contains(github.ref_name, '-')
     runs-on: ubuntu-latest
     steps:
       - name: Trigger deployment workflow
