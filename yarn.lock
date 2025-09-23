@@ -6269,15 +6269,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@internal/plugin-kubernetes-ingestor-own@link:../../plugins/kubernetes-ingestor-own::locator=backend%40workspace%3Apackages%2Fbackend":
+"@internal/plugin-kubernetes-ingestor@link:../../plugins/kubernetes-ingestor::locator=backend%40workspace%3Apackages%2Fbackend":
   version: 0.0.0-use.local
-  resolution: "@internal/plugin-kubernetes-ingestor-own@link:../../plugins/kubernetes-ingestor-own::locator=backend%40workspace%3Apackages%2Fbackend"
+  resolution: "@internal/plugin-kubernetes-ingestor@link:../../plugins/kubernetes-ingestor::locator=backend%40workspace%3Apackages%2Fbackend"
   languageName: node
   linkType: soft
 
-"@internal/plugin-kubernetes-ingestor-own@workspace:plugins/kubernetes-ingestor-own":
+"@internal/plugin-kubernetes-ingestor@workspace:plugins/kubernetes-ingestor":
   version: 0.0.0-use.local
-  resolution: "@internal/plugin-kubernetes-ingestor-own@workspace:plugins/kubernetes-ingestor-own"
+  resolution: "@internal/plugin-kubernetes-ingestor@workspace:plugins/kubernetes-ingestor"
   dependencies:
     "@backstage/backend-defaults": "npm:^0.11.1"
     "@backstage/backend-plugin-api": "npm:^1.4.1"
@@ -16281,7 +16281,7 @@ __metadata:
     "@backstage/plugin-signals-backend": "npm:^0.3.7"
     "@backstage/plugin-techdocs-backend": "npm:^2.0.5"
     "@internal/plugin-crossplane-ingestor": "link:../../plugins/crossplane-ingestor"
-    "@internal/plugin-kubernetes-ingestor-own": "link:../../plugins/kubernetes-ingestor-own"
+    "@internal/plugin-kubernetes-ingestor": "link:../../plugins/kubernetes-ingestor"
     "@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils": "npm:^1.7.1"
     app: "link:../app"
     better-sqlite3: "npm:^9.0.0"
