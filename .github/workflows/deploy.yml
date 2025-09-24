@@ -132,6 +132,7 @@ jobs:
     name: 🧪 Smoke Test
     needs: deploy
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     if: success()
     steps:
       - name: Wait for application to be ready
