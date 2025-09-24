@@ -65,6 +65,9 @@ COPY --chown=node:node examples ./examples
 
 # Then copy the rest of the backend bundle, along with any other files we might want.
 COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config*.yaml ./
+COPY --chown=node:node app-config ./app-config
+COPY --chown=node:node start.js ./
+COPY --chown=node:node set-max-listeners.js ./
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 
-CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
+CMD ["node", "start.js"]
