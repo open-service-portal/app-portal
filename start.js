@@ -108,6 +108,17 @@ if (configFilesToLoad.length > 0) {
   console.log(`\n📋 Config loading order: ${loadedConfigs.join(' → ')}\n`);
 }
 
+// Load production config if in production mode
+if (isProduction) {
+  const productionConfigPath = path.join(appPortalRoot, 'app-config.production.yaml');
+  if (fs.existsSync(productionConfigPath)) {
+    console.log(`🏭 Loading production config: app-config.production.yaml`);
+    backstageArgs.push('--config', productionConfigPath);
+  } else {
+    console.log(`⚠️  Production config not found: app-config.production.yaml`);
+  }
+}
+
 // Load context-specific config if available
 if (context) {
   const configFile = `app-config.${context}.local.yaml`;
