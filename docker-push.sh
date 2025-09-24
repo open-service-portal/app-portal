@@ -1,11 +1,6 @@
 #!/bin/bash
 set -e
 
-# Configuration
-REGISTRY="ghcr.io"
-ORG="open-service-portal"
-IMAGE_NAME="backstage"
-
 echo "🚀 Pushing Docker images to GitHub Container Registry"
 echo "====================================================="
 echo ""

@@ -35,8 +35,11 @@ const appPortalRoot = __dirname;
 process.chdir(appPortalRoot);
 console.log(`📂 Working directory: ${process.cwd()}`);
 
-// Build the backstage command
-const backstageArgs = ['backstage-cli', 'repo', 'start'];
+// Build the backstage command - use direct backend in production
+const isProduction = process.env.NODE_ENV === 'production';
+const backstageArgs = isProduction
+  ? ['packages/backend'] // Direct backend execution in production
+  : ['backstage-cli', 'repo', 'start']; // Development mode
 
 // Always add the base config with absolute path
 const baseConfigPath = path.join(appPortalRoot, 'app-config.yaml');
@@ -143,22 +146,23 @@ if (withLogging) {
   const logDir = process.env.BACKSTAGE_LOG_DIR || 'logs';
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
   const logFile = path.join(logDir, `backstage-${timestamp}.log`);
-  
+
   console.log(`📝 Logging enabled: ${logFile}`);
-  
+
   // Create log directory if it doesn't exist
   if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir, { recursive: true });
   }
-  
+
   // Build the full command with logging using shell
-  command = `yarn ${backstageArgs.join(' ')} 2>&1 | tee ${logFile}`;
+  const baseCommand = isProduction ? 'node' : 'yarn';
+  command = `${baseCommand} ${backstageArgs.join(' ')} 2>&1 | tee ${logFile}`;
   commandArgs = [];
   spawnOptions = { stdio: 'inherit', shell: true, env: envWithNodeOptions };
   console.log('🚀 Starting Backstage with logging...\n');
 } else {
   // Simple command without logging
-  command = 'yarn';
+  command = isProduction ? 'node' : 'yarn';
   commandArgs = backstageArgs;
   spawnOptions = { stdio: 'inherit', shell: true, env: envWithNodeOptions };
   console.log('🚀 Starting Backstage...\n');

@@ -4,24 +4,31 @@ set -e
 # Configuration
 REGISTRY="ghcr.io"
 ORG="open-service-portal"
-IMAGE_NAME="backstage"
+IMAGE_NAME="app-portal"
 BASE_TAG="dev-sqlite"
 
-# Get git commit short SHA and date
+# Platform parameter - defaults to current platform if not specified
+PLATFORM=${1:-$(docker version --format '{{.Server.Os}}/{{.Server.Arch}}')}
+if [ -z "$PLATFORM" ]; then
+    # Fallback to detecting platform manually
+    PLATFORM="linux/$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')"
+fi
+
+# Get git commit short SHA and datetime
 GIT_SHA=$(git rev-parse --short HEAD)
-DATE=$(date +%Y%m%d)
+DATETIME=$(date +%Y%m%d%H%M)
 
 # Full image paths
 IMAGE_BASE="${REGISTRY}/${ORG}/${IMAGE_NAME}"
 IMAGE_SHA="${IMAGE_BASE}:${BASE_TAG}-${GIT_SHA}"
-IMAGE_DATE="${IMAGE_BASE}:${BASE_TAG}-${DATE}"
+IMAGE_DATETIME="${IMAGE_BASE}:${BASE_TAG}-${DATETIME}"
 IMAGE_LATEST="${IMAGE_BASE}:${BASE_TAG}-latest"
 
 echo "🐳 Building Docker image..."
 echo "=========================="
 echo "Tags to be created:"
 echo "  - ${IMAGE_SHA}"
-echo "  - ${IMAGE_DATE}"
+echo "  - ${IMAGE_DATETIME}"
 echo "  - ${IMAGE_LATEST}"
 echo ""
 
@@ -31,20 +38,20 @@ if [ ! -f "packages/backend/dist/bundle.tar.gz" ]; then
     exit 1
 fi
 
-# Build the Docker image for linux/amd64
-echo "📦 Building image for linux/amd64..."
+# Build the Docker image for specified platform
+echo "📦 Building image for ${PLATFORM}..."
 docker build . -f packages/backend/Dockerfile \
-    --platform linux/amd64 \
+    --platform ${PLATFORM} \
     --tag ${IMAGE_SHA}
 
 # Tag additional versions
 echo "🏷️  Creating additional tags..."
-docker tag ${IMAGE_SHA} ${IMAGE_DATE}
+docker tag ${IMAGE_SHA} ${IMAGE_DATETIME}
 docker tag ${IMAGE_SHA} ${IMAGE_LATEST}
 
 # Save the image tags to a file for the push script
 echo "${IMAGE_SHA}" > .docker-tags
-echo "${IMAGE_DATE}" >> .docker-tags
+echo "${IMAGE_DATETIME}" >> .docker-tags
 echo "${IMAGE_LATEST}" >> .docker-tags
 
 echo ""
