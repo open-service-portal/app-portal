@@ -1,13 +1,5 @@
-# Ingestor Selection - Choose which XRD ingestor to use
-# Available ingestor selectors:
-# - 'kubernetes-ingestor' - Internal workspace version (legacy)
-# - 'kubernetes-ingestor-custom' - TeraSky fork from backstage-plugins-custom workspace (current)
-# - 'open-service-portal-ingestor' - Open Service Portal NPM package v1.0.0 (new)
-# - 'crossplane-ingestor' - Refactored Crossplane-focused version
-ingestorSelector: 'open-service-portal-ingestor'
-
-# All ingestors share the same configuration below
-# Only the ingestorSelector above determines which one runs
+# Ingestor Plugin Configuration
+# The ingestor plugin discovers and imports Kubernetes resources into the Backstage catalog
 
 # Kubernetes Ingestor configuration
 kubernetesIngestor:
@@ -38,7 +30,7 @@ kubernetesIngestor:
       - external-dns
       - cert-manager
       - kubernetes-dashboard
-  
+
   # Crossplane XRD template generation
   crossplane:
     enabled: true
@@ -48,30 +40,9 @@ kubernetesIngestor:
     xrds:
       enabled: true
       ingestAllXRDs: true  # Ingest all XRDs with the label
-      taskRunner:
-        frequency: 10  # XRD scanning every 10 seconds (faster for testing)
-        timeout: 600
-      convertDefaultValuesToPlaceholders: true
-      allowedTargets: ['github.com']
-      publishPhase:
-        target: github
-        git:
-          repoUrl: github.com?owner=open-service-portal&repo=catalog-orders
-          targetBranch: main
-        enabled: true
-        # allowRepoSelection: true  # Users can override if needed
-  genericCRDTemplates:
-    # Settings related to the final steps of a software template
-    publishPhase:
-      allowedTargets: ['github.com']
-      target: github
-      git:
-        repoUrl: github.com?owner=open-service-portal&repo=catalog-orders
-        targetBranch: main
-        targetPath: 'crds'  # Put generic CRDs in a subdirectory
-      # allowRepoSelection: true
-    # crdLabelSelector:
-    #   key: terasky.backstage.io/generate-form
-    #   value: "true"
-    # crds:
-    #   - certificates.cert-manager.io
+      # Only ingest XRDs with this label (if ingestAllXRDs is false)
+      labelSelector: 'openportal.dev/tags'
+      # The label that contains tags for the templates
+      tagsLabel: 'openportal.dev/tags'
+      # Default namespace for XR templates
+      defaultNamespace: 'demo'
