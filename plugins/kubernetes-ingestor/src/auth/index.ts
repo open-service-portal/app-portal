@@ -1,1 +1,0 @@
-export { getAuthCredential } from './kubernetesCredentialProvider';
