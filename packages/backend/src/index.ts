@@ -65,11 +65,13 @@ backend.add(import('@backstage/plugin-kubernetes-backend'));
 // - 'kubernetes-ingestor' - Legacy internal version (workspace plugin)
 // - 'open-service-portal-ingestor' - Open Service Portal fork (NPM package)
 // - 'crossplane-ingestor' - Refactored Crossplane-focused version
+// - 'ingestor' - New standalone ingestor (renamed and refactored)
 // Additional ingestors can be installed via NPM and added here
 
 // Internal ingestors (included in this repo)
 backend.add(import('@internal/plugin-kubernetes-ingestor')); // Legacy internal version
 backend.add(import('@internal/plugin-crossplane-ingestor')); // Refactored Crossplane-focused version
+backend.add(import('@internal/plugin-ingestor')); // New standalone ingestor
 
 // External ingestors (from NPM)
 backend.add(import('@open-service-portal/backstage-plugin-kubernetes-ingestor')); // Open Service Portal fork
