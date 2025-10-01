@@ -11,11 +11,16 @@ A Backstage 1.42+ compatible backend module that automatically adds metadata tag
 ## Features
 
 Automatically adds tags to Templates and other entities:
+
+**Source Tags (technical only):**
+- `source:file` - for local file-based templates
 - `source:github-discovered` - for entities discovered via GitHub discovery
 - `source:github-url` - for entities imported via direct GitHub URLs
+- `source:kubernetes-ingestor` - added by kubernetes-ingestor plugin (not by this processor)
+
+**Additional Tags:**
 - `org:<orgname>` - organization tags extracted from GitHub URLs
 - `official` - for entities from the open-service-portal organization
-- `auto-discovered` - for entities found via automatic discovery
 
 Also adds annotations:
 - `backstage.io/source-location` - the original import location (only for URL-based imports, not for kubernetes-ingestor)

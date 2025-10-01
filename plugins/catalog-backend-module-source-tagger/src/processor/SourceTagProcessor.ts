@@ -7,13 +7,16 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * A processor that automatically adds source tags to entities based on their import location.
- * 
- * This processor adds tags like:
+ *
+ * Source tags (technical only):
+ * - source:file - for local file-based templates
  * - source:github-discovered - for templates discovered via GitHub discovery
  * - source:github-url - for direct GitHub URLs
- * - org:<orgname> - organization tags based on GitHub URL
- * 
- * Note: The kubernetes-ingestor plugin already adds source:kubernetes-ingestor
+ * - source:kubernetes-ingestor - added by kubernetes-ingestor plugin
+ *
+ * Additional tags:
+ * - org:<orgname> - organization extracted from GitHub URLs
+ * - official - for templates from open-service-portal organization
  */
 export class SourceTagProcessor implements CatalogProcessor {
   constructor(private readonly logger: LoggerService) {}
@@ -35,16 +38,18 @@ export class SourceTagProcessor implements CatalogProcessor {
     const existingTags = entity.metadata.tags || [];
     const tags = new Set(existingTags);
     
+    // Check if this is a local file-based template
+    if (location.type === 'file') {
+      tags.add('source:file');
+      this.logger.info(`Detected local file template: ${entity.metadata.name} from ${location.target}`);
+    }
     // Check if this comes from GitHub discovery
     // GitHub discovery sets type as 'url' but we can detect it by checking for template.yaml pattern
-    const isGithubDiscovery = location.type === 'url' && 
-                              location.target?.includes('github.com') && 
-                              location.target?.includes('/template.yaml');
-    
-    if (isGithubDiscovery) {
+    else if (location.type === 'url' &&
+             location.target?.includes('github.com') &&
+             location.target?.includes('/template.yaml')) {
       tags.add('source:github-discovered');
-      tags.add('auto-discovered');
-    } 
+    }
     // Check if this is a direct GitHub URL (not from discovery)
     else if (location.type === 'url' && location.target?.includes('github.com')) {
       tags.add('source:github-url');
