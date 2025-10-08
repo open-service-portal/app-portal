@@ -61,9 +61,9 @@ ingestor:
     #       Longer names are unique but verbose. Consider your multi-cluster setup.
     nameModel: 'name-namespace-cluster'
 
-    # Entity Title Mapping (Optional)
+    # Entity Title Mapping
     # Controls automatic title generation when no backstage.io/title annotation exists
-    # If not set, titles will only come from annotations (recommended for flexibility)
+    # Annotations always take precedence over titleModel when present
     #
     # Options:
     #   'name'              - Just the resource name (e.g., "payment-service")
@@ -73,10 +73,11 @@ ingestor:
     #   'kind-name-cluster' - Kind + name + cluster (e.g., "Deployment: payment-service (prod)")
     #
     # Example: With 'kind-name-cluster', a Deployment "api" in "prod" shows as "Deployment: api (prod)"
+    # Example: With 'name', resources show with their simple name as the title
     #
-    # NOTE: Leave commented out to require explicit backstage.io/title annotations (recommended)
-    #       This gives teams full control over how their services appear in the catalog.
-    # titleModel: 'kind-name'
+    # NOTE: Default is 'name' for clean, simple titles. Use other models for more context.
+    #       Teams can always override with backstage.io/title annotations on resources.
+    titleModel: 'name'
 
   # Kubernetes resource ingestion (includes Claims and XRs via auto-detection)
   kubernetes:
