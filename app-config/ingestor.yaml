@@ -39,20 +39,17 @@ kubernetesIngestor:
       ingestAllClaims: true
     xrds:
       enabled: true
+      ingestAllXRDs: true  # Ingest all XRDs with the label
+      # Only ingest XRDs with this label (if ingestAllXRDs is false)
+      # labelSelector: 'openportal.dev/add-to-catalog'
+      
       taskRunner:
         frequency: 20  # How often to regenerate templates from XRDs (in seconds)
         timeout: 600   # Max processing time
-      ingestAllXRDs: true  # Ingest all XRDs with the label
-      # Only ingest XRDs with this label (if ingestAllXRDs is false)
-      labelSelector: 'openportal.dev/tags'
-      # The label that contains tags for the templates
-      tagsLabel: 'openportal.dev/tags'
-      # Default namespace for XR templates
-      defaultNamespace: 'demo'
+      
       # GitOps configuration for template generation
       gitops:
         # Repository where XR instances are created via PRs
-        ordersRepo:
-          owner: 'open-service-portal'
-          repo: 'catalog-orders'
-          targetBranch: 'main'
+        owner: 'open-service-portal'
+        repo: 'catalog-orders'
+        targetBranch: 'main'
