@@ -67,6 +67,9 @@ backend.add(import('@internal/plugin-ingestor'));
 // TeraSky scaffolder utilities
 backend.add(import('@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils'));
 
+// Kubernetes scaffolder actions (provides kube:apply and other kube:* actions)
+backend.add(import('@devangelista/backstage-scaffolder-kubernetes'));
+
 // notifications and signals plugins
 backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));

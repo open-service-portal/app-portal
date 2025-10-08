@@ -316,6 +316,9 @@ A comprehensive Crossplane integration plugin with 16,000+ lines of production c
 - Creates API documentation entities
 - Tracks Composition relationships
 - Includes CLI tools for debugging and testing
+- **Configuration-driven templates** from `app-config/ingestor.yaml`
+- **GitOps workflow** support with PR-based resource creation
+- **Auto-detection** of kubectl context for cluster targeting
 
 **CLI Tools:**
 ```bash
@@ -326,7 +329,13 @@ yarn cli export --cluster local         # Export all entities
 yarn cli validate --xrd ./xrd.yaml      # Validate XRD compatibility
 ```
 
-**Configuration:** See `app-config/ingestor.yaml` for settings.
+**Template System:**
+- **Unified templates**: Single `default.hbs` handles both namespaced and cluster-scoped resources using `xrd.spec.scope` detection
+- **GitOps workflow**: `gitops.hbs` step template for PR-based deployment
+- **Configuration validation**: Fails fast with helpful messages if required config is missing
+- **HTML escaping fix**: Use `{{{...}}}` (triple braces) for Backstage variables to prevent HTML entity encoding
+
+**Configuration:** See `app-config/ingestor.yaml` for settings including GitOps repository configuration.
 **Documentation:** See [Crossplane Ingestor Guide](./docs/crossplane-ingestor.md) and `plugins/crossplane-ingestor/docs/` for detailed documentation.
 
 ### Scaffolder Actions (New Module System)

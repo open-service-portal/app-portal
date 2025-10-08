@@ -14,7 +14,7 @@ kubernetesIngestor:
   components:
     enabled: true
     taskRunner:
-      frequency: 10  # How often to query clusters (in seconds)
+      frequency: 20  # How often to query clusters (in seconds)
       timeout: 600   # Max processing time
     excludedNamespaces:
       - kube-public
@@ -39,6 +39,9 @@ kubernetesIngestor:
       ingestAllClaims: true
     xrds:
       enabled: true
+      taskRunner:
+        frequency: 20  # How often to regenerate templates from XRDs (in seconds)
+        timeout: 600   # Max processing time
       ingestAllXRDs: true  # Ingest all XRDs with the label
       # Only ingest XRDs with this label (if ingestAllXRDs is false)
       labelSelector: 'openportal.dev/tags'
@@ -46,3 +49,10 @@ kubernetesIngestor:
       tagsLabel: 'openportal.dev/tags'
       # Default namespace for XR templates
       defaultNamespace: 'demo'
+      # GitOps configuration for template generation
+      gitops:
+        # Repository where XR instances are created via PRs
+        ordersRepo:
+          owner: 'open-service-portal'
+          repo: 'catalog-orders'
+          targetBranch: 'main'
