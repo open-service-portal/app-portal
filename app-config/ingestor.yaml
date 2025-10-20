@@ -1,28 +1,89 @@
-# Ingestor Selection - Choose which XRD ingestor to use
-# Available ingestor selectors:
-# - 'kubernetes-ingestor' - Internal workspace version (legacy)
-# - 'kubernetes-ingestor-custom' - TeraSky fork from backstage-plugins-custom workspace (current)
-# - 'open-service-portal-ingestor' - Open Service Portal NPM package v1.0.0 (new)
-# - 'crossplane-ingestor' - Refactored Crossplane-focused version
-ingestorSelector: 'kubernetes-ingestor-custom'
+# Ingestor Plugin Configuration
+# The ingestor plugin discovers and imports Kubernetes resources into the Backstage catalog
 
-# All ingestors share the same configuration below
-# Only the ingestorSelector above determines which one runs
-
-# Kubernetes Ingestor configuration
-kubernetesIngestor:
-  # Mappings of kubernetes resource metadata to backstage entity metadata
+# Ingestor configuration
+ingestor:
+  # ============================================================================
+  # Entity Organization Mappings
+  # ============================================================================
+  # Controls how Backstage entities are organized and grouped for ALL ingested
+  # Kubernetes resources, including:
+  # - Standard K8s resources (Deployments, Services, etc.)
+  # - Crossplane Claims (v1 style with spec.resourceRef)
+  # - Crossplane XRs (v2 style with spec.crossplane)
+  #
+  # These mappings control the Backstage entity namespace and system fields,
+  # which determine how entities are grouped and filtered in the catalog UI.
+  # ============================================================================
   mappings:
-    namespaceModel: 'namespace'       # Options: cluster, namespace, default
-    nameModel: 'name-cluster'         # Options: name-cluster, name-namespace, name
-    titleModel: 'name'                # Options: name, name-cluster, name-namespace
-    systemModel: 'cluster'            # Options: cluster, namespace, cluster-namespace, default
+    # Entity Namespace Mapping
+    # Controls the Backstage entity's metadata.namespace field
+    # This determines entity isolation and access control
+    #
+    # Options:
+    #   'cluster'   - Group by K8s cluster (e.g., entities in namespace "production-cluster")
+    #   'namespace' - Group by K8s namespace (e.g., entities in namespace "backend-team")
+    #   'default'   - All entities in default namespace (flat structure)
+    #
+    # Example: With 'cluster', a Pod in cluster "prod" goes to Backstage namespace "prod"
+    # Example: With 'namespace', a Pod in K8s namespace "api" goes to Backstage namespace "api"
+    namespaceModel: 'namespace'
 
-  # Component ingestion settings
-  components:
+    # System Name Mapping
+    # Controls the Backstage entity's spec.system field reference
+    # This determines how components are grouped into systems in the catalog
+    #
+    # Options:
+    #   'cluster'           - System name is the cluster name (e.g., "system:rancher-desktop")
+    #   'namespace'         - System name is the K8s namespace (e.g., "system:demo")
+    #   'cluster-namespace' - System name combines both (e.g., "system:prod-backend")
+    #   'default'           - All components belong to "system:default"
+    #
+    # Example: With 'cluster', all resources from "prod" cluster belong to "system:prod"
+    # Example: With 'cluster-namespace', resources from "prod" cluster in "api" namespace
+    #          belong to "system:prod-api"
+    systemModel: 'cluster'
+
+    # Entity Name Mapping
+    # Controls the Backstage entity's metadata.name field format
+    # This determines the unique identifier for each entity
+    #
+    # Options:
+    #   'name'                   - Just the resource name (e.g., "payment-service")
+    #   'name-cluster'           - Name + cluster (e.g., "payment-service-prod")
+    #   'name-namespace'         - Name + namespace (e.g., "payment-service-backend")
+    #   'name-namespace-cluster' - Name + namespace + cluster (e.g., "payment-service-backend-prod")
+    #
+    # Example: With 'name-cluster', a deployment "api" in cluster "prod" becomes "api-prod"
+    # Example: With 'name-namespace-cluster', it becomes "api-default-prod"
+    #
+    # NOTE: Choose wisely! Shorter names are cleaner but may conflict across namespaces/clusters.
+    #       Longer names are unique but verbose. Consider your multi-cluster setup.
+    nameModel: 'name-namespace-cluster'
+
+    # Entity Title Mapping
+    # Controls automatic title generation when no backstage.io/title annotation exists
+    # Annotations always take precedence over titleModel when present
+    #
+    # Options:
+    #   'name'              - Just the resource name (e.g., "payment-service")
+    #   'name-cluster'      - Name with cluster (e.g., "payment-service (prod)")
+    #   'name-namespace'    - Name with namespace (e.g., "payment-service (backend)")
+    #   'kind-name'         - Kind prefix (e.g., "Deployment: payment-service")
+    #   'kind-name-cluster' - Kind + name + cluster (e.g., "Deployment: payment-service (prod)")
+    #
+    # Example: With 'kind-name-cluster', a Deployment "api" in "prod" shows as "Deployment: api (prod)"
+    # Example: With 'name', resources show with their simple name as the title
+    #
+    # NOTE: Default is 'name' for clean, simple titles. Use other models for more context.
+    #       Teams can always override with backstage.io/title annotations on resources.
+    titleModel: 'name'
+
+  # Kubernetes resource ingestion (includes Claims and XRs via auto-detection)
+  kubernetes:
     enabled: true
     taskRunner:
-      frequency: 10  # How often to query clusters (in seconds)
+      frequency: 20  # How often to query clusters (in seconds)
       timeout: 600   # Max processing time
     excludedNamespaces:
       - kube-public
@@ -36,41 +97,25 @@ kubernetesIngestor:
       - tigera-operator
       - ingress-nginx
       - external-dns
+      - cert-manager
       - kubernetes-dashboard
-  
+
   # Crossplane XRD template generation
   crossplane:
     enabled: true
-    claims:
-      # Ingest all claims and XRs from the cluster
-      ingestAllClaims: true
     xrds:
       enabled: true
       ingestAllXRDs: true  # Ingest all XRDs with the label
+      # Only ingest XRDs with this label (if ingestAllXRDs is false)
+      # labelSelector: 'openportal.dev/add-to-catalog'
+
       taskRunner:
-        frequency: 10  # XRD scanning every 10 seconds (faster for testing)
-        timeout: 600
-      convertDefaultValuesToPlaceholders: true
-      allowedTargets: ['github.com']
-      publishPhase:
-        target: github
-        git:
-          repoUrl: github.com?owner=open-service-portal&repo=catalog-orders
-          targetBranch: main
-        enabled: true
-        # allowRepoSelection: true  # Users can override if needed
-  genericCRDTemplates:
-    # Settings related to the final steps of a software template
-    publishPhase:
-      allowedTargets: ['github.com']
-      target: github
-      git:
-        repoUrl: github.com?owner=open-service-portal&repo=catalog-orders
-        targetBranch: main
-        targetPath: 'crds'  # Put generic CRDs in a subdirectory
-      # allowRepoSelection: true
-    # crdLabelSelector:
-    #   key: terasky.backstage.io/generate-form
-    #   value: "true"
-    # crds:
-    #   - certificates.cert-manager.io
+        frequency: 20  # How often to regenerate templates from XRDs (in seconds)
+        timeout: 600   # Max processing time
+
+      # GitOps configuration for template generation
+      gitops:
+        # Repository where XR instances are created via PRs
+        owner: 'open-service-portal'
+        repo: 'catalog-orders'
+        targetBranch: 'main'

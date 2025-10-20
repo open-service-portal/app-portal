@@ -60,22 +60,15 @@ backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 // kubernetes plugin
 backend.add(import('@backstage/plugin-kubernetes-backend'));
 
-// Kubernetes and Crossplane ingestor plugins
-// Configure in app-config/ingestor.yaml with ingestorSelector:
-// - 'kubernetes-ingestor' - Legacy internal version (workspace plugin)
-// - 'open-service-portal-ingestor' - Open Service Portal fork (NPM package)
-// - 'crossplane-ingestor' - Refactored Crossplane-focused version
-// Additional ingestors can be installed via NPM and added here
-
-// Internal ingestors (included in this repo)
-backend.add(import('@internal/plugin-kubernetes-ingestor')); // Legacy internal version
-backend.add(import('@internal/plugin-crossplane-ingestor')); // Refactored Crossplane-focused version
-
-// External ingestors (from NPM)
-backend.add(import('@open-service-portal/backstage-plugin-kubernetes-ingestor')); // Open Service Portal fork
+// Ingestor plugin - discovers and imports Kubernetes resources into catalog
+// Configure in app-config/ingestor.yaml
+backend.add(import('@internal/plugin-ingestor'));
 
 // TeraSky scaffolder utilities
 backend.add(import('@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils'));
+
+// Kubernetes scaffolder actions (provides kube:apply and other kube:* actions)
+backend.add(import('@devangelista/backstage-scaffolder-kubernetes'));
 
 // notifications and signals plugins
 backend.add(import('@backstage/plugin-notifications-backend'));
