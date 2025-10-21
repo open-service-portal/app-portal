@@ -62,8 +62,11 @@ backend.add(import('@backstage/plugin-kubernetes-backend'));
 
 // Ingestor plugin - discovers and imports Kubernetes resources into catalog
 // Configure in app-config/ingestor.yaml
+//
+// Switch between npm package and local plugin development:
+// 1. For npm package (default): Use line below
 backend.add(import('@open-service-portal/backstage-plugin-ingestor'));
-// For local development, uncomment the line below and comment out the npm package above:
+// 2. For local development: Comment line above, uncomment line below
 // backend.add(import('@internal/plugin-ingestor'));
 
 // TeraSky scaffolder utilities
