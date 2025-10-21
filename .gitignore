@@ -76,3 +76,4 @@ e2e-test-report/
 
 # Nested git repositories (managed independently)
 plugins/ingestor/
+plugins/ingestor-dev/
