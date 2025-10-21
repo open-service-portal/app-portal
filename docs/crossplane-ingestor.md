@@ -159,6 +159,112 @@ plugins/crossplane-ingestor/
 - Aggregates resources
 - Handles different auth methods
 
+## Template Customization
+
+The ingestor uses Handlebars templates to transform XRDs into Backstage templates. You can customize these templates to match your organization's needs.
+
+### Quick Start
+
+```bash
+# 1. Initialize custom templates
+yarn ingestor:init
+
+# 2. Configure in app-config/ingestor.yaml
+ingestor:
+  crossplane:
+    xrds:
+      templateDir: './ingestor-templates'
+
+# 3. Customize templates
+vim ingestor-templates/backstage/default.hbs
+vim ingestor-templates/steps/gitops.hbs
+
+# 4. Restart Backstage
+yarn start
+```
+
+### Why Customize Templates?
+
+- **Brand consistency**: Add your organization's styling and conventions
+- **Custom workflows**: Modify scaffolder steps to match your processes
+- **Parameter validation**: Add organization-specific validation rules
+- **GitOps integration**: Customize PR templates and commit messages
+- **Version control**: Track template changes in your app repository
+
+### Configuration Options
+
+```yaml
+ingestor:
+  crossplane:
+    xrds:
+      # Optional: Path to custom templates (relative to app root)
+      # If not set, uses built-in templates from npm package
+      templateDir: './ingestor-templates'
+
+      # GitOps configuration (used by templates)
+      gitops:
+        owner: 'your-org'
+        repo: 'catalog-orders'
+        targetBranch: 'main'
+```
+
+### Template Priority
+
+Templates are loaded with this priority:
+
+1. **CLI flag** (CLI tool only): `--template-path ./custom`
+2. **Config setting**: `ingestor.crossplane.xrds.templateDir`
+3. **Built-in default**: Templates from npm package
+
+This allows you to:
+- Use custom templates in production (via config)
+- Test experimental templates (via CLI flag)
+- Fallback to built-in templates automatically
+
+### Common Customizations
+
+**Add organization tags:**
+```handlebars
+{{!-- ingestor-templates/backstage/default.hbs --}}
+spec:
+  type: crossplane-resource
+  tags:
+    - crossplane
+    - {{xrd.spec.group}}
+    - your-org-tag  {{!-- Add custom tag --}}
+```
+
+**Customize parameter validation:**
+```handlebars
+{{!-- ingestor-templates/parameters/default.hbs --}}
+properties:
+  name:
+    title: Name
+    type: string
+    pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+    minLength: 3      {{!-- Add min length --}}
+    maxLength: 63     {{!-- Add max length --}}
+```
+
+**Modify GitOps workflow:**
+```handlebars
+{{!-- ingestor-templates/steps/gitops.hbs --}}
+- id: create-pr
+  name: Create Pull Request
+  action: publish:github:pull-request
+  input:
+    title: "[YOUR-ORG] New {{xrd.spec.names.kind}}: \${{ parameters.name }}"
+    labels:
+      - crossplane
+      - your-org-label  {{!-- Add custom label --}}
+```
+
+### Detailed Documentation
+
+For complete template customization documentation, see:
+- [Ingestor Template Customization Guide](https://github.com/open-service-portal/ingestor/blob/main/docs/template-customization.md)
+- [Template Directory Structure](https://github.com/open-service-portal/ingestor/blob/main/templates/README.md)
+
 ## XRD Requirements
 
 For XRDs to be discovered and processed:
