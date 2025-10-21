@@ -47,8 +47,6 @@
     "@backstage/plugin-techdocs-backend": "^2.0.5",
     "@devangelista/backstage-scaffolder-kubernetes": "^0.5.0",
     "@open-service-portal/backstage-plugin-ingestor": "^1.0.0",
-    // For local development, uncomment the line below and comment out the npm package above:
-    // "@internal/plugin-ingestor": "link:../../plugins/ingestor",
     "@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils": "^1.7.1",
     "app": "link:../app",
     "better-sqlite3": "^9.0.0",

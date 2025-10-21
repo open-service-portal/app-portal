@@ -82,8 +82,5 @@
       "prettier --write"
     ]
   },
-  "packageManager": "yarn@4.9.4",
-  "dependencies": {
-    "@open-service-portal/backstage-plugin-kubernetes-ingestor": "1.0.0"
-  }
+  "packageManager": "yarn@4.9.4"
 }
