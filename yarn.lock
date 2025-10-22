@@ -9504,9 +9504,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-service-portal/backstage-plugin-ingestor@npm:2.2.0":
-  version: 2.2.0
-  resolution: "@open-service-portal/backstage-plugin-ingestor@npm:2.2.0"
+"@open-service-portal/backstage-plugin-ingestor@npm:2.2.1":
+  version: 2.2.1
+  resolution: "@open-service-portal/backstage-plugin-ingestor@npm:2.2.1"
   dependencies:
     "@backstage/backend-defaults": "npm:^0.12.0"
     "@backstage/backend-plugin-api": "npm:^1.4.2"
@@ -9534,7 +9534,7 @@ __metadata:
   bin:
     backstage-export: bin/backstage-export
     ingestor: bin/ingestor
-  checksum: 10c0/137fbc84c268c2d24a4d0ddfdb529ae60a1fd2003e1da0e3539969bd26e7cb12bcfc0c2c16a1b813929ed1899c16d0afcd855003217d38c6fa2d5fe65465e862
+  checksum: 10c0/761e42fed7fb2d66dd78cbbdc6e3bcb023df0f9f809e96aa1bfb9041a51d5c9246e92590ecb959e45964f270477d721dcc6f3218bcba19d8663c12fca81bcba9
   languageName: node
   linkType: hard
 
@@ -34748,7 +34748,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "npm:^0.34.0"
     "@backstage/e2e-test-utils": "npm:^0.1.1"
-    "@open-service-portal/backstage-plugin-ingestor": "npm:2.2.0"
+    "@open-service-portal/backstage-plugin-ingestor": "npm:2.2.1"
     "@playwright/test": "npm:^1.32.3"
     "@types/lodash": "npm:^4.17.20"
     node-gyp: "npm:^10.0.0"
