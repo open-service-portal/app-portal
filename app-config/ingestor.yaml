@@ -109,6 +109,11 @@ ingestor:
       # Only ingest XRDs with this label (if ingestAllXRDs is false)
       # labelSelector: 'openportal.dev/add-to-catalog'
 
+      # Custom template directory (optional)
+      # If not specified, uses built-in templates from npm package
+      # Initialize custom templates with: yarn ingestor:init
+      templateDir: './ingestor-templates'
+
       taskRunner:
         frequency: 20  # How often to regenerate templates from XRDs (in seconds)
         timeout: 600   # Max processing time
