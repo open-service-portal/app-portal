@@ -100,6 +100,13 @@ ingestor:
       - cert-manager
       - kubernetes-dashboard
 
+  # XRD Transform Configuration
+  transform:
+    # Custom template directory (optional)
+    # If not specified, uses built-in templates from npm package
+    # Use ${APP_ROOT} environment variable for portable path
+    templateDir: '${APP_ROOT}/ingestor-templates'
+
   # Crossplane XRD template generation
   crossplane:
     enabled: true
@@ -108,11 +115,6 @@ ingestor:
       ingestAllXRDs: true  # Ingest all XRDs with the label
       # Only ingest XRDs with this label (if ingestAllXRDs is false)
       # labelSelector: 'openportal.dev/add-to-catalog'
-
-      # Custom template directory (optional)
-      # If not specified, uses built-in templates from npm package
-      # Initialize custom templates with: yarn ingestor:init
-      templateDir: './ingestor-templates'
 
       taskRunner:
         frequency: 20  # How often to regenerate templates from XRDs (in seconds)

@@ -35,6 +35,9 @@ const appPortalRoot = __dirname;
 process.chdir(appPortalRoot);
 console.log(`📂 Working directory: ${process.cwd()}`);
 
+// Set APP_ROOT environment variable for config interpolation
+process.env.APP_ROOT = appPortalRoot;
+
 // Build the backstage command - use direct backend in production
 const isProduction = process.env.NODE_ENV === 'production';
 const backstageArgs = isProduction
