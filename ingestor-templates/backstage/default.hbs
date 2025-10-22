@@ -19,6 +19,10 @@ metadata:
 {{/if}}
   tags:
     - crossplane
+    - source:kubernetes-ingestor
+{{#if metadata.cluster}}
+    - cluster:{{metadata.cluster}}
+{{/if}}
     - {{replace xrd.spec.group "." "-"}}
 {{#if (getAnnotation xrd "openportal.dev/tags")}}
 {{#each (split (getAnnotation xrd "openportal.dev/tags") ",")}}
