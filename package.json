@@ -84,6 +84,6 @@
   },
   "packageManager": "yarn@4.9.4",
   "dependencies": {
-    "@open-service-portal/backstage-plugin-ingestor": "2.2.0"
+    "@open-service-portal/backstage-plugin-ingestor": "2.2.1"
   }
 }
