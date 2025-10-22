@@ -26,8 +26,8 @@
     "lint:all": "backstage-cli repo lint",
     "prettier:check": "prettier --check .",
     "new": "backstage-cli new",
-    "ingestor:init": "@open-service-portal/backstage-plugin-ingestor init",
-    "ingestor:init:help": "@open-service-portal/backstage-plugin-ingestor init --help"
+    "ingestor:init": "yarn ingestor init",
+    "ingestor:init:help": "yarn ingestor init --help"
   },
   "backstage": {
     "cli": {
@@ -82,5 +82,8 @@
       "prettier --write"
     ]
   },
-  "packageManager": "yarn@4.9.4"
+  "packageManager": "yarn@4.9.4",
+  "dependencies": {
+    "@open-service-portal/backstage-plugin-ingestor": "2.1.1"
+  }
 }
