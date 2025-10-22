@@ -104,7 +104,7 @@ ingestor:
   transform:
     # Custom template directory (optional)
     # If not specified, uses built-in templates from npm package
-    # Use ${APP_ROOT} environment variable for portable path
+    # Use ${APP_ROOT} environment variable for portable absolute path
     templateDir: '${APP_ROOT}/ingestor-templates'
 
   # Crossplane XRD template generation
