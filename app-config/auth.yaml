@@ -21,3 +21,23 @@ auth:
             # Matches the GitHub username with the Backstage user entity name.
             # See https://backstage.io/docs/auth/github/provider#resolvers for more resolvers.
             - resolver: usernameMatchingUserEntityName
+
+    # Custom OIDC PKCE Provider for Kubernetes cluster access
+    # This is a custom provider that supports PKCE for public clients
+    # See packages/backend/src/auth-providers/oidc-pkce-authenticator.ts
+    oidc:
+      development:
+        metadataUrl: https://login.spot.rackspace.com/.well-known/openid-configuration
+        clientId: mwG3lUMV8KyeMqHe4fJ5Bb3nM1vBvRNa
+        # No clientSecret needed - will use PKCE automatically
+        prompt: auto
+        # Additional auth request parameters for Rackspace multi-tenant
+        additionalAuthParams:
+          - key: organization
+            value: org_zOuCBHiyF1yG8d1D
+        signIn:
+          resolvers:
+            # Use email claim for identity matching
+            # JWT claim "email" matches Backstage user entity spec.profile.email
+            # See concepts/2025-10-23-oidc-kubernetes-authentication.md for details
+            - resolver: emailMatchingUserEntityProfileEmail

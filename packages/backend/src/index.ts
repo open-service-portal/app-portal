@@ -25,6 +25,12 @@ backend.add(import('@backstage/plugin-auth-backend'));
 // See https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
+// OIDC provider (generic OIDC, requires client secret)
+// backend.add(import('@backstage/plugin-auth-backend-module-oidc-provider'));
+// Auth0 provider (Auth0-specific, also requires client secret)
+// backend.add(import('@backstage/plugin-auth-backend-module-auth0-provider'));
+// Custom OIDC PKCE provider (supports public clients without client secret)
+backend.add(import('./auth-providers'));
 // See https://backstage.io/docs/auth/guest/provider
 
 // catalog plugin
