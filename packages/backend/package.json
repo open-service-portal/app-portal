@@ -51,8 +51,11 @@
     "@internal/plugin-ingestor": "link:../../plugins/ingestor",
     "@open-service-portal/backstage-plugin-ingestor": "2.3.1",
     "@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils": "^1.7.1",
+    "@types/jsonwebtoken": "^9.0.10",
     "app": "link:../app",
     "better-sqlite3": "^9.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^3.2.0",
     "node-gyp": "^10.0.0",
     "pg": "^8.11.3",
     "yaml": "^2.8.1"

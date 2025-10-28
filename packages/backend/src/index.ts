@@ -66,6 +66,9 @@ backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 // kubernetes plugin
 backend.add(import('@backstage/plugin-kubernetes-backend'));
 
+// Cluster authentication plugin - receives OIDC tokens from oidc-authenticator daemon
+backend.add(import('./plugins/cluster-auth-module').then(m => m.clusterAuthPlugin));
+
 // Ingestor plugin - discovers and imports Kubernetes resources into catalog
 // Configure in app-config/ingestor.yaml
 //
