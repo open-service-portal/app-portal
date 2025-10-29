@@ -19,8 +19,8 @@ The OIDC Authenticator provides a secure way to obtain OIDC tokens for accessing
 │  (Browser)       │         │  (localhost:8000) │         │ (Auth0/Okta)   │
 └──────────────────┘         └───────────────────┘         └────────────────┘
          │                            │                             │
-         │ 1. Click "Authenticate     │                             │
-         │    with Cluster" button    │                             │
+         │ 1. Click "Sign In" on K8s  │                             │
+         │    Cluster auth provider   │                             │
          │───────────────────────────>│                             │
          │                            │                             │
          │ 2. Open localhost:8000     │                             │
@@ -71,15 +71,27 @@ Provides three endpoints:
 - **`GET /api/cluster-auth/status`** - Check if user has valid tokens
 - **`GET /api/cluster-auth/token`** - Get access token for K8s API calls
 
-### 3. Frontend Cluster Auth Button
+### 3. Frontend Cluster Auth Provider
 
-**Location:** `packages/app/src/components/ClusterAuthButton.tsx`
+**Location:** `packages/app/src/components/CustomAuthProviders.tsx`
 
-A React component that:
-- Checks if daemon is running
-- Opens authentication popup
-- Polls for authentication completion
-- Shows status and instructions
+A custom authentication provider that:
+- Appears in Settings > Authentication Providers tab
+- Shows authentication status (Authenticated / Not Authenticated)
+- Opens authentication window to `localhost:8000?mode=return-tokens`
+- Receives tokens via postMessage from daemon
+- Sends tokens to backend API
+- Supports Sign In, Sign Out, and Re-authenticate actions
+
+### 4. User Profile Component
+
+**Location:** `packages/app/src/components/UserProfile.tsx`
+
+A sidebar component that:
+- Shows authenticated user's name with PersonIcon
+- Collapses properly with sidebar
+- Links to user's catalog profile page
+- Updates automatically based on authentication state
 
 ## Setup
 
@@ -163,27 +175,34 @@ node bin/cli.js stop
 
 ### In Backstage UI
 
-1. **Navigate to Settings**
-   - Click your profile icon in the top-right
-   - Select "Settings"
-   - Look for "Authenticate with Cluster" button
+1. **Navigate to Settings > Authentication Providers**
+   - Click Settings in the left sidebar
+   - Navigate to the "Authentication Providers" tab
+   - Find the "K8s Cluster" provider
 
-2. **Click "Authenticate with Cluster"**
-   - A dialog will open
-   - If daemon is not running, instructions will be shown
-   - If daemon is running, click "Authenticate"
+2. **Click "Sign In"**
+   - A popup window opens to `localhost:8000?mode=return-tokens`
+   - If daemon is not running, the window will show an error
 
 3. **Complete Authentication**
-   - A popup window opens to `localhost:8000`
-   - You're redirected to your OIDC provider
+   - The popup window redirects to your OIDC provider
    - Log in with your credentials
-   - After successful login, the popup closes automatically
-   - Tokens are sent to Backstage backend
+   - After successful login, tokens are sent via postMessage
+   - The popup window closes automatically
+   - Tokens are stored in Backstage backend
 
 4. **Verify Authentication**
-   - Check the settings dialog again
-   - It should show "Already Authenticated" status
+   - The K8s Cluster provider status updates to "Authenticated"
+   - Shows token expiration time
+   - "Sign Out" and "Re-authenticate" buttons become available
    - Your Kubernetes access should now work
+
+### User Profile
+
+A new user profile link appears in the sidebar:
+- Shows your username (e.g., "Guest")
+- Click to view your catalog profile
+- Automatically updates based on authentication state
 
 ### Troubleshooting
 
