@@ -227,10 +227,10 @@ const K8sClusterAuthProvider = () => {
             <Grid item container spacing={2} xs={12} sm>
               <Grid item container direction="column" xs>
                 <Grid item xs>
-                  <Typography variant="subtitle1" color="textPrimary" gutterBottom>
+                  <Typography variant="subtitle1" color="textPrimary" gutterBottom component="div">
                     {authenticated ? 'Authenticated' : 'Not Authenticated'}
                   </Typography>
-                  <Typography variant="body2" color="textSecondary">
+                  <Typography variant="body2" color="textSecondary" component="div">
                     {authenticated && expiresAt ? (
                       <>
                         <CheckCircleIcon className={classes.successIcon} fontSize="small" />
