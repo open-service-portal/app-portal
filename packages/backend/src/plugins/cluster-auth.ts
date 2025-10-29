@@ -40,7 +40,7 @@ export interface OIDCTokens {
   id_token: string;
   refresh_token?: string;
   token_type: string;
-  expires_in: number;
+  expires_in?: number;  // Optional: expiration is read from JWT instead
   scope?: string;
 }
 
@@ -164,7 +164,6 @@ export async function createRouter(options: ClusterAuthOptions): Promise<Router>
 
       logger.info('Received OIDC tokens from authenticator daemon', {
         tokenType: tokens.token_type,
-        expiresIn: tokens.expires_in,
         scope: tokens.scope,
       });
 
@@ -231,22 +230,21 @@ export async function createRouter(options: ClusterAuthOptions): Promise<Router>
         });
       }
 
-      // Calculate expiration
-      // If expires_in is provided, use it; otherwise extract from id_token exp claim
+      // Calculate expiration from id_token JWT
+      // The JWT is the source of truth for token expiration
+      const jwt = require('jsonwebtoken');
+      const decoded = jwt.decode(tokens.id_token) as any;
       let expiresAt: Date;
-      if (tokens.expires_in) {
-        expiresAt = new Date(Date.now() + tokens.expires_in * 1000);
+
+      if (decoded?.exp) {
+        expiresAt = new Date(decoded.exp * 1000);
+        logger.info('Token expiration extracted from JWT', {
+          expiresAt: expiresAt.toISOString(),
+        });
       } else {
-        // Extract expiration from id_token
-        const jwt = require('jsonwebtoken');
-        const decoded = jwt.decode(tokens.id_token) as any;
-        if (decoded?.exp) {
-          expiresAt = new Date(decoded.exp * 1000);
-        } else {
-          // Default to 1 hour if no expiration found
-          logger.warn('No expiration found in tokens, defaulting to 1 hour');
-          expiresAt = new Date(Date.now() + 3600 * 1000);
-        }
+        // If no expiration in JWT, default to 1 hour
+        logger.warn('No expiration found in JWT, defaulting to 1 hour');
+        expiresAt = new Date(Date.now() + 3600 * 1000);
       }
 
       // Store tokens in database
