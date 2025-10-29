@@ -227,10 +227,10 @@ const K8sClusterAuthProvider = () => {
             <Grid item container spacing={2} xs={12} sm>
               <Grid item container direction="column" xs>
                 <Grid item xs>
-                  <Typography variant="subtitle1" color="textPrimary" gutterBottom component="div">
+                  <div style={{ fontWeight: 500, marginBottom: 4, color: 'rgba(255, 255, 255, 0.87)' }}>
                     {authenticated ? 'Authenticated' : 'Not Authenticated'}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" component="div">
+                  </div>
+                  <div style={{ fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.6)', display: 'flex', alignItems: 'center' }}>
                     {authenticated && expiresAt ? (
                       <>
                         <CheckCircleIcon className={classes.successIcon} fontSize="small" />
@@ -239,7 +239,7 @@ const K8sClusterAuthProvider = () => {
                     ) : (
                       'Sign in using Kubernetes cluster credentials'
                     )}
-                  </Typography>
+                  </div>
                 </Grid>
               </Grid>
             </Grid>

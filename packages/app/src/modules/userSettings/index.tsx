@@ -25,30 +25,17 @@ const customProviderSettingsExtension = createExtension({
 });
 
 /**
- * Extension that provides cluster authentication button
- * to the user-settings page. This appears in the General settings section.
- */
-const clusterAuthExtension = createExtension({
-  namespace: 'app',
-  name: 'cluster-auth-button',
-  attachTo: {
-    id: 'page:user-settings/general',
-    input: 'contents',
-  },
-  output: [coreExtensionData.reactElement],
-  factory() {
-    return [coreExtensionData.reactElement(<ClusterAuthButton />)];
-  },
-});
-
-/**
  * Frontend module that customizes the user-settings plugin
- * with custom authentication providers (OIDC, etc.) and cluster authentication
+ * with custom authentication providers (OIDC, etc.)
  *
  * This module must be added to the app's features array alongside
  * the base userSettingsPlugin to enable custom provider settings.
+ *
+ * Note: ClusterAuthButton is rendered separately via a dedicated page,
+ * not as an extension to the user-settings page, due to limitations
+ * in the new frontend system's extension attachment points.
  */
 export const userSettingsModule = createFrontendModule({
   pluginId: 'user-settings',
-  extensions: [customProviderSettingsExtension, clusterAuthExtension],
+  extensions: [customProviderSettingsExtension],
 });

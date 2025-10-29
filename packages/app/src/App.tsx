@@ -14,15 +14,18 @@ import { Navigate } from 'react-router-dom';
 import { navModule } from './modules/nav';
 import { customAuthModule } from './modules/auth';
 import { userSettingsModule } from './modules/userSettings';
-import { oidcAuthApiRef } from './apis/oidcAuthApiRef';
+import { clusterAuthModule } from './modules/clusterAuth';
 import { CrossplanePage } from './components/crossplane/CrossplanePage';
 import {
   crossplaneOverviewCard,
   crossplaneResourcesContent,
   crossplaneGraphContent,
 } from './extensions/crossplaneEntityExtensions';
+import { oidcAuthApiRef } from './apis/oidcAuthApiRef';
 
-// Custom SignInPage with GitHub and OIDC Auth
+// Custom SignInPage with GitHub as PRIMARY authentication
+// Cluster authentication is handled separately via Settings page after login
+// Users must log in with GitHub first, then authenticate with clusters
 const signInPage = SignInPageBlueprint.make({
   params: {
     loader: async () => props =>
@@ -30,19 +33,13 @@ const signInPage = SignInPageBlueprint.make({
         <SignInPage
           {...props}
           providers={[
-            'guest',
             {
               id: 'github-auth-provider',
               title: 'GitHub',
               message: 'Sign in using GitHub',
               apiRef: githubAuthApiRef,
             },
-            {
-              id: 'oidc-auth-provider',
-              title: 'K8s Cluster',
-              message: 'Sign in using Kubernetes cluster credentials',
-              apiRef: oidcAuthApiRef,
-            },
+            'guest',
           ]}
         />
       ),
@@ -93,6 +90,7 @@ const app = createApp({
     techdocsPlugin,
     userSettingsPlugin,
     userSettingsModule,  // Custom provider settings (includes OIDC in settings page)
+    clusterAuthModule,  // Cluster authentication page and navigation
     kubernetesPlugin,
     apiDocsPlugin,
     navModule,

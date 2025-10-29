@@ -18,14 +18,19 @@
  */
 
 import { Router } from 'express';
+import express from 'express';
 import { Logger } from 'winston';
-import { Knex } from 'knex';
+import { DatabaseService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { ClusterAuthValidator } from './cluster-auth-validator';
 import { ClusterAuthStore } from './cluster-auth-store';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { CatalogApi } from '@backstage/catalog-client';
 
 export interface ClusterAuthOptions {
   logger: Logger;
-  database: Knex;
+  database: DatabaseService;
+  httpAuth: HttpAuthService;
+  catalogApi: CatalogApi;
   issuer?: string;  // OIDC issuer URL (from config)
   verifySignature?: boolean;  // Whether to verify JWT signatures
 }
@@ -40,17 +45,67 @@ export interface OIDCTokens {
 }
 
 /**
+ * Helper function to resolve user entity ref from email by looking up in catalog
+ * This matches the behavior of emailMatchingUserEntityProfileEmail resolver
+ */
+async function resolveUserEntityRefFromEmail(
+  email: string,
+  catalogApi: CatalogApi,
+  logger: Logger,
+): Promise<string> {
+  try {
+    logger.info(`🔍 Looking up user in catalog by email: ${email}`);
+
+    // Query catalog for user with matching email
+    const { items } = await catalogApi.getEntities({
+      filter: {
+        kind: 'User',
+        'spec.profile.email': email,
+      },
+    });
+
+    logger.info(`📊 Found ${items.length} user(s) with email ${email}`);
+
+    if (items.length === 0) {
+      // Log helpful debugging info
+      logger.error(`❌ No user found in catalog with email: ${email}`);
+      logger.error(`   💡 Tip: Check that your user entity in the catalog has this email in spec.profile.email`);
+      logger.error(`   💡 GitHub users: Your email must be public in GitHub settings or added to catalog manually`);
+      throw new Error(`No user found in catalog with email: ${email}`);
+    }
+
+    if (items.length > 1) {
+      logger.warn(`⚠️  Multiple users found with email ${email}:`);
+      items.forEach((item, idx) => {
+        logger.warn(`   ${idx + 1}. ${stringifyEntityRef(item)}`);
+      });
+      logger.warn(`   Using first match: ${stringifyEntityRef(items[0])}`);
+    }
+
+    const userEntity = items[0];
+    const userEntityRef = stringifyEntityRef(userEntity);
+
+    logger.info(`✅ Resolved email ${email} → ${userEntityRef}`);
+
+    return userEntityRef;
+  } catch (error) {
+    logger.error(`Failed to resolve user from email ${email}`, error);
+    throw new Error(`Could not find user in catalog with email: ${email}`);
+  }
+}
+
+/**
  * Creates a router for cluster authentication
  */
-export function createRouter(options: ClusterAuthOptions): Router {
-  const { logger, database } = options;
+export async function createRouter(options: ClusterAuthOptions): Promise<Router> {
+  const { logger, database, httpAuth, catalogApi } = options;
   const router = Router();
 
-  // Initialize token store
-  const tokenStore = new ClusterAuthStore({
-    database,
-    logger,
-  });
+  // Add JSON body parser middleware
+  router.use(express.json());
+
+  // Initialize token store (following Backstage pattern)
+  const tokenStore = await ClusterAuthStore.create(database, logger);
 
   // Initialize token validator (if issuer provided)
   let tokenValidator: ClusterAuthValidator | undefined;
@@ -63,14 +118,36 @@ export function createRouter(options: ClusterAuthOptions): Router {
   }
 
   /**
+   * Helper function to extract user entity ref from Backstage auth context
+   */
+  async function getUserEntityRef(req: express.Request): Promise<string> {
+    try {
+      const credentials = await httpAuth.credentials(req);
+      const principal = credentials.principal;
+
+      // If it's a user principal, return the userEntityRef directly
+      if (principal.type === 'user') {
+        return principal.userEntityRef;
+      }
+
+      // If it's a service principal or other type, throw error
+      throw new Error(`Unsupported principal type: ${principal.type}`);
+    } catch (error) {
+      logger.warn('Failed to extract user from auth context', { error });
+      throw new Error('User not authenticated or invalid credentials');
+    }
+  }
+
+  /**
    * POST /api/cluster-auth/tokens
    *
    * Receives OIDC tokens from oidc-authenticator daemon
    *
-   * Since the daemon handles OAuth/PKCE, we just need to:
-   * 1. Validate the tokens (JWT signature + claims)
-   * 2. Extract user identity
-   * 3. Store in database
+   * NEW APPROACH:
+   * - User must be logged into Backstage (via GitHub)
+   * - Cluster tokens are stored under the current Backstage user
+   * - No email matching needed - use the active Backstage session
+   * - Guest users are rejected
    */
   router.post('/tokens', async (req, res) => {
     try {
@@ -91,9 +168,32 @@ export function createRouter(options: ClusterAuthOptions): Router {
         scope: tokens.scope,
       });
 
-      // Validate id_token and extract user identity
-      let userEmail: string | undefined;
+      // Get the current Backstage user from the session
+      // This requires the frontend to pass authentication when triggering the daemon
+      let userEntityRef: string;
+      try {
+        userEntityRef = await getUserEntityRef(req);
+        logger.info(`🔐 Cluster authentication for Backstage user: ${userEntityRef}`);
+      } catch (error) {
+        logger.error('No Backstage session found - user must be logged in first');
+        return res.status(401).json({
+          error: 'Not authenticated',
+          message: 'You must be logged into Backstage (via GitHub) before authenticating with the cluster',
+        });
+      }
+
+      // Reject guest users
+      if (userEntityRef === 'user:default/guest') {
+        logger.warn('Cluster authentication rejected for guest user');
+        return res.status(403).json({
+          error: 'Forbidden',
+          message: 'Guest users cannot authenticate with clusters. Please log in with GitHub.',
+        });
+      }
+
+      // Validate id_token for security (optional but recommended)
       let issuer: string | undefined;
+      let userEmail: string | undefined;
 
       if (tokenValidator) {
         const validation = await tokenValidator.validateIdToken(tokens.id_token);
@@ -112,9 +212,10 @@ export function createRouter(options: ClusterAuthOptions): Router {
         const decoded = jwt.decode(tokens.id_token) as any;
         issuer = decoded?.iss;
 
-        logger.info('Token validated', {
-          email: userEmail,
-          sub: validation.userIdentity?.sub,
+        logger.info('Cluster token validated', {
+          backstageUser: userEntityRef,
+          clusterEmail: userEmail,
+          issuer,
         });
       } else {
         // Fallback: decode without validation (not recommended for production!)
@@ -123,19 +224,12 @@ export function createRouter(options: ClusterAuthOptions): Router {
         const decoded = jwt.decode(tokens.id_token) as any;
         userEmail = decoded?.email;
         issuer = decoded?.iss;
-      }
 
-      if (!userEmail) {
-        return res.status(400).json({
-          error: 'Missing user email',
-          message: 'Could not extract email from id_token',
+        logger.info('Cluster token received (unvalidated)', {
+          backstageUser: userEntityRef,
+          clusterEmail: userEmail,
         });
       }
-
-      // Convert email to user entity ref
-      // Format: user:default/email (where @ and . are replaced with -)
-      const username = userEmail.split('@')[0].replace(/\./g, '-');
-      const userEntityRef = `user:default/${username}`;
 
       // Calculate expiration
       const expiresAt = new Date(Date.now() + tokens.expires_in * 1000);
@@ -154,6 +248,13 @@ export function createRouter(options: ClusterAuthOptions): Router {
         user: userEntityRef,
         expiresAt: expiresAt.toISOString(),
       });
+
+      // Note: We don't issue a Backstage session token here because:
+      // 1. The frontend already has its own Backstage session (via Guest or GitHub auth)
+      // 2. These cluster tokens are only for Kubernetes API access, not Backstage auth
+      // 3. The user's Backstage identity is separate from their cluster identity
+
+      logger.info('Cluster authentication completed successfully', { user: userEntityRef });
 
       // Send success response back to daemon
       res.json({
@@ -174,22 +275,11 @@ export function createRouter(options: ClusterAuthOptions): Router {
    * GET /api/cluster-auth/status
    *
    * Check if current user has authenticated cluster tokens
-   *
-   * TODO: Get current user from Backstage auth context
-   * For now, requires ?user=user:default/john query parameter
+   * Requires Backstage authentication
    */
   router.get('/status', async (req, res) => {
     try {
-      // TODO: Get user from Backstage auth context
-      // For now, accept user from query parameter (INSECURE - for testing only!)
-      const userEntityRef = req.query.user as string;
-
-      if (!userEntityRef) {
-        return res.json({
-          authenticated: false,
-          message: 'No user specified',
-        });
-      }
+      const userEntityRef = await getUserEntityRef(req);
 
       const hasValid = await tokenStore.hasValidTokens(userEntityRef);
       const tokens = await tokenStore.getTokens(userEntityRef);
@@ -201,6 +291,15 @@ export function createRouter(options: ClusterAuthOptions): Router {
       });
     } catch (error) {
       logger.error('Failed to check cluster auth status', error);
+
+      // If authentication failed, return 401
+      if (error instanceof Error && error.message.includes('not authenticated')) {
+        return res.status(401).json({
+          error: 'Unauthorized',
+          message: error.message,
+        });
+      }
+
       res.status(500).json({ error: 'Internal server error' });
     }
   });
@@ -210,22 +309,11 @@ export function createRouter(options: ClusterAuthOptions): Router {
    *
    * Get current access token for cluster authentication
    * Used by Kubernetes plugin to authenticate requests
-   *
-   * TODO: Get current user from Backstage auth context
-   * For now, requires ?user=user:default/john query parameter
+   * Requires Backstage authentication
    */
   router.get('/token', async (req, res) => {
     try {
-      // TODO: Get user from Backstage auth context
-      // For now, accept user from query parameter (INSECURE - for testing only!)
-      const userEntityRef = req.query.user as string;
-
-      if (!userEntityRef) {
-        return res.status(401).json({
-          error: 'Not authenticated',
-          message: 'No user specified',
-        });
-      }
+      const userEntityRef = await getUserEntityRef(req);
 
       const tokens = await tokenStore.getTokens(userEntityRef);
 
@@ -253,6 +341,15 @@ export function createRouter(options: ClusterAuthOptions): Router {
       });
     } catch (error) {
       logger.error('Failed to retrieve cluster token', error);
+
+      // If authentication failed, return 401
+      if (error instanceof Error && error.message.includes('not authenticated')) {
+        return res.status(401).json({
+          error: 'Unauthorized',
+          message: error.message,
+        });
+      }
+
       res.status(500).json({ error: 'Internal server error' });
     }
   });
@@ -273,22 +370,100 @@ export function createRouter(options: ClusterAuthOptions): Router {
   });
 
   /**
+   * GET /api/cluster-auth/user-emails
+   *
+   * Public debug endpoint showing all user/email mappings in catalog
+   * Does NOT require authentication - useful for debugging email matching
+   */
+  router.get('/user-emails', async (req, res) => {
+    try {
+      // Look up all users in catalog
+      const { items } = await catalogApi.getEntities({
+        filter: {
+          kind: 'User',
+        },
+      });
+
+      const userMappings = items.map(item => ({
+        entityRef: stringifyEntityRef(item),
+        name: item.metadata.name,
+        email: item.spec?.profile?.email || 'Not set',
+        displayName: item.spec?.profile?.displayName || item.metadata.name,
+      }));
+
+      res.json({
+        message: 'For cluster authentication to work, the email in your OIDC token must match spec.profile.email in your user entity',
+        tip: 'If you have multiple GitHub emails, ensure the one in your catalog matches your OIDC token email',
+        totalUsers: userMappings.length,
+        users: userMappings,
+      });
+    } catch (error) {
+      logger.error('Failed to get user email mappings', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  /**
+   * GET /api/cluster-auth/debug
+   *
+   * Debug endpoint to show current user's email and entity ref mapping
+   * Requires Backstage authentication
+   */
+  router.get('/debug', async (req, res) => {
+    try {
+      const userEntityRef = await getUserEntityRef(req);
+
+      // Look up user entity in catalog
+      const { items } = await catalogApi.getEntities({
+        filter: {
+          kind: 'User',
+        },
+      });
+
+      // Find the current user
+      const currentUser = items.find(
+        item => stringifyEntityRef(item) === userEntityRef,
+      );
+
+      res.json({
+        currentUserEntityRef: userEntityRef,
+        userEmail: currentUser?.spec?.profile?.email || 'Not set',
+        emailMatchingInfo: {
+          message:
+            'For cluster authentication to work, the email in your OIDC token must match spec.profile.email in your user entity',
+          currentEmail: currentUser?.spec?.profile?.email || 'Not set',
+          entityRef: userEntityRef,
+          tip: 'If you have multiple GitHub emails, make sure the one in your catalog user entity matches the primary email in your OIDC token',
+        },
+        allUsers: items.map(item => ({
+          entityRef: stringifyEntityRef(item),
+          email: item.spec?.profile?.email || 'Not set',
+        })),
+      });
+    } catch (error) {
+      logger.error('Failed to get debug info', error);
+
+      // If authentication failed, return 401
+      if (error instanceof Error && error.message.includes('not authenticated')) {
+        return res.status(401).json({
+          error: 'Unauthorized',
+          message: error.message,
+        });
+      }
+
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  /**
    * DELETE /api/cluster-auth/tokens
    *
    * Delete cluster tokens for current user (logout)
-   *
-   * TODO: Get current user from Backstage auth context
+   * Requires Backstage authentication
    */
   router.delete('/tokens', async (req, res) => {
     try {
-      const userEntityRef = req.query.user as string;
-
-      if (!userEntityRef) {
-        return res.status(400).json({
-          error: 'Bad request',
-          message: 'User not specified',
-        });
-      }
+      const userEntityRef = await getUserEntityRef(req);
 
       const deleted = await tokenStore.deleteTokens(userEntityRef);
 
@@ -306,6 +481,15 @@ export function createRouter(options: ClusterAuthOptions): Router {
       }
     } catch (error) {
       logger.error('Failed to delete cluster tokens', error);
+
+      // If authentication failed, return 401
+      if (error instanceof Error && error.message.includes('not authenticated')) {
+        return res.status(401).json({
+          error: 'Unauthorized',
+          message: error.message,
+        });
+      }
+
       res.status(500).json({ error: 'Internal server error' });
     }
   });

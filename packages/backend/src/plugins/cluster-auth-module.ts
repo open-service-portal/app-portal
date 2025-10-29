@@ -14,6 +14,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { CatalogClient } from '@backstage/catalog-client';
 import { createRouter } from './cluster-auth';
 
 /**
@@ -32,12 +33,12 @@ export const clusterAuthPlugin = createBackendPlugin({
         http: coreServices.httpRouter,
         database: coreServices.database,
         config: coreServices.rootConfig,
+        httpAuth: coreServices.httpAuth,
+        discovery: coreServices.discovery,
+        auth: coreServices.auth,
       },
-      async init({ logger, http, database, config }) {
+      async init({ logger, http, database, config, httpAuth, discovery, auth }) {
         const winstonLogger = loggerToWinstonLogger(logger);
-
-        // Get database client (Knex)
-        const { client } = await database.getClient();
 
         // Get optional config for token validation
         const issuer = config.getOptionalString('clusterAuth.issuer');
@@ -49,11 +50,48 @@ export const clusterAuthPlugin = createBackendPlugin({
           logger.warn('Cluster auth: No issuer configured, token validation will be limited');
         }
 
-        const router = createRouter({
+        // Create catalog client with service-to-service authentication
+        // This allows the cluster-auth plugin to query the catalog without user credentials
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: await auth.getOwnServiceCredentials(),
+          targetPluginId: 'catalog',
+        });
+
+        const catalogApi = new CatalogClient({
+          discoveryApi: discovery,
+          fetchApi: {
+            fetch: async (url: string, init?: RequestInit) => {
+              return fetch(url, {
+                ...init,
+                headers: {
+                  ...init?.headers,
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+            },
+          },
+        });
+
+        // Pass DatabaseService, httpAuth, and catalogApi directly, following Backstage pattern
+        // The router will call database.getClient() when needed
+        const router = await createRouter({
           logger: winstonLogger,
-          database: client,
+          database,
+          httpAuth,
+          catalogApi,
           issuer,
           verifySignature,
+        });
+
+        // Configure auth policies for endpoints
+        // POST /tokens - NOW REQUIRES authentication (user must be logged in via GitHub)
+        //                The oidc-authenticator daemon will receive and forward the user's
+        //                Backstage session cookie/token
+        // GET /user-emails - Public debug endpoint for checking email mappings
+        // Must be called BEFORE http.use(router)
+        http.addAuthPolicy({
+          path: '/user-emails',
+          allow: 'unauthenticated',
         });
 
         http.use(router);
@@ -63,3 +101,6 @@ export const clusterAuthPlugin = createBackendPlugin({
     });
   },
 });
+
+// Export as default for the new backend system
+export default clusterAuthPlugin;

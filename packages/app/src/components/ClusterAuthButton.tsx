@@ -20,8 +20,8 @@ import {
   Typography,
   Box,
   CircularProgress,
-  Alert,
 } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import CloudIcon from '@material-ui/icons/Cloud';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
@@ -112,20 +112,7 @@ export const ClusterAuthButton = () => {
 
   // Handle authentication flow
   const handleAuthenticate = async () => {
-    setLoading(true);
-    setError(null);
-
-    // Check if daemon is running
-    const running = await checkDaemonHealth();
-    if (!running) {
-      setDaemonRunning(false);
-      setLoading(false);
-      return;
-    }
-
-    setDaemonRunning(true);
-
-    // Open authentication window
+    // Directly open authentication window - daemon will handle errors
     const authWindow = window.open(
       'http://localhost:8000',
       'cluster-auth',
@@ -134,9 +121,11 @@ export const ClusterAuthButton = () => {
 
     if (!authWindow) {
       setError('Failed to open authentication window. Please allow popups for this site.');
-      setLoading(false);
       return;
     }
+
+    setLoading(true);
+    setError(null);
 
     // Poll for completion
     const pollInterval = setInterval(async () => {
@@ -208,24 +197,6 @@ export const ClusterAuthButton = () => {
                 Authenticating... Please complete the login in the popup window.
               </Typography>
             </Box>
-          ) : daemonRunning === false ? (
-            <Alert severity="warning">
-              <Typography variant="h6" gutterBottom>
-                OIDC Authenticator Not Running
-              </Typography>
-              <Typography variant="body2" paragraph>
-                The OIDC authenticator daemon is not running on your laptop.
-                Please start it first:
-              </Typography>
-              <Box className={classes.codeBlock}>
-                cd oidc-authenticator<br />
-                node bin/cli.js start --verbose
-              </Box>
-              <Typography variant="body2" style={{ marginTop: 16 }}>
-                The daemon will run on <code>http://localhost:8000</code> and
-                handle authentication for your Kubernetes clusters.
-              </Typography>
-            </Alert>
           ) : authStatus?.authenticated ? (
             <Box className={classes.statusBox}>
               <CheckCircleIcon className={classes.successIcon} fontSize="large" />
@@ -264,7 +235,7 @@ export const ClusterAuthButton = () => {
           <Button onClick={handleClose} color="default">
             Cancel
           </Button>
-          {!loading && daemonRunning !== false && !authStatus?.authenticated && (
+          {!loading && !authStatus?.authenticated && (
             <Button
               onClick={handleAuthenticate}
               color="primary"

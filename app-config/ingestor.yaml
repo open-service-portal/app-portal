@@ -83,7 +83,7 @@ ingestor:
   kubernetes:
     enabled: true
     taskRunner:
-      frequency: 20  # How often to query clusters (in seconds)
+      frequency: 60  # How often to query clusters (in seconds)
       timeout: 600   # Max processing time
     excludedNamespaces:
       - kube-public
@@ -115,7 +115,7 @@ ingestor:
       templateDir: './ingestor-templates'
 
       taskRunner:
-        frequency: 20  # How often to regenerate templates from XRDs (in seconds)
+        frequency: 60  # How often to regenerate templates from XRDs (in seconds)
         timeout: 600   # Max processing time
 
       # GitOps configuration for template generation

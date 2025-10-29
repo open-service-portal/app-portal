@@ -41,3 +41,15 @@ auth:
             # JWT claim "email" matches Backstage user entity spec.profile.email
             # See concepts/2025-10-23-oidc-kubernetes-authentication.md for details
             - resolver: emailMatchingUserEntityProfileEmail
+
+# Cluster Authentication Configuration
+# Backend plugin for storing OIDC tokens from oidc-authenticator daemon
+#
+# The backend doesn't need to know about the OIDC provider details -
+# it just receives already-validated tokens from the daemon.
+# However, providing the issuer allows optional JWT validation for extra security.
+#
+# See oidc-authenticator/docs/backstage-integration.md for details
+clusterAuth:
+  issuer: https://login.spot.rackspace.com/  # Optional: for JWT validation
+  verifySignature: false  # Set to true for production JWT signature verification

@@ -13,6 +13,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import { SidebarSearchModal } from '@backstage/plugin-search';
 import { UserSettingsSignInAvatar, Settings as SidebarSettings } from '@backstage/plugin-user-settings';
+import { UserProfile } from '../../components/UserProfile';
 
 export const SidebarContent = NavContentBlueprint.make({
   params: {
@@ -28,12 +29,13 @@ export const SidebarContent = NavContentBlueprint.make({
             <SidebarScrollWrapper>
               {/* Items in this group will be scrollable if they run out of space */}
               {items.map((item, index) => (
-                <SidebarItem {...item} key={index} />
+                <SidebarItem {...item} key={item.key ?? item.to ?? index} />
               ))}
             </SidebarScrollWrapper>
           </SidebarGroup>
           <SidebarSpace />
           <SidebarDivider />
+          <UserProfile />
           <SidebarGroup
             label="Settings"
             icon={<UserSettingsSignInAvatar />}
