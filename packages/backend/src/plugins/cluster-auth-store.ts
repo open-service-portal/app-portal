@@ -6,10 +6,13 @@
  *
  * Much simpler than the full OAuth flow since oidc-authenticator daemon
  * handles token exchange!
+ *
+ * Follows Backstage pattern from auth-backend/src/database/AuthDatabase.ts
  */
 
 import { Knex } from 'knex';
 import { Logger } from 'winston';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 
 export interface ClusterTokens {
   userEntityRef: string;    // e.g., 'user:default/john.doe'
@@ -22,124 +25,110 @@ export interface ClusterTokens {
   updatedAt?: Date;
 }
 
-export interface ClusterAuthStoreOptions {
-  database: Knex;
-  logger: Logger;
-}
-
 const TABLE_NAME = 'cluster_tokens';
 
 /**
  * Database store for cluster authentication tokens
+ * Follows Backstage pattern: lazy database initialization with promise caching
  */
 export class ClusterAuthStore {
-  private db: Knex;
-  private logger: Logger;
-  private initialized: boolean = false;
+  private readonly database: DatabaseService;
+  private readonly logger: Logger;
+  private dbPromise: Promise<Knex> | undefined;
 
-  constructor(options: ClusterAuthStoreOptions) {
-    this.db = options.database;
-    this.logger = options.logger;
+  static async create(database: DatabaseService, logger: Logger): Promise<ClusterAuthStore> {
+    const store = new ClusterAuthStore(database, logger);
+    // Eagerly initialize database and run migrations
+    await store.getDb();
+    return store;
+  }
+
+  private constructor(database: DatabaseService, logger: Logger) {
+    this.database = database;
+    this.logger = logger;
+  }
+
+  /**
+   * Get database client with lazy initialization and promise caching
+   * Following the pattern from auth-backend/src/database/AuthDatabase.ts
+   */
+  private async getDb(): Promise<Knex> {
+    if (!this.dbPromise) {
+      this.dbPromise = this.database.getClient().then(async (client) => {
+        // Ensure table exists
+        await this.ensureTable(client);
+        return client;
+      });
+    }
+    return this.dbPromise;
   }
 
   /**
    * Initialize the database table
-   * Called automatically on first operation
+   * Called automatically on first database access
    */
-  private async ensureTable(): Promise<void> {
-    if (this.initialized) return;
-
-    const exists = await this.db.schema.hasTable(TABLE_NAME);
+  private async ensureTable(db: Knex): Promise<void> {
+    const exists = await db.schema.hasTable(TABLE_NAME);
 
     if (!exists) {
       this.logger.info(`Creating ${TABLE_NAME} table...`);
 
-      await this.db.schema.createTable(TABLE_NAME, table => {
+      await db.schema.createTable(TABLE_NAME, table => {
         table.string('user_entity_ref').primary().notNullable();
         table.text('access_token').notNullable();
         table.text('id_token').notNullable();
         table.text('refresh_token').nullable();
         table.string('issuer').notNullable();
         table.timestamp('expires_at').notNullable();
-        table.timestamp('created_at').defaultTo(this.db.fn.now());
-        table.timestamp('updated_at').defaultTo(this.db.fn.now());
+        table.timestamp('created_at').defaultTo(db.fn.now());
+        table.timestamp('updated_at').defaultTo(db.fn.now());
 
         // Index for faster lookups by expiration
         table.index('expires_at');
         table.index('issuer');
       });
 
-      this.logger.info(`${TABLE_NAME} table created`);
+      this.logger.info(`Table ${TABLE_NAME} created successfully`);
     }
-
-    this.initialized = true;
   }
 
   /**
-   * Save or update tokens for a user
+   * Save or update cluster tokens for a user
    */
   async saveTokens(tokens: ClusterTokens): Promise<void> {
-    await this.ensureTable();
+    const db = await this.getDb();
 
-    const now = new Date();
-    const data = {
-      user_entity_ref: tokens.userEntityRef,
-      access_token: tokens.accessToken,
-      id_token: tokens.idToken,
-      refresh_token: tokens.refreshToken || null,
-      issuer: tokens.issuer,
-      expires_at: tokens.expiresAt,
-      updated_at: now,
-    };
-
-    // Upsert (insert or update)
-    const existing = await this.db(TABLE_NAME)
-      .where({ user_entity_ref: tokens.userEntityRef })
-      .first();
-
-    if (existing) {
-      // Update existing
-      await this.db(TABLE_NAME)
-        .where({ user_entity_ref: tokens.userEntityRef })
-        .update(data);
-
-      this.logger.info('Cluster tokens updated', {
-        user: tokens.userEntityRef,
+    await db(TABLE_NAME)
+      .insert({
+        user_entity_ref: tokens.userEntityRef,
+        access_token: tokens.accessToken,
+        id_token: tokens.idToken,
+        refresh_token: tokens.refreshToken,
         issuer: tokens.issuer,
-      });
-    } else {
-      // Insert new
-      await this.db(TABLE_NAME).insert({
-        ...data,
-        created_at: now,
-      });
-
-      this.logger.info('Cluster tokens saved', {
-        user: tokens.userEntityRef,
-        issuer: tokens.issuer,
-      });
-    }
+        expires_at: tokens.expiresAt,
+        updated_at: db.fn.now(),
+      })
+      .onConflict('user_entity_ref')
+      .merge();
   }
 
   /**
-   * Get tokens for a user
+   * Get tokens for a specific user
    */
-  async getTokens(userEntityRef: string): Promise<ClusterTokens | null> {
-    await this.ensureTable();
+  async getTokens(userEntityRef: string): Promise<ClusterTokens | undefined> {
+    const db = await this.getDb();
 
-    const row = await this.db(TABLE_NAME)
-      .where({ user_entity_ref: userEntityRef })
+    const row = await db(TABLE_NAME)
+      .where('user_entity_ref', userEntityRef)
       .first();
 
-    if (!row) {
-      return null;
-    }
+    if (!row) return undefined;
 
     return {
       userEntityRef: row.user_entity_ref,
       accessToken: row.access_token,
       idToken: row.id_token,
-      refreshToken: row.refresh_token || undefined,
+      refreshToken: row.refresh_token,
       issuer: row.issuer,
       expiresAt: new Date(row.expires_at),
       createdAt: new Date(row.created_at),
@@ -148,56 +137,76 @@ export class ClusterAuthStore {
   }
 
   /**
-   * Delete tokens for a user
-   */
-  async deleteTokens(userEntityRef: string): Promise<boolean> {
-    await this.ensureTable();
-
-    const deleted = await this.db(TABLE_NAME)
-      .where({ user_entity_ref: userEntityRef })
-      .delete();
-
-    if (deleted > 0) {
-      this.logger.info('Cluster tokens deleted', { user: userEntityRef });
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
    * Check if user has valid (non-expired) tokens
    */
   async hasValidTokens(userEntityRef: string): Promise<boolean> {
-    await this.ensureTable();
+    const db = await this.getDb();
 
+    // Get the tokens first to check expiry
     const tokens = await this.getTokens(userEntityRef);
-    if (!tokens) return false;
 
-    return tokens.expiresAt.getTime() > Date.now();
+    if (!tokens) {
+      return false;
+    }
+
+    // Check if token is expired by comparing JavaScript Date objects
+    const isValid = tokens.expiresAt.getTime() > Date.now();
+
+    this.logger.info('Checking token validity', {
+      userEntityRef,
+      expiresAt: tokens.expiresAt.toISOString(),
+      now: new Date().toISOString(),
+      isValid,
+    });
+
+    return isValid;
   }
 
   /**
-   * Get all users with expired tokens (for cleanup)
+   * Delete tokens for a specific user
    */
-  async getExpiredTokens(): Promise<string[]> {
-    await this.ensureTable();
+  async deleteTokens(userEntityRef: string): Promise<boolean> {
+    const db = await this.getDb();
 
-    const rows = await this.db(TABLE_NAME)
-      .where('expires_at', '<', new Date())
-      .select('user_entity_ref');
+    const deleted = await db(TABLE_NAME)
+      .where('user_entity_ref', userEntityRef)
+      .delete();
 
-    return rows.map(row => row.user_entity_ref);
+    return deleted > 0;
+  }
+
+  /**
+   * Get statistics about stored tokens
+   */
+  async getStats(): Promise<{ total: number; valid: number; expired: number }> {
+    const db = await this.getDb();
+
+    const [totalResult, validResult] = await Promise.all([
+      db(TABLE_NAME).count('* as count').first(),
+      db(TABLE_NAME)
+        .where('expires_at', '>', db.fn.now())
+        .count('* as count')
+        .first(),
+    ]);
+
+    const total = (totalResult?.count as number) || 0;
+    const valid = (validResult?.count as number) || 0;
+
+    return {
+      total,
+      valid,
+      expired: total - valid,
+    };
   }
 
   /**
    * Delete all expired tokens (cleanup)
    */
   async deleteExpiredTokens(): Promise<number> {
-    await this.ensureTable();
+    const db = await this.getDb();
 
-    const deleted = await this.db(TABLE_NAME)
-      .where('expires_at', '<', new Date())
+    const deleted = await db(TABLE_NAME)
+      .where('expires_at', '<', db.fn.now())
       .delete();
 
     if (deleted > 0) {
@@ -205,45 +214,5 @@ export class ClusterAuthStore {
     }
 
     return deleted;
-  }
-
-  /**
-   * Get count of stored tokens (for monitoring)
-   */
-  async getTokenCount(): Promise<number> {
-    await this.ensureTable();
-
-    const result = await this.db(TABLE_NAME).count('* as count').first();
-    return Number(result?.count || 0);
-  }
-
-  /**
-   * Get statistics about stored tokens
-   */
-  async getStats(): Promise<{
-    total: number;
-    valid: number;
-    expired: number;
-  }> {
-    await this.ensureTable();
-
-    const now = new Date();
-
-    const [total, valid] = await Promise.all([
-      this.db(TABLE_NAME).count('* as count').first(),
-      this.db(TABLE_NAME)
-        .where('expires_at', '>=', now)
-        .count('* as count')
-        .first(),
-    ]);
-
-    const totalCount = Number(total?.count || 0);
-    const validCount = Number(valid?.count || 0);
-
-    return {
-      total: totalCount,
-      valid: validCount,
-      expired: totalCount - validCount,
-    };
   }
 }
