@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { ProviderSettingsItem } from '@backstage/plugin-user-settings';
 import { githubAuthApiRef, useApi, configApiRef, discoveryApiRef, identityApiRef } from '@backstage/core-plugin-api';
 import {
-  Card,
-  CardContent,
-  CardActions,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  ListItemSecondaryAction,
+  Grid,
   Typography,
   Button,
-  Box,
+  Avatar,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import LockIcon from '@material-ui/icons/Lock';
@@ -16,23 +18,17 @@ import CloudIcon from '@material-ui/icons/Cloud';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 const useStyles = makeStyles(theme => ({
-  card: {
-    marginBottom: theme.spacing(2),
+  avatar: {
+    width: theme.spacing(6),
+    height: theme.spacing(6),
   },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-  statusBox: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(1),
-    marginTop: theme.spacing(1),
+  button: {
+    border: `1px solid ${theme.palette.divider}`,
+    marginLeft: theme.spacing(1),
   },
   successIcon: {
     color: theme.palette.success.main,
+    marginRight: theme.spacing(0.5),
   },
 }));
 
@@ -82,6 +78,37 @@ const K8sClusterAuthProvider = () => {
   useEffect(() => {
     checkAuthStatus();
   }, []);
+
+  const handleSignOut = async () => {
+    try {
+      setLoading(true);
+
+      // Get Backstage auth token
+      const { token } = await identityApi.getCredentials();
+
+      // Use discovery API to get the backend base URL
+      const baseUrl = await discoveryApi.getBaseUrl('cluster-auth');
+      const response = await fetch(`${baseUrl}/tokens`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        console.log('✅ Signed out successfully');
+        setAuthenticated(false);
+        setExpiresAt(null);
+      } else {
+        console.error('Failed to sign out');
+      }
+    } catch (error) {
+      console.error('Error signing out:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAuthenticate = () => {
     // Open authentication window to get cluster tokens
@@ -180,36 +207,83 @@ const K8sClusterAuthProvider = () => {
   };
 
   return (
-    <Card className={classes.card}>
-      <CardContent>
-        <Box className={classes.header}>
-          <CloudIcon />
-          <Typography variant="h6">K8s Cluster</Typography>
-        </Box>
-        <Typography variant="body2" color="textSecondary">
-          Sign in using Kubernetes cluster credentials
-        </Typography>
-        {authenticated && (
-          <Box className={classes.statusBox}>
-            <CheckCircleIcon className={classes.successIcon} fontSize="small" />
-            <Typography variant="body2" color="textSecondary">
-              Authenticated {expiresAt && `(expires ${new Date(expiresAt).toLocaleString()})`}
-            </Typography>
-          </Box>
+    <ListItem dense>
+      <ListItemIcon>
+        <Star />
+      </ListItemIcon>
+      <ListItemText
+        primary="K8s Cluster"
+        secondary={
+          <Grid
+            container
+            spacing={6}
+            title="Sign in using Kubernetes cluster credentials"
+          >
+            <Grid item>
+              <Avatar className={classes.avatar}>
+                <CloudIcon />
+              </Avatar>
+            </Grid>
+            <Grid item container spacing={2} xs={12} sm>
+              <Grid item container direction="column" xs>
+                <Grid item xs>
+                  <Typography variant="subtitle1" color="textPrimary" gutterBottom>
+                    {authenticated ? 'Authenticated' : 'Not Authenticated'}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {authenticated && expiresAt ? (
+                      <>
+                        <CheckCircleIcon className={classes.successIcon} fontSize="small" />
+                        Expires {new Date(expiresAt).toLocaleString()}
+                      </>
+                    ) : (
+                      'Sign in using Kubernetes cluster credentials'
+                    )}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        }
+        secondaryTypographyProps={{
+          component: 'div',
+          style: { width: '80%' },
+        }}
+      />
+      <ListItemSecondaryAction>
+        {authenticated ? (
+          <>
+            <Button
+              variant="outlined"
+              className={classes.button}
+              onClick={handleAuthenticate}
+              disabled={loading}
+              startIcon={<CloudIcon />}
+            >
+              {loading ? 'Authenticating...' : 'Re-authenticate'}
+            </Button>
+            <Button
+              variant="outlined"
+              className={classes.button}
+              onClick={handleSignOut}
+              disabled={loading}
+            >
+              Sign Out
+            </Button>
+          </>
+        ) : (
+          <Button
+            variant="outlined"
+            className={classes.button}
+            onClick={handleAuthenticate}
+            disabled={loading}
+            startIcon={<CloudIcon />}
+          >
+            {loading ? 'Authenticating...' : 'Sign In'}
+          </Button>
         )}
-      </CardContent>
-      <CardActions>
-        <Button
-          size="small"
-          color="primary"
-          onClick={handleAuthenticate}
-          disabled={loading}
-          startIcon={<CloudIcon />}
-        >
-          {loading ? 'Authenticating...' : authenticated ? 'Re-authenticate' : 'Sign In'}
-        </Button>
-      </CardActions>
-    </Card>
+      </ListItemSecondaryAction>
+    </ListItem>
   );
 };
 
