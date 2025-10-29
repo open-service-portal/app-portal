@@ -70,9 +70,9 @@ curl http://localhost:7007/api/cluster-auth/stats
 
 ---
 
-### 3. ⏳ End-to-End Testing with oidc-authenticator Daemon
+### 3. ✅ End-to-End Testing with oidc-authenticator Daemon
 **Priority:** HIGH
-**Status:** ⏳ TODO
+**Status:** ✅ COMPLETED
 **Estimated Time:** 30 minutes
 
 **Prerequisites:**
@@ -99,14 +99,19 @@ yarn start
 6. Verify status changes to "Authenticated"
 
 **Success Criteria:**
-- [ ] Daemon starts on localhost:8000
-- [ ] OAuth popup window opens to localhost:8000?mode=return-tokens
-- [ ] User completes OIDC authentication flow
-- [ ] Daemon sends tokens via postMessage
-- [ ] Backend receives tokens via POST /api/cluster-auth/tokens
-- [ ] Tokens stored in database (check with /stats endpoint)
-- [ ] Provider status updates to "Authenticated"
-- [ ] Expiration time displayed correctly
+- [x] Daemon starts on localhost:8000
+- [x] OAuth popup window opens to localhost:8000?mode=return-tokens
+- [x] User completes OIDC authentication flow (auto-login)
+- [x] Daemon sends tokens via postMessage
+- [x] Backend receives tokens via POST /api/cluster-auth/tokens
+- [x] Tokens stored in database (expiration extracted from JWT)
+- [x] Provider status updates to "Authenticated"
+- [x] Expiration time displayed correctly
+- [x] Re-authenticate and Sign Out buttons functional
+
+**Bugs Fixed:**
+- Fixed missing `expires_in` field by extracting expiration from JWT `exp` claim
+- JWT is now the source of truth for token expiration
 
 **Verification Commands:**
 ```bash
@@ -696,9 +701,9 @@ router.get('/metrics', async (req, res) => {
 - ⏳ TODO
 - 🔴 Blocked
 
-### Overall Progress: ~65%
+### Overall Progress: ~70%
 
-**Phase 1 (Testing & Integration):** 80% Complete
+**Phase 1 (Testing & Integration):** 100% Complete ✅
 - ✅ **Backend Module** (100%)
 - ✅ **Token Storage** (100%)
 - ✅ **JWT Validation** (100%)
@@ -706,7 +711,7 @@ router.get('/metrics', async (req, res) => {
 - ✅ **Frontend Provider** (100%)
 - ✅ **User Profile Component** (100%)
 - ✅ **Console Error Fixes** (100%)
-- ⏳ **End-to-End Testing** (0%) - Waiting for oidc-authenticator setup
+- ✅ **End-to-End Testing** (100%) - COMPLETE!
 
 **Phase 2-5:** Not Started
 - ⏳ **User Context Integration** (0%)
@@ -741,4 +746,4 @@ router.get('/metrics', async (req, res) => {
 
 **Last Updated:** 2025-10-29
 **Maintained By:** Development Team
-**Status:** Phase 1 - 80% Complete (Awaiting E2E Testing)
+**Status:** Phase 1 - 100% COMPLETE ✅ | Ready for Phase 2
