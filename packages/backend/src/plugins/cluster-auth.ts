@@ -232,7 +232,22 @@ export async function createRouter(options: ClusterAuthOptions): Promise<Router>
       }
 
       // Calculate expiration
-      const expiresAt = new Date(Date.now() + tokens.expires_in * 1000);
+      // If expires_in is provided, use it; otherwise extract from id_token exp claim
+      let expiresAt: Date;
+      if (tokens.expires_in) {
+        expiresAt = new Date(Date.now() + tokens.expires_in * 1000);
+      } else {
+        // Extract expiration from id_token
+        const jwt = require('jsonwebtoken');
+        const decoded = jwt.decode(tokens.id_token) as any;
+        if (decoded?.exp) {
+          expiresAt = new Date(decoded.exp * 1000);
+        } else {
+          // Default to 1 hour if no expiration found
+          logger.warn('No expiration found in tokens, defaulting to 1 hour');
+          expiresAt = new Date(Date.now() + 3600 * 1000);
+        }
+      }
 
       // Store tokens in database
       await tokenStore.saveTokens({
