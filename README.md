@@ -171,10 +171,21 @@ BACKSTAGE_LOG_DIR=~/debugging yarn install:log
 
 All secrets are managed through SOPS encryption. The `.envrc` file automatically:
 1. Loads Node.js version via nvm
-2. Decrypts `.env.enc` to load GitHub App credentials
+2. Decrypts `.env.enc` to load authentication credentials (GitHub, Microsoft, etc.)
 3. Decrypts `github-app-key.pem.enc` for GitHub App authentication
 
-No manual environment variable setup needed!
+#### Required Variables for Authentication
+
+**GitHub Authentication:**
+- `AUTH_GITHUB_CLIENT_ID` - GitHub OAuth App Client ID
+- `AUTH_GITHUB_CLIENT_SECRET` - GitHub OAuth App Client Secret
+
+**Microsoft Entra ID Authentication:**
+- `AUTH_MICROSOFT_CLIENT_ID` - Microsoft Application (client) ID
+- `AUTH_MICROSOFT_CLIENT_SECRET` - Microsoft Client Secret
+- `AUTH_MICROSOFT_TENANT_ID` - Microsoft Tenant ID
+
+No manual environment variable setup needed when using direnv!
 
 ## 📦 Project Structure
 
