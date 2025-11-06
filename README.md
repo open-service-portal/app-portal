@@ -25,13 +25,13 @@ yarn install
 # Allow direnv to load environment (auto-decrypts secrets)
 direnv allow
 
-# Start the application (auto-detects kubectl context)
+# Start the application (auto-detects cluster from kubectl context)
 yarn start        # Using yarn (traditional Node.js way)
 # OR
 ./start.js        # Direct execution (Unix-style) 🚀
 ```
 
-The application automatically detects your current kubectl context and loads the appropriate configuration file (e.g., `app-config.rancher-desktop.local.yaml` for local development).
+The application automatically extracts the cluster name from your kubectl context and loads the appropriate configuration file (e.g., `app-config.openportal.local.yaml`). Multiple contexts with different authentication methods can share the same configuration when connecting to the same cluster.
 
 The secrets are automatically decrypted using SOPS when you enter the directory with direnv. Your SSH key is used for decryption - no additional configuration needed!
 
@@ -106,7 +106,7 @@ Example: [service-nodejs-template](https://github.com/open-service-portal/servic
 # Development - Choose your style!
 
 # Traditional Node.js style
-yarn start          # Start with auto-detected kubectl context config
+yarn start          # Start with auto-detected cluster config
 yarn start:log      # Same as above, with timestamped logging
 
 # Direct execution (Unix-style)
@@ -139,11 +139,20 @@ yarn new            # Create new Backstage plugin
 
 #### Dynamic Configuration Loading
 
-Both `yarn start` and `./start` automatically detect your current kubectl context and load the matching configuration:
-- Detects context via `kubectl config current-context`
-- Loads `app-config.{context}.local.yaml` if it exists
-- Falls back to base `app-config.yaml` if no context-specific config found
+Both `yarn start` and `./start.js` automatically detect your cluster and load the matching configuration:
+- Detects current kubectl context via `kubectl config current-context`
+- Extracts cluster name from context (multiple contexts can share same cluster)
+- Loads `app-config.{cluster}.local.yaml` if it exists
+- Falls back to context-based config for backward compatibility
+- Falls back to base `app-config.yaml` if no cluster-specific config found
 - Shows which configuration is being used during startup
+
+**Example:**
+- Context: `osp-openportal` → Cluster: `openportal` → Loads: `app-config.openportal.local.yaml`
+- Context: `osp-openportal-oidc` → Cluster: `openportal` → Loads: `app-config.openportal.local.yaml`
+- Context: `rancher-desktop` → Cluster: `rancher-desktop` → Loads: `app-config.rancher-desktop.local.yaml`
+
+**Key Benefit:** Different authentication methods (client certs, OIDC tokens) can share the same configuration when connecting to the same cluster.
 
 #### Logging Scripts
 
@@ -196,9 +205,11 @@ packages/
 
 - `app-config.yaml` - Base configuration (Updated for v1.42.0)
 - `app-config.production.yaml` - Production overrides
-- `app-config.{context}.local.yaml` - Context-specific overrides (gitignored, auto-loaded by yarn start)
+- `app-config.{cluster}.local.yaml` - Cluster-specific overrides (gitignored, auto-loaded by yarn start)
 - `.sops.yaml` - SOPS encryption configuration
 - `.envrc` - Direnv auto-loader with SOPS decryption
+
+**Note:** Configuration uses cluster names (not context names), allowing multiple contexts with different authentication methods to share the same config.
 
 ## 🆕 New Frontend System Features (v1.42.0)
 
