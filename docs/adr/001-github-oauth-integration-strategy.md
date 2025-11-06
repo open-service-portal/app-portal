@@ -203,6 +203,6 @@ If we need to migrate to the custom email resolver in the future:
 
 ## Notes
 
-Date: 2025-01-06
+Date: 2025-11-06
 Participants: Engineering Team
 Related ADRs: None (first ADR)
