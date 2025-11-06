@@ -34,7 +34,7 @@ backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
 backend.add(import('@backstage/plugin-catalog-backend-module-github'));
-backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
+backend.add(import('@backstage/plugin-catalog-backend-module-msgraph'));
 
 // Custom catalog module for automatic source tagging
 backend.add(import('../../../plugins/catalog-backend-module-source-tagger/src/index.ts'));

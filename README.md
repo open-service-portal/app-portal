@@ -180,12 +180,27 @@ All secrets are managed through SOPS encryption. The `.envrc` file automatically
 - `AUTH_GITHUB_CLIENT_ID` - GitHub OAuth App Client ID
 - `AUTH_GITHUB_CLIENT_SECRET` - GitHub OAuth App Client Secret
 
-**Microsoft Entra ID Authentication:**
+**Microsoft Entra ID Authentication & Catalog:**
 - `AUTH_MICROSOFT_CLIENT_ID` - Microsoft Application (client) ID
 - `AUTH_MICROSOFT_CLIENT_SECRET` - Microsoft Client Secret
 - `AUTH_MICROSOFT_TENANT_ID` - Microsoft Tenant ID
 
+These credentials are used for both:
+- User authentication (sign-in)
+- Microsoft Graph catalog provider (importing users/groups from Entra ID)
+
 No manual environment variable setup needed when using direnv!
+
+#### GitHub Integration Strategy
+
+**Current approach:** GitHub OAuth with `dangerouslyAllowSignInWithoutUserInCatalog: true`
+- Users authenticate with Microsoft Entra ID for Backstage identity
+- GitHub OAuth is used solely for API access (creating PRs, commits on behalf of users)
+- No validation that GitHub account belongs to the Microsoft user
+- Simple, works immediately, suitable for trusted internal environments
+
+**For details on this decision and alternative approaches, see:**
+- [ADR-001: GitHub OAuth Integration Strategy](docs/adr/001-github-oauth-integration-strategy.md)
 
 ## 📦 Project Structure
 

@@ -8,7 +8,7 @@ import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
 import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
 import apiDocsPlugin from '@backstage/plugin-api-docs/alpha';
 import { SignInPageBlueprint, createFrontendModule, PageBlueprint } from '@backstage/frontend-plugin-api';
-import { githubAuthApiRef, microsoftAuthApiRef } from '@backstage/core-plugin-api';
+import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { SignInPage } from '@backstage/core-components';
 import { Navigate } from 'react-router-dom';
 import { navModule } from './modules/nav';
@@ -19,7 +19,7 @@ import {
   crossplaneGraphContent,
 } from './extensions/crossplaneEntityExtensions';
 
-// Custom SignInPage with GitHub and Microsoft Auth
+// Custom SignInPage with Microsoft Auth only
 const signInPage = SignInPageBlueprint.make({
   params: {
     loader: async () => props =>
@@ -28,12 +28,6 @@ const signInPage = SignInPageBlueprint.make({
           {...props}
           providers={[
             'guest',
-            {
-              id: 'github-auth-provider',
-              title: 'GitHub',
-              message: 'Sign in using GitHub',
-              apiRef: githubAuthApiRef,
-            },
             {
               id: 'microsoft-auth-provider',
               title: 'Microsoft',
