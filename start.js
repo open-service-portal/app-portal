@@ -15,6 +15,19 @@ const path = require('path');
 require('events').EventEmitter.defaultMaxListeners = 20;
 process.setMaxListeners(20);
 
+/**
+ * Escape argument for safe shell execution
+ * Wraps argument in single quotes and escapes any internal single quotes
+ * using the '\'' sequence (close quote, escaped quote, open quote)
+ * 
+ * @param {string} arg - The argument to escape
+ * @returns {string} - Shell-safe escaped argument
+ */
+function shellEscape(arg) {
+  // Replace each single quote with '\'' (close-escape-open)
+  return `'${arg.replace(/'/g, "'\\''")}'`;
+}
+
 // Check for --log flag
 const withLogging = process.argv.includes('--log') || process.argv.includes('--with-log');
 
@@ -161,8 +174,11 @@ if (withLogging) {
   }
 
   // Build the full command with logging using shell
+  // Use shellEscape for all arguments and logFile to handle special characters
   const baseCommand = isProduction ? 'node' : 'yarn';
-  command = `${baseCommand} ${backstageArgs.map(arg => `"${arg}"`).join(' ')} 2>&1 | tee ${logFile}`;
+  const escapedArgs = backstageArgs.map(arg => shellEscape(arg)).join(' ');
+  const escapedLogFile = shellEscape(logFile);
+  command = `${baseCommand} ${escapedArgs} 2>&1 | tee ${escapedLogFile}`;
   commandArgs = [];
   spawnOptions = { stdio: 'inherit', shell: true, env: envWithNodeOptions };
   console.log('🚀 Starting Backstage with logging...\n');
