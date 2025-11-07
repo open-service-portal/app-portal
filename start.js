@@ -12,10 +12,21 @@ const fs = require('fs');
 const path = require('path');
 
 // Increase max listeners to handle multiple config files without warnings
-// Note: Most of the work is now done via --require flag, but we keep this
-// as a fallback for the parent process
 require('events').EventEmitter.defaultMaxListeners = 20;
 process.setMaxListeners(20);
+
+/**
+ * Escape argument for safe shell execution
+ * Wraps argument in single quotes and escapes any internal single quotes
+ * using the '\'' sequence (close quote, escaped quote, open quote)
+ * 
+ * @param {string} arg - The argument to escape
+ * @returns {string} - Shell-safe escaped argument
+ */
+function shellEscape(arg) {
+  // Replace each single quote with '\'' (close-escape-open)
+  return `'${arg.replace(/'/g, "'\\''")}'`;
+}
 
 // Check for --log flag
 const withLogging = process.argv.includes('--log') || process.argv.includes('--with-log');
@@ -137,20 +148,17 @@ if (context) {
 let command, commandArgs, spawnOptions;
 
 // Set Node options for better performance and to handle multiple config files
-// --max-old-space-size=4096 for memory
-// --max-http-header-size=16384 for larger headers
-// --require ./set-max-listeners.js to set max listeners before backstage-cli runs
 const maxListenersPath = path.join(appPortalRoot, 'set-max-listeners.js');
-const nodeOptions = `--max-old-space-size=4096 --max-http-header-size=16384 --require ${maxListenersPath}`;
+const nodeOptions = `--max-old-space-size=4096 --max-http-header-size=16384 --require "${maxListenersPath}"`;
 const currentNodeOptions = process.env.NODE_OPTIONS || '';
 
 // Pass increased max listeners via environment variable
 const envWithNodeOptions = {
   ...process.env,
   NODE_OPTIONS: `${currentNodeOptions} ${nodeOptions}`.trim(),
-  NODE_NO_WARNINGS: '0', // Keep warnings visible for debugging
-  UV_THREADPOOL_SIZE: '8', // Increase thread pool for file operations
-  LOG_LEVEL: process.env.LOG_LEVEL || 'info'  // Control Backstage logging verbosity
+  NODE_NO_WARNINGS: '0',
+  UV_THREADPOOL_SIZE: '8',
+  LOG_LEVEL: process.env.LOG_LEVEL || 'info'
 };
 
 if (withLogging) {
@@ -166,16 +174,20 @@ if (withLogging) {
   }
 
   // Build the full command with logging using shell
+  // Use shellEscape for all arguments and logFile to handle special characters
   const baseCommand = isProduction ? 'node' : 'yarn';
-  command = `${baseCommand} ${backstageArgs.join(' ')} 2>&1 | tee ${logFile}`;
+  const escapedArgs = backstageArgs.map(arg => shellEscape(arg)).join(' ');
+  const escapedLogFile = shellEscape(logFile);
+  command = `${baseCommand} ${escapedArgs} 2>&1 | tee ${escapedLogFile}`;
   commandArgs = [];
   spawnOptions = { stdio: 'inherit', shell: true, env: envWithNodeOptions };
   console.log('🚀 Starting Backstage with logging...\n');
 } else {
-  // Simple command without logging
+  // Use spawn without shell for better argument handling
   command = isProduction ? 'node' : 'yarn';
   commandArgs = backstageArgs;
-  spawnOptions = { stdio: 'inherit', shell: true, env: envWithNodeOptions };
+  // Don't use shell: true - let spawn handle the arguments directly
+  spawnOptions = { stdio: 'inherit', env: envWithNodeOptions };
   console.log('🚀 Starting Backstage...\n');
 }
 
