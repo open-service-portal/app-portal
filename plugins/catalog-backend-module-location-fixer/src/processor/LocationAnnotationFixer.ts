@@ -1,5 +1,5 @@
-import { CatalogProcessor, CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
-import { Entity, LocationEntity } from '@backstage/catalog-model';
+import { CatalogProcessor, CatalogProcessorEmit, CatalogProcessorCache } from '@backstage/plugin-catalog-node';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
@@ -22,11 +22,7 @@ export class LocationAnnotationFixer implements CatalogProcessor {
     return 'LocationAnnotationFixer';
   }
 
-  async preProcessEntity(
-    entity: Entity,
-    _location: LocationEntity,
-    _emit: CatalogProcessorEmit,
-  ): Promise<Entity> {
+  private fixAnnotations(entity: Entity): Entity {
     const annotations = entity.metadata.annotations;
 
     if (!annotations) {
@@ -67,5 +63,24 @@ export class LocationAnnotationFixer implements CatalogProcessor {
     }
 
     return entity;
+  }
+
+  async preProcessEntity(
+    entity: Entity,
+    _location: LocationSpec,
+    _emit: CatalogProcessorEmit,
+    _originLocation: LocationSpec,
+    _cache: CatalogProcessorCache,
+  ): Promise<Entity> {
+    return this.fixAnnotations(entity);
+  }
+
+  async postProcessEntity(
+    entity: Entity,
+    _location: LocationSpec,
+    _emit: CatalogProcessorEmit,
+    _cache: CatalogProcessorCache,
+  ): Promise<Entity> {
+    return this.fixAnnotations(entity);
   }
 }
