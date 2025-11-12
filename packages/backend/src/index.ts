@@ -25,6 +25,7 @@ backend.add(import('@backstage/plugin-auth-backend'));
 // See https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
+backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));
 // See https://backstage.io/docs/auth/guest/provider
 
 // catalog plugin
@@ -33,7 +34,7 @@ backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
 backend.add(import('@backstage/plugin-catalog-backend-module-github'));
-backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
+backend.add(import('@backstage/plugin-catalog-backend-module-msgraph'));
 
 // Custom catalog module for automatic source tagging
 backend.add(import('../../../plugins/catalog-backend-module-source-tagger/src/index.ts'));

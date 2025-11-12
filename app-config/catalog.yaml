@@ -8,6 +8,16 @@ catalog:
   rules:
     - allow: [Component, System, API, Resource, Location, User, Group, Template]
   providers:
+    microsoftGraphOrg:
+      default:
+        tenantId: ${AUTH_MICROSOFT_TENANT_ID}
+        clientId: ${AUTH_MICROSOFT_CLIENT_ID}
+        clientSecret: ${AUTH_MICROSOFT_CLIENT_SECRET}
+        # Optional: filter users by group
+        # userGroupMember: 'group-id-here'
+        schedule:
+          frequency: { minutes: 30 }
+          timeout: { minutes: 3 }
     githubOrg:
       - id: production
         githubUrl: https://github.com
