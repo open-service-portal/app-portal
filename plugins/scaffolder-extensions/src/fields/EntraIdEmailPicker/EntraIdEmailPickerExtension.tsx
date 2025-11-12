@@ -112,6 +112,10 @@ export const EntraIdEmailPicker = ({
         onChange={(_, newValue) => {
           setSelectedUser(newValue);
           onChange(newValue?.mail || '');
+          // Update input to show the selected email
+          if (newValue) {
+            setInputValue(newValue.mail);
+          }
         }}
         inputValue={inputValue}
         onInputChange={(_, newInputValue, reason) => {
