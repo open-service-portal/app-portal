@@ -1,0 +1,15 @@
+# Microsoft Entra ID (Azure AD) Configuration
+# Used for user search and directory integration
+
+entraId:
+  # Azure AD Tenant ID
+  tenantId: ${AUTH_MICROSOFT_TENANT_ID}
+
+  # Application (Client) ID
+  clientId: ${AUTH_MICROSOFT_CLIENT_ID}
+
+  # Client Secret
+  clientSecret: ${AUTH_MICROSOFT_CLIENT_SECRET}
+
+  # Optional: Custom Graph API endpoint (defaults to https://graph.microsoft.com/v1.0)
+  # graphApiEndpoint: https://graph.microsoft.com/v1.0

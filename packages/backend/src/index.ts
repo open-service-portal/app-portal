@@ -27,6 +27,9 @@ backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 // See https://backstage.io/docs/auth/guest/provider
 
+// EntraID user search for scaffolder field
+backend.add(import('./modules/entra-id-user-search'));
+
 // catalog plugin
 backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(

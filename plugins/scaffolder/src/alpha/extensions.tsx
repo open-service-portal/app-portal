@@ -72,6 +72,8 @@ export const repoUrlPickerFormField = FormFieldBlueprint.make({
   },
 });
 
+export { validateKebabCaseFormField } from './fields/ValidateKebabCase';
+
 export const scaffolderApi = ApiBlueprint.make({
   params: defineParams =>
     defineParams({

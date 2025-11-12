@@ -29,6 +29,7 @@ import {
 } from '../routes';
 import {
   repoUrlPickerFormField,
+  validateKebabCaseFormField,
   scaffolderNavItem,
   scaffolderPage,
   scaffolderApi,
@@ -73,6 +74,7 @@ const scaffolderPlugin: FrontendPlugin = createFrontendPlugin({
     formDecoratorsApi,
     formFieldsApi,
     repoUrlPickerFormField,
+    validateKebabCaseFormField,
   ],
 });
 

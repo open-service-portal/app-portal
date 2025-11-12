@@ -27,6 +27,7 @@ includes:
   - app-config/backend.yaml         # Backend server configuration
   - app-config/auth.yaml           # Authentication providers and settings
   - app-config/catalog.yaml        # Software catalog configuration
+  - app-config/entraid.yaml        # Microsoft Entra ID (Azure AD) configuration
   - app-config/integrations.yaml   # External service integrations
   - app-config/kubernetes.yaml     # Kubernetes clusters and ingestors
   - app-config/ingestor.yaml       # Ingestor settings
