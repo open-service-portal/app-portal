@@ -31,14 +31,24 @@ function shellEscape(arg) {
 // Check for --log flag
 const withLogging = process.argv.includes('--log') || process.argv.includes('--with-log');
 
-// Get current kubectl context
-let context;
+// Get current kubectl context and extract cluster name
+let context, clusterName;
 try {
   context = execSync('kubectl config current-context', { encoding: 'utf8' }).trim();
   console.log(`📍 Current kubectl context: ${context}`);
+
+  // Extract cluster name from context (multiple contexts can point to same cluster)
+  try {
+    clusterName = execSync('kubectl config view --minify -o jsonpath=\'{.contexts[0].context.cluster}\'', { encoding: 'utf8' }).trim();
+    console.log(`🎯 Cluster name: ${clusterName}`);
+  } catch (clusterError) {
+    console.log('⚠️  Could not extract cluster name from context');
+    clusterName = null;
+  }
 } catch (error) {
   console.log('⚠️  No kubectl context found, using defaults');
   context = null;
+  clusterName = null;
 }
 
 // Ensure we're in the right directory (app-portal root)
@@ -130,17 +140,28 @@ if (isProduction) {
   }
 }
 
-// Load context-specific config if available
-if (context) {
-  const configFile = `app-config.${context}.local.yaml`;
+// Load cluster-specific config if available
+// Multiple contexts can point to the same cluster with different auth methods
+if (clusterName) {
+  const configFile = `app-config.${clusterName}.local.yaml`;
   const configPath = path.join(appPortalRoot, configFile);
-  
+
   if (fs.existsSync(configPath)) {
-    console.log(`✅ Found context config: ${configFile}`);
+    console.log(`✅ Found cluster config: ${configFile}`);
     backstageArgs.push('--config', configPath);
   } else {
-    console.log(`⚠️  No config found for context: ${context}`);
+    console.log(`⚠️  No config found for cluster: ${clusterName}`);
     console.log(`    Expected: ${configFile}`);
+    console.log(`    Run: ../scripts/cluster-config.sh`);
+  }
+} else if (context) {
+  // Fallback: try context-based config for backward compatibility
+  const configFile = `app-config.${context}.local.yaml`;
+  const configPath = path.join(appPortalRoot, configFile);
+
+  if (fs.existsSync(configPath)) {
+    console.log(`✅ Found context config (legacy): ${configFile}`);
+    backstageArgs.push('--config', configPath);
   }
 }
 

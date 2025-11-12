@@ -50,8 +50,8 @@ sops updatekeys github-app-key.pem.enc
 ## Development Commands
 
 ```bash
-# Start development server (auto-detects kubectl context)
-yarn start              # Loads app-config.{context}.local.yaml automatically
+# Start development server (auto-detects cluster from kubectl context)
+yarn start              # Loads app-config.{cluster}.local.yaml automatically
 yarn start:log          # Same as above, with timestamped logging
 yarn start --log        # Alternative syntax for logging
 
@@ -85,14 +85,19 @@ yarn new
 
 The `yarn start` command uses a Node.js script (`start.js` in root) that:
 1. Detects current kubectl context via `kubectl config current-context`
-2. Looks for context-specific config: `app-config.{context}.local.yaml`
-3. Automatically loads both base and context configs
-4. Shows which configuration is being used
-5. Falls back gracefully if no context or config found
+2. Extracts cluster name from context (multiple contexts can share same cluster)
+3. Looks for cluster-specific config: `app-config.{cluster}.local.yaml`
+4. Automatically loads both base and cluster configs
+5. Shows which configuration is being used
+6. Falls back to context-based config for backward compatibility
+7. Falls back gracefully if no context or config found
 
 **Example:**
-- Context: `rancher-desktop` → Loads: `app-config.rancher-desktop.local.yaml`
-- Context: `rackspace-openportal` → Loads: `app-config.rackspace-openportal.local.yaml`
+- Context: `osp-openportal` → Cluster: `openportal` → Loads: `app-config.openportal.local.yaml`
+- Context: `osp-openportal-oidc` → Cluster: `openportal` → Loads: `app-config.openportal.local.yaml`
+- Context: `rancher-desktop` → Cluster: `rancher-desktop` → Loads: `app-config.rancher-desktop.local.yaml`
+
+**Key Benefit:** Multiple contexts with different authentication methods can share the same configuration when connecting to the same cluster.
 
 ### Logging Support
 The start script supports logging via `--log` flag:
@@ -247,7 +252,7 @@ Configuration is now split into focused modules in the `app-config/` directory:
 
 ```yaml
 # The start.js script loads all modules automatically:
-yarn start  # Loads: app-config.yaml + app-config/*.yaml + app-config.{context}.local.yaml
+yarn start  # Loads: app-config.yaml + app-config/*.yaml + app-config.{cluster}.local.yaml
 ```
 
 **Configuration Modules:**
@@ -318,7 +323,7 @@ A comprehensive Crossplane integration plugin with 16,000+ lines of production c
 - Includes CLI tools for debugging and testing
 - **Configuration-driven templates** from `app-config/ingestor.yaml`
 - **GitOps workflow** support with PR-based resource creation
-- **Auto-detection** of kubectl context for cluster targeting
+- **Auto-detection** of cluster name from kubectl context for targeting
 
 **CLI Tools:**
 ```bash
