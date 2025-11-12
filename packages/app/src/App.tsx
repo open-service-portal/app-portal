@@ -13,11 +13,12 @@ import { SignInPage } from '@backstage/core-components';
 import { Navigate } from 'react-router-dom';
 import { navModule } from './modules/nav';
 import { CrossplanePage } from './components/crossplane/CrossplanePage';
-import { 
+import {
   crossplaneOverviewCard,
   crossplaneResourcesContent,
   crossplaneGraphContent,
 } from './extensions/crossplaneEntityExtensions';
+import { EntraIdUserPickerFieldExtension } from './scaffolder';
 
 // Custom SignInPage with Microsoft Auth only
 const signInPage = SignInPageBlueprint.make({
@@ -78,6 +79,7 @@ const app = createApp({
   features: [
     catalogPlugin,
     scaffolderPlugin,  // Use our enhanced local scaffolder plugin
+    EntraIdUserPickerFieldExtension,  // Custom scaffolder field for Entra ID user selection
     authModule,
     searchPlugin,
     techdocsPlugin,
