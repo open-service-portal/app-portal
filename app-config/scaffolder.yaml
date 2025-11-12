@@ -7,3 +7,10 @@ scaffolder:
     name: Open Service Portal
     email: noreply@github.com
   defaultCommitMessage: "Initial commit from Backstage"
+
+  # Custom action configuration
+  entraId:
+    # Microsoft Graph credentials (reuse environment variables from catalog provider)
+    tenantId: ${AUTH_MICROSOFT_TENANT_ID}
+    clientId: ${AUTH_MICROSOFT_CLIENT_ID}
+    clientSecret: ${AUTH_MICROSOFT_CLIENT_SECRET}
