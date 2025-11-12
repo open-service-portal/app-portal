@@ -6,6 +6,7 @@ const backend = createBackend();
 
 backend.add(import('@backstage/plugin-app-backend'));
 backend.add(import('@backstage/plugin-proxy-backend'));
+backend.add(import('./plugins/entraIdProxy'));
 
 // scaffolder plugin
 backend.add(import('@backstage/plugin-scaffolder-backend'));
