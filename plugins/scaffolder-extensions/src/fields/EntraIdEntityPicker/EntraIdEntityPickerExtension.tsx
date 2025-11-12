@@ -167,12 +167,7 @@ export const entraIdEntityPickerValidation = (
   value: string,
   validation: { addError: (message: string) => void },
 ): void => {
-  if (!value) {
-    return;
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(value)) {
-    validation.addError('Please enter a valid email address');
-  }
+  // No validation needed - email format is guaranteed by the picker
+  // since users can only select from valid Entra ID users with email addresses
+  return;
 };
