@@ -28,7 +28,7 @@ interface EntraIdUser {
   userPrincipalName: string;
 }
 
-export const EntraIdEmailPicker = ({
+export const EntraIdEntityPicker = ({
   onChange,
   rawErrors,
   required,
@@ -163,7 +163,7 @@ export const EntraIdEmailPicker = ({
   );
 };
 
-export const entraIdEmailPickerValidation = (
+export const entraIdEntityPickerValidation = (
   value: string,
   validation: { addError: (message: string) => void },
 ): void => {

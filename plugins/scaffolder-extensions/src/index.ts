@@ -25,5 +25,5 @@
 // Export all custom field extensions
 export { ValidateKebabCase } from './fields/ValidateKebabCase';
 export { validateKebabCaseValidation } from './fields/ValidateKebabCase/ValidateKebabCaseExtension';
-export { EntraIdEmailPicker } from './fields/EntraIdEmailPicker';
-export { entraIdEmailPickerValidation } from './fields/EntraIdEmailPicker/EntraIdEmailPickerExtension';
+export { EntraIdEntityPicker } from './fields/EntraIdEntityPicker';
+export { entraIdEntityPickerValidation } from './fields/EntraIdEntityPicker/EntraIdEntityPickerExtension';

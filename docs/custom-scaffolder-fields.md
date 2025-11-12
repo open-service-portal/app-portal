@@ -233,7 +233,7 @@ FormFieldBlueprint.make({
 - ✅ `packages/app/src/modules/scaffolderExtensions.ts` - Created module
 - ✅ `plugins/scaffolder.backup/` - Old internal fork backed up
 
-## EntraIdEmailPicker Field
+## EntraIdEntityPicker Field
 
 Custom autocomplete field for selecting user email addresses from Microsoft Entra ID (Azure AD).
 
@@ -287,7 +287,7 @@ spec:
       properties:
         ownerEmail:
           type: string
-          ui:field: EntraIdEmailPicker
+          ui:field: EntraIdEntityPicker
           title: Owner Email
           description: Email address of the resource owner
 ```
@@ -311,8 +311,8 @@ Backend:
 - Registered in: `packages/backend/src/index.ts`
 
 Frontend:
-- `plugins/scaffolder-extensions/src/fields/EntraIdEmailPicker/EntraIdEmailPickerExtension.tsx` - Component
-- `plugins/scaffolder-extensions/src/fields/EntraIdEmailPicker/index.ts` - Field creation
+- `plugins/scaffolder-extensions/src/fields/EntraIdEntityPicker/EntraIdEntityPickerExtension.tsx` - Component
+- `plugins/scaffolder-extensions/src/fields/EntraIdEntityPicker/index.ts` - Field creation
 - Exported from: `plugins/scaffolder-extensions/src/index.ts`
 - Registered in: `packages/app/src/modules/scaffolderExtensions.ts`
 

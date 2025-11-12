@@ -37,12 +37,12 @@ export const scaffolderExtensionsModule = createFrontendModule({
       },
     }),
 
-    // EntraIdEmailPicker field extension
+    // EntraIdEntityPicker field extension
     FormFieldBlueprint.make({
-      name: 'entra-id-email-picker',
+      name: 'entra-id-entity-picker',
       params: {
         field: () =>
-          import('@internal/scaffolder-extensions').then(m => m.EntraIdEmailPicker),
+          import('@internal/scaffolder-extensions').then(m => m.EntraIdEntityPicker),
       },
     }),
 
