@@ -1,0 +1,4 @@
+[tools]
+node = "20"
+sops = "latest"
+yarn = "4.4.1"
