@@ -51,6 +51,22 @@ spec:
         # Path to the mounted private key file
         - name: AUTH_GITHUB_APP_PRIVATE_KEY_FILE
           value: "/secrets/github-app-key.pem"
+        # Microsoft Entra ID configuration from secret
+        - name: AUTH_MICROSOFT_TENANT_ID
+          valueFrom:
+            secretKeyRef:
+              name: app-portal-microsoft-entraid
+              key: AUTH_MICROSOFT_TENANT_ID
+        - name: AUTH_MICROSOFT_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: app-portal-microsoft-entraid
+              key: AUTH_MICROSOFT_CLIENT_ID
+        - name: AUTH_MICROSOFT_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: app-portal-microsoft-entraid
+              key: AUTH_MICROSOFT_CLIENT_SECRET
         # Kubernetes configuration
         - name: KUBERNETES_API_URL
           valueFrom:
