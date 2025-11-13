@@ -1,7 +1,7 @@
 import { createApp } from '@backstage/frontend-defaults';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
-// Use our enhanced local scaffolder plugin
-import scaffolderPlugin from '@internal/plugin-scaffolder/alpha';
+// Use official scaffolder plugin with custom extensions
+import scaffolderPlugin from '@backstage/plugin-scaffolder/alpha';
 import searchPlugin from '@backstage/plugin-search/alpha';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
@@ -12,6 +12,7 @@ import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { SignInPage } from '@backstage/core-components';
 import { Navigate } from 'react-router-dom';
 import { navModule } from './modules/nav';
+import { scaffolderExtensionsModule } from './modules/scaffolderExtensions';
 import { CrossplanePage } from './components/crossplane/CrossplanePage';
 import { 
   crossplaneOverviewCard,
@@ -73,11 +74,11 @@ const crossplaneEntityModule = createFrontendModule({
   ],
 });
 
-
 const app = createApp({
   features: [
     catalogPlugin,
-    scaffolderPlugin,  // Use our enhanced local scaffolder plugin
+    scaffolderPlugin,  // Official Backstage scaffolder plugin
+    scaffolderExtensionsModule,  // Our custom field extensions
     authModule,
     searchPlugin,
     techdocsPlugin,

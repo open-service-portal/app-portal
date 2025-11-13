@@ -43,6 +43,11 @@ dist-types
 # Temporary change files created by Vim
 *.swp
 
+# Backup files
+*.bak
+*.backup
+*~
+
 # MkDocs build output
 site
 
