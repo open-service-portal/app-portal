@@ -1,8 +1,9 @@
-import { 
-  createBackendModule 
+import {
+  createBackendModule
 } from '@backstage/backend-plugin-api';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import { createGenerateIdAction } from './generateId';
+import { createValidateGitHubAuthAction } from './actions/validateGitHubAuth';
 
 const scaffolderModuleCustomActions = createBackendModule({
   pluginId: 'scaffolder',
@@ -13,7 +14,10 @@ const scaffolderModuleCustomActions = createBackendModule({
         scaffolder: scaffolderActionsExtensionPoint,
       },
       async init({ scaffolder }) {
-        scaffolder.addActions(createGenerateIdAction());
+        scaffolder.addActions(
+          createGenerateIdAction(),
+          createValidateGitHubAuthAction(),
+        );
       },
     });
   },

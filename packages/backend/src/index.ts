@@ -28,6 +28,9 @@ backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));
 // See https://backstage.io/docs/auth/guest/provider
 
+// EntraID user search for scaffolder field
+backend.add(import('./modules/entra-id-user-search'));
+
 // catalog plugin
 backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
@@ -38,6 +41,9 @@ backend.add(import('@backstage/plugin-catalog-backend-module-msgraph'));
 
 // Custom catalog module for automatic source tagging
 backend.add(import('../../../plugins/catalog-backend-module-source-tagger/src/index.ts'));
+
+// Custom catalog module to fix location annotations with url: prefix
+backend.add(import('../../../plugins/catalog-backend-module-location-fixer/src/index.ts'));
 
 // See https://backstage.io/docs/features/software-catalog/configuration#subscribing-to-catalog-errors
 backend.add(import('@backstage/plugin-catalog-backend-module-logs'));
