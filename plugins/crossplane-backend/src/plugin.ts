@@ -74,27 +74,27 @@ export const crossplanePlugin = createBackendPlugin({
         // Initialize Kubernetes client
         const kubernetesClient = new KubernetesClient(logger, clusters);
 
-        // Create router
-        const router = await createRouter({
-          logger,
-          kubernetesClient,
-        });
-
-        // Register router with auth policies
-        httpRouter.use(router);
-
         // Read auth configuration
         const allowUnauthenticated = config.getOptionalBoolean(
           'crossplane.allowUnauthenticated',
         ) ?? false;
 
-        // Add auth policies for all endpoints
+        // Add auth policies BEFORE registering router
         // Default: require authentication (user-cookie)
         // Override: set crossplane.allowUnauthenticated: true in app-config.yaml
         httpRouter.addAuthPolicy({
           path: '/',
           allow: allowUnauthenticated ? 'unauthenticated' : 'user-cookie',
         });
+
+        // Create router
+        const router = await createRouter({
+          logger,
+          kubernetesClient,
+        });
+
+        // Register router
+        httpRouter.use(router);
 
         logger.info(
           `Crossplane backend plugin initialized (auth: ${allowUnauthenticated ? 'unauthenticated' : 'authenticated'})`,

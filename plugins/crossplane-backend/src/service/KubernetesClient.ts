@@ -1,6 +1,7 @@
-import { KubeConfig, CustomObjectsApi } from '@kubernetes/client-node';
+import { KubeConfig } from '@kubernetes/client-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ClusterConfig, CrossplaneXR } from '../types';
+import https from 'https';
 
 /**
  * Kubernetes client for querying Crossplane resources
@@ -24,12 +25,18 @@ export class KubernetesClient {
         const kc = new KubeConfig();
 
         // Create cluster configuration
+        const clusterConfig: any = {
+          name: cluster.name,
+          server: cluster.url,
+        };
+
+        // Add skipTLSVerify if configured
+        if (cluster.skipTLSVerify) {
+          clusterConfig.skipTLSVerify = true;
+        }
+
         kc.loadFromOptions({
-          clusters: [{
-            name: cluster.name,
-            server: cluster.url,
-            skipTLSVerify: cluster.skipTLSVerify ?? false,
-          }],
+          clusters: [clusterConfig],
           users: [{
             name: 'backstage',
             token: cluster.serviceAccountToken,
@@ -78,62 +85,58 @@ export class KubernetesClient {
       }
 
       try {
-        const api = kc.makeApiClient(CustomObjectsApi);
+        // Build API path
+        const apiPath = namespace
+          ? `/apis/${group}/${version}/namespaces/${namespace}/${plural}`
+          : `/apis/${group}/${version}/${plural}`;
 
-        let response: any;
-        if (namespace) {
-          // Namespaced resource
-          response = await api.listNamespacedCustomObject(
-            group,
-            version,
-            namespace,
-            plural,
-            undefined, // pretty
-            undefined, // allowWatchBookmarks
-            undefined, // continue
-            undefined, // fieldSelector
-            labelSelector,
-          );
-        } else {
-          // Check if resource is cluster-scoped or search all namespaces
-          try {
-            response = await api.listClusterCustomObject(
-              group,
-              version,
-              plural,
-              undefined, // pretty
-              undefined, // allowWatchBookmarks
-              undefined, // continue
-              undefined, // fieldSelector
-              labelSelector,
-            );
-          } catch (error: any) {
-            // If cluster-scoped fails, try listing across all namespaces
-            if (error.response?.statusCode === 404) {
-              response = await api.listClusterCustomObject(
-                group,
-                version,
-                plural,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                labelSelector,
-              );
-            } else {
-              throw error;
-            }
-          }
+        // Get cluster config
+        const cluster = this.clusters.find(c => c.name === clusterName);
+        if (!cluster) {
+          throw new Error(`Cluster ${clusterName} not found`);
         }
 
-        // Parse response items
-        if (response.body && typeof response.body === 'object') {
-          const body = response.body as any;
-          const items = body.items || [];
+        // Make direct HTTPS request
+        const url = new URL(apiPath, cluster.url);
 
-          for (const item of items) {
-            results.push(this.transformToXR(item, clusterName));
-          }
+        const body: any = await new Promise((resolve, reject) => {
+          const options = {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${cluster.serviceAccountToken}`,
+              'Accept': 'application/json',
+            },
+            rejectUnauthorized: !cluster.skipTLSVerify,
+          };
+
+          https.get(url.toString(), options, (res) => {
+            let data = '';
+
+            res.on('data', (chunk) => {
+              data += chunk;
+            });
+
+            res.on('end', () => {
+              if (res.statusCode !== 200) {
+                reject(new Error(`K8s API returned ${res.statusCode}: ${res.statusMessage}`));
+                return;
+              }
+
+              try {
+                resolve(JSON.parse(data));
+              } catch (err) {
+                reject(new Error(`Failed to parse JSON response: ${err}`));
+              }
+            });
+          }).on('error', (err) => {
+            reject(err);
+          });
+        });
+
+        // Parse response items
+        const items = body.items || [];
+        for (const item of items) {
+          results.push(this.transformToXR(item, clusterName));
         }
 
         this.logger.debug(
@@ -141,8 +144,7 @@ export class KubernetesClient {
         );
       } catch (error: any) {
         this.logger.error(
-          `Failed to list XRs in cluster ${clusterName}:`,
-          error.message,
+          `Failed to list XRs in cluster ${clusterName}: ${error.message}`,
         );
         // Continue with other clusters
       }
