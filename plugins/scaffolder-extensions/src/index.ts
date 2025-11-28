@@ -27,3 +27,5 @@ export { ValidateKebabCase } from './fields/ValidateKebabCase';
 export { validateKebabCaseValidation } from './fields/ValidateKebabCase/ValidateKebabCaseExtension';
 export { EntraIdEntityPicker } from './fields/EntraIdEntityPicker';
 export { entraIdEntityPickerValidation } from './fields/EntraIdEntityPicker/EntraIdEntityPickerExtension';
+export { CrossplaneXRPicker } from './fields/CrossplaneXRPicker';
+export { crossplaneXRPickerValidation } from './fields/CrossplaneXRPicker/CrossplaneXRPickerExtension';
