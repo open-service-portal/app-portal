@@ -67,6 +67,9 @@ backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 // kubernetes plugin
 backend.add(import('@backstage/plugin-kubernetes-backend'));
 
+// crossplane backend plugin - provides API for querying XR instances
+backend.add(import('@internal/plugin-crossplane-backend'));
+
 // Ingestor plugin - discovers and imports Kubernetes resources into catalog
 // Configure in app-config/ingestor.yaml
 //

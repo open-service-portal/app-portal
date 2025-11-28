@@ -48,6 +48,7 @@
     "@backstage/plugin-signals-backend": "^0.3.7",
     "@backstage/plugin-techdocs-backend": "^2.0.5",
     "@devangelista/backstage-scaffolder-kubernetes": "^0.5.0",
+    "@internal/plugin-crossplane-backend": "link:../../plugins/crossplane-backend",
     "@internal/plugin-ingestor": "link:../../plugins/ingestor",
     "@open-service-portal/backstage-plugin-ingestor": "2.3.1",
     "@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils": "^1.7.1",

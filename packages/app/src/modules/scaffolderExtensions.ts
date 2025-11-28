@@ -46,6 +46,15 @@ export const scaffolderExtensionsModule = createFrontendModule({
       },
     }),
 
+    // CrossplaneXRPicker field extension
+    FormFieldBlueprint.make({
+      name: 'crossplane-xr-picker',
+      params: {
+        field: () =>
+          import('@internal/scaffolder-extensions').then(m => m.CrossplaneXRPicker),
+      },
+    }),
+
     // Future custom fields can be added here following the same pattern:
     // FormFieldBlueprint.make({
     //   name: 'your-custom-field',
