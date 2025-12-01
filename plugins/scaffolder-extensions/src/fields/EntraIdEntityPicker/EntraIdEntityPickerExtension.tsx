@@ -56,9 +56,12 @@ export const EntraIdEntityPicker = ({
       setLoading(true);
 
       try {
-        // Use Discovery API to get the correct backend URL
-        const baseUrl = await discoveryApi.getBaseUrl('app');
-        const url = `${baseUrl}/entra-id/users/search?q=${encodeURIComponent(query)}`;
+        // Use Discovery API to get backend base URL, then add custom path
+        // rootHttpRouter registers at /api/entra-id/users directly
+        const backendUrl = await discoveryApi.getBaseUrl('app');
+        // Remove /api/app from the end and add our custom path
+        const baseUrl = backendUrl.replace(/\/api\/app$/, '');
+        const url = `${baseUrl}/api/entra-id/users/search?q=${encodeURIComponent(query)}`;
         const response = await fetch(url);
 
         if (!response.ok) {
