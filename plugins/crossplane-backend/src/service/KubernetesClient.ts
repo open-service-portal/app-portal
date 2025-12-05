@@ -86,9 +86,13 @@ export class KubernetesClient {
 
       try {
         // Build API path
+        // Core API (no group): /api/v1/...
+        // Grouped API: /apis/{group}/{version}/...
+        const apiPrefix = group ? `/apis/${group}` : '/api';
+        const versionPath = `${apiPrefix}/${version}`;
         const apiPath = namespace
-          ? `/apis/${group}/${version}/namespaces/${namespace}/${plural}`
-          : `/apis/${group}/${version}/${plural}`;
+          ? `${versionPath}/namespaces/${namespace}/${plural}`
+          : `${versionPath}/${plural}`;
 
         // Get cluster config
         const cluster = this.clusters.find(c => c.name === clusterName);
