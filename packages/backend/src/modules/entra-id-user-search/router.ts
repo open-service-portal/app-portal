@@ -1,5 +1,5 @@
 import { Config } from '@backstage/config';
-import express from 'express';
+import * as express from 'express';
 import Router from 'express-promise-router';
 import { LoggerService } from '@backstage/backend-plugin-api';
 

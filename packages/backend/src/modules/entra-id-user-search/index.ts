@@ -3,7 +3,6 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
-import Router from 'express-promise-router';
 
 /**
  * EntraID User Search Backend Module
@@ -32,9 +31,9 @@ export const entraIdUserSearchModule = createBackendModule({
       deps: {
         logger: coreServices.logger,
         config: coreServices.rootConfig,
-        httpRouter: coreServices.httpRouter,
+        rootHttpRouter: coreServices.rootHttpRouter,
       },
-      async init({ logger, config, httpRouter }) {
+      async init({ logger, config, rootHttpRouter }) {
         // Check if EntraID is configured
         const tenantId = config.getOptionalString('entraId.tenantId');
         const clientId = config.getOptionalString('entraId.clientId');
@@ -57,12 +56,9 @@ export const entraIdUserSearchModule = createBackendModule({
           config,
         });
 
-        // Create a wrapper router to mount under /entra-id/users path
-        // New Backend System's httpRouter.use() only accepts 1 argument
-        const wrapperRouter = Router();
-        wrapperRouter.use('/entra-id/users', router);
-
-        httpRouter.use(wrapperRouter as any);
+        // Use rootHttpRouter for custom path registration
+        // Direct registration at /api/entra-id/users
+        rootHttpRouter.use('/api/entra-id/users', router);
 
         logger.info('EntraID User Search module initialized at /api/entra-id/users');
       },
