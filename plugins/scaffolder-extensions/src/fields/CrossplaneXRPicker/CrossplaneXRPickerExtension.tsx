@@ -151,14 +151,37 @@ export const CrossplaneXRPicker = ({
   }, [apiVersion, kind, fetchXRs]);
 
   // Set initial value if formData exists
+  // Only initialize once to prevent overwriting user selection when options refetch
   useEffect(() => {
-    if (formData && !selectedXR && options.length > 0) {
-      const existingXR = options.find(xr => xr.name === formData);
-      if (existingXR) {
-        setSelectedXR(existingXR);
-      }
+    // Only set if we have formData, no current selection, and options available
+    if (!formData || selectedXR || options.length === 0) {
+      return;
     }
-  }, [formData, selectedXR, options]);
+
+    // Find matching XR by name
+    // If multiple matches exist (same name in different clusters/namespaces),
+    // prefer the one from the currently selected cluster/namespace if specified
+    const matchingXRs = options.filter(xr => xr.name === formData);
+
+    if (matchingXRs.length === 0) {
+      return;
+    }
+
+    // If only one match, use it
+    if (matchingXRs.length === 1) {
+      setSelectedXR(matchingXRs[0]);
+      return;
+    }
+
+    // Multiple matches: prefer cluster/namespace match if filters are set
+    const preferredXR = matchingXRs.find(xr => {
+      const clusterMatch = !cluster || xr.cluster === cluster;
+      const namespaceMatch = !namespace || xr.namespace === namespace;
+      return clusterMatch && namespaceMatch;
+    });
+
+    setSelectedXR(preferredXR || matchingXRs[0]);
+  }, [formData, options, cluster, namespace]);
 
   return (
     <FormControl
