@@ -26,6 +26,7 @@ backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));
+backend.add(import('@internal/plugin-kubernetes-auth-backend'));
 // See https://backstage.io/docs/auth/guest/provider
 
 // EntraID user search for scaffolder field

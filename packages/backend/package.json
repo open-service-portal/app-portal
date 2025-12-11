@@ -50,6 +50,7 @@
     "@devangelista/backstage-scaffolder-kubernetes": "^0.5.0",
     "@internal/plugin-crossplane-backend": "link:../../plugins/crossplane-backend",
     "@internal/plugin-ingestor": "link:../../plugins/ingestor",
+    "@internal/plugin-kubernetes-auth-backend": "link:../../plugins/kubernetes-auth-backend",
     "@open-service-portal/backstage-plugin-ingestor": "2.3.1",
     "@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils": "^1.7.1",
     "app": "link:../app",
