@@ -14,6 +14,7 @@ import { kubernetesAuthPlugin, kubernetesAuthApiRef } from '../../../plugins/kub
 import { Navigate } from 'react-router-dom';
 import { navModule } from './modules/nav';
 import { scaffolderExtensionsModule } from './modules/scaffolderExtensions';
+import { userSettingsModule } from './modules/userSettings';
 import { CrossplanePage } from './components/crossplane/CrossplanePage';
 import { 
   crossplaneOverviewCard,
@@ -86,6 +87,7 @@ const app = createApp({
     searchPlugin,
     techdocsPlugin,
     userSettingsPlugin,
+    userSettingsModule,  // Custom provider settings with Kubernetes auth
     kubernetesPlugin,
     apiDocsPlugin,
     navModule,
