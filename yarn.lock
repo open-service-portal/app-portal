@@ -7420,6 +7420,41 @@ __metadata:
   languageName: node
   linkType: soft
 
+"@internal/plugin-kubernetes-auth-backend@link:../../plugins/kubernetes-auth-backend::locator=backend%40workspace%3Apackages%2Fbackend":
+  version: 0.0.0-use.local
+  resolution: "@internal/plugin-kubernetes-auth-backend@link:../../plugins/kubernetes-auth-backend::locator=backend%40workspace%3Apackages%2Fbackend"
+  languageName: node
+  linkType: soft
+
+"@internal/plugin-kubernetes-auth-backend@workspace:plugins/kubernetes-auth-backend":
+  version: 0.0.0-use.local
+  resolution: "@internal/plugin-kubernetes-auth-backend@workspace:plugins/kubernetes-auth-backend"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.1.1"
+    "@backstage/cli": "npm:^0.34.0"
+    "@backstage/plugin-auth-node": "npm:^0.6.6"
+    "@types/passport-oauth2": "npm:^1.4.17"
+    passport-oauth2: "npm:^1.8.0"
+  languageName: unknown
+  linkType: soft
+
+"@internal/plugin-kubernetes-auth@link:../../plugins/kubernetes-auth::locator=app%40workspace%3Apackages%2Fapp":
+  version: 0.0.0-use.local
+  resolution: "@internal/plugin-kubernetes-auth@link:../../plugins/kubernetes-auth::locator=app%40workspace%3Apackages%2Fapp"
+  languageName: node
+  linkType: soft
+
+"@internal/plugin-kubernetes-auth@workspace:plugins/kubernetes-auth":
+  version: 0.0.0-use.local
+  resolution: "@internal/plugin-kubernetes-auth@workspace:plugins/kubernetes-auth"
+  dependencies:
+    "@backstage/cli": "npm:^0.34.0"
+    "@backstage/core-app-api": "npm:^1.18.0"
+    "@backstage/core-plugin-api": "npm:^1.11.1"
+    "@backstage/frontend-plugin-api": "npm:^0.11.0"
+  languageName: unknown
+  linkType: soft
+
 "@internal/scaffolder-extensions@workspace:*, @internal/scaffolder-extensions@workspace:plugins/scaffolder-extensions":
   version: 0.0.0-use.local
   resolution: "@internal/scaffolder-extensions@workspace:plugins/scaffolder-extensions"
@@ -16497,6 +16532,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/oauth@npm:*":
+  version: 0.9.6
+  resolution: "@types/oauth@npm:0.9.6"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/2f3e4ee1059fd28fc2cb6dd9d0973365a0630ea1fa305ac5455ea9666220b73d8ac42e5bee42367a0f12a1041ef103a16c55bf7803d0a82898319c3e32095b4a
+  languageName: node
+  linkType: hard
+
 "@types/parse-json@npm:^4.0.0":
   version: 4.0.2
   resolution: "@types/parse-json@npm:4.0.2"
@@ -16504,7 +16548,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport@npm:^1.0.3":
+"@types/passport-oauth2@npm:^1.4.17":
+  version: 1.8.0
+  resolution: "@types/passport-oauth2@npm:1.8.0"
+  dependencies:
+    "@types/express": "npm:*"
+    "@types/oauth": "npm:*"
+    "@types/passport": "npm:*"
+  checksum: 10c0/1635679ed70044858570488fb46a14868099286f4fe785d47874c1a02706cf5b5cee07e5be0e75a5103a5c260ea9e903e0243d8b7992281680233e69f60e72fa
+  languageName: node
+  linkType: hard
+
+"@types/passport@npm:*, @types/passport@npm:^1.0.3":
   version: 1.0.17
   resolution: "@types/passport@npm:1.0.17"
   dependencies:
@@ -17700,6 +17755,7 @@ __metadata:
     "@backstage/plugin-techdocs": "npm:^1.14.0"
     "@backstage/plugin-user-settings": "npm:^0.8.25"
     "@backstage/ui": "npm:^0.7.0"
+    "@internal/plugin-kubernetes-auth": "link:../../plugins/kubernetes-auth"
     "@internal/scaffolder-extensions": "workspace:*"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
@@ -18389,6 +18445,7 @@ __metadata:
     "@devangelista/backstage-scaffolder-kubernetes": "npm:^0.5.0"
     "@internal/plugin-crossplane-backend": "link:../../plugins/crossplane-backend"
     "@internal/plugin-ingestor": "link:../../plugins/ingestor"
+    "@internal/plugin-kubernetes-auth-backend": "link:../../plugins/kubernetes-auth-backend"
     "@open-service-portal/backstage-plugin-ingestor": "npm:2.3.1"
     "@terasky/backstage-plugin-scaffolder-backend-module-terasky-utils": "npm:^1.7.1"
     app: "link:../app"
@@ -32381,7 +32438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-oauth2@npm:1.8.0, passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.7.0":
+"passport-oauth2@npm:1.8.0, passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.7.0, passport-oauth2@npm:^1.8.0":
   version: 1.8.0
   resolution: "passport-oauth2@npm:1.8.0"
   dependencies:
