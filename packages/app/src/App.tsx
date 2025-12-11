@@ -10,6 +10,7 @@ import apiDocsPlugin from '@backstage/plugin-api-docs/alpha';
 import { SignInPageBlueprint, createFrontendModule, PageBlueprint } from '@backstage/frontend-plugin-api';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { SignInPage } from '@backstage/core-components';
+import { kubernetesAuthPlugin, kubernetesAuthApiRef } from '../../../plugins/kubernetes-auth/src';
 import { Navigate } from 'react-router-dom';
 import { navModule } from './modules/nav';
 import { scaffolderExtensionsModule } from './modules/scaffolderExtensions';
@@ -20,7 +21,8 @@ import {
   crossplaneGraphContent,
 } from './extensions/crossplaneEntityExtensions';
 
-// Custom SignInPage with Microsoft Auth only
+// Custom SignInPage with Microsoft Auth
+// Note: Kubernetes Auth is available for API token access only (not for login)
 const signInPage = SignInPageBlueprint.make({
   params: {
     loader: async () => props =>
@@ -79,6 +81,7 @@ const app = createApp({
     catalogPlugin,
     scaffolderPlugin,  // Official Backstage scaffolder plugin
     scaffolderExtensionsModule,  // Our custom field extensions
+    kubernetesAuthPlugin,  // Kubernetes OIDC authentication plugin
     authModule,
     searchPlugin,
     techdocsPlugin,
