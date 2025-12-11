@@ -26,6 +26,7 @@ backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));
+backend.add(import('@internal/plugin-kubernetes-auth-backend'));
 // See https://backstage.io/docs/auth/guest/provider
 
 // EntraID user search for scaffolder field
@@ -66,6 +67,9 @@ backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 
 // kubernetes plugin
 backend.add(import('@backstage/plugin-kubernetes-backend'));
+
+// crossplane backend plugin - provides API for querying XR instances
+backend.add(import('@internal/plugin-crossplane-backend'));
 
 // Ingestor plugin - discovers and imports Kubernetes resources into catalog
 // Configure in app-config/ingestor.yaml

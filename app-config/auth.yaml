@@ -33,3 +33,12 @@ auth:
           resolvers:
             # See https://backstage.io/docs/auth/microsoft/provider#resolvers for more resolvers
             - resolver: userIdMatchingUserEntityAnnotation
+    # Kubernetes OIDC authentication provider
+    # Used for Kubernetes API token access only (not for user login)
+    # Similar to GitHub provider - available for API calls but not shown on SignInPage
+    kubernetes:
+      development:
+        issuer: ${AUTH_KUBERNETES_ISSUER}
+        clientId: ${AUTH_KUBERNETES_CLIENT_ID}
+        clientSecret: ${AUTH_KUBERNETES_CLIENT_SECRET}
+        # Note: No signIn resolvers - this provider is for API tokens only
